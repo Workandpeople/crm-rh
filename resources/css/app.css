@@ -1,0 +1,46 @@
+/* === Imports === */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "../../public/fonts/fontAwesome/css/all.css";
+@import url("https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Quicksand:wght@400;500;600;700&display=swap");
+
+/* === Composants === */
+@import "./components/landing/modals.css";
+@import "./components/landing/header.css";
+@import "./components/landing/banner.css";
+@import "./components/landing/cta.css";
+@import "./components/landing/slogan.css";
+@import "./components/landing/advantages.css";
+@import "./components/landing/events.css";
+
+/* === Variables globales === */
+:root {
+  --font-title: "Castoro Titling", serif;
+  --font-body: "Quicksand", sans-serif;
+}
+
+/* === Typographie === */
+.font-title {
+  font-family: var(--font-title);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* === Couleurs globales === */
+body {
+  font-family: var(--font-body);
+}
+
+/* === SUPPRESSION DU CONTOUR BLEU (focus Bootstrap) === */
+button:focus,
+button:active,
+.btn:focus,
+.btn:active,
+.btn-close:focus,
+.btn-close:active,
+a.btn:focus,
+a.btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
