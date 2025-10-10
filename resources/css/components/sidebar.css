@@ -1,0 +1,62 @@
+/* === SIDEBAR DASHBOARD === */
+.sidebar {
+    width: 15rem;
+    background-color: var(--color-bg-secondary);
+    border-right: 1px solid var(--color-border);
+    position: fixed;
+    left: 0;
+    top: 4rem;
+    bottom: 0;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+.sidebar .section-title {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 0.25rem;
+}
+
+.sidebar .nav-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.4rem;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: background 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--color-primary-hover);
+    color: white;
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--color-primary);
+    color: white !important;
+}
+
+.sidebar .logout {
+    border-top: 1px solid var(--color-border);
+    padding: 1rem;
+}
+
+.sidebar .logout button {
+    width: 100%;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
