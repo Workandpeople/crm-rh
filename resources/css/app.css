@@ -3,7 +3,13 @@
 @import "../../public/fonts/fontAwesome/css/all.css";
 @import url("https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Quicksand:wght@400;500;600;700&display=swap");
 
+/* === Partials === */
+@import "./partials/headerDashboard.css";
+
 /* === Composants === */
+@import "./components/dashboard.css";
+@import "./components/sidebar.css";
+/*
 @import "./components/landing/modals.css";
 @import "./components/landing/header.css";
 @import "./components/landing/banner.css";
@@ -11,27 +17,22 @@
 @import "./components/landing/slogan.css";
 @import "./components/landing/advantages.css";
 @import "./components/landing/events.css";
+*/
 
 /* === Variables globales === */
 :root {
-  --font-title: "Castoro Titling", serif;
-  --font-body: "Quicksand", sans-serif;
+    --font-title: "Castoro Titling", serif;
+    --font-body: "Quicksand", sans-serif;
 }
 
 /* === Typographie === */
 .font-title {
-  font-family: var(--font-title);
+    font-family: var(--font-title);
 }
 
 .font-body {
-  font-family: var(--font-body);
+    font-family: var(--font-body);
 }
-
-/* === Couleurs globales === */
-body {
-  font-family: var(--font-body);
-}
-
 /* === SUPPRESSION DU CONTOUR BLEU (focus Bootstrap) === */
 button:focus,
 button:active,
@@ -41,6 +42,26 @@ button:active,
 .btn-close:active,
 a.btn:focus,
 a.btn:active {
-  outline: none !important;
-  box-shadow: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+/* === Styles globaux modifier par Moha === */
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: "Inter", sans-serif;
+}
+
+/*(Moha) J'ai pensé mettre ces couleurs */
+:root {
+    --color-bg: #1e1e2f;
+    --color-bg-secondary: #2c2c3e;
+    --color-text: #e4e4eb;
+    --color-text-muted: #a0a0b2;
+    --color-border: #3c3c50;
+
+    --color-primary: #4f46e5;
+    --color-primary-hover: #6366f1;
+
+    --radius-card: 1rem;
 }
