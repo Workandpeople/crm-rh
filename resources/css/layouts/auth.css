@@ -1,0 +1,58 @@
+.login {
+    background: linear-gradient(160deg, #1e1e2f 0%, #2c2c3e 100%);
+    border-radius: 1.2rem;
+}
+
+.login .card {
+    background: linear-gradient(
+        180deg,
+        rgba(46, 46, 70, 0.9) 0%,
+        rgba(34, 34, 54, 0.95) 100%
+    );
+    max-width: 25rem;
+    width: 100%;
+    border-radius: 1.2rem;
+}
+
+.forgot-password {
+    background: linear-gradient(160deg, #1e1e2f 0%, #2c2c3e 100%);
+    border-radius: 1.2rem;
+}
+
+.forgot-password .card {
+    background: linear-gradient(
+        180deg,
+        rgba(46, 46, 70, 0.9) 0%,
+        rgba(34, 34, 54, 0.95) 100%
+    );
+    max-width: 30rem;
+    width: 100%;
+    border-radius: 1.2rem;
+}
+
+.reset-password {
+    background: linear-gradient(160deg, #1e1e2f 0%, #2c2c3e 100%);
+    border-radius: 1.2rem;
+}
+
+.reset-password .card {
+    background: linear-gradient(
+        180deg,
+        rgba(46, 46, 70, 0.9) 0%,
+        rgba(34, 34, 54, 0.95) 100%
+    );
+    max-width: 30rem;
+    width: 100%;
+    border-radius: 1.2rem;
+}
+
+.deconnexion {
+    background: linear-gradient(160deg, #1e1e2f 0%, #2c2c3e 100%);
+    border-radius: 0 0 1.2rem 1.2rem;
+}
+.deconnexion button {
+    background: linear-gradient(160deg, #4e54c8 0%, #8f94fb 100%);
+    color: white;
+    border-radius: 0.8rem;
+    transition: background 0.3s ease;
+}

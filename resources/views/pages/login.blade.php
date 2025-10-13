@@ -3,14 +3,13 @@
 @section('title', 'Connexion - CRM RH')
 
 @section('content')
-<div class="min-vh-100 d-flex align-items-center justify-content-center bg-dark text-light">
-    <div class="card shadow-lg border-0 bg-gradient"
-         style="background: linear-gradient(160deg, #1e1e2f 0%, #2c2c3e 100%); max-width: 420px; width: 100%; border-radius: 1.2rem;">
+<div class="login min-vh-100 d-flex align-items-center justify-content-center bg-dark text-light">
+    <div class="card shadow-lg border-0">
 
          <div class="card-body p-5">
             {{-- Logo + titre --}}
             <div class="text-center mb-4">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 60px;">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo">
                 <h2 class="fw-bold mt-3 text-light">Espace RH</h2>
                 <p class="text-secondary small">Connexion sécurisée au CRM</p>
             </div>
@@ -29,8 +28,6 @@
             {{-- Formulaire --}}
             <form method="POST" class="text-start">
                 @csrf
-
-
                 {{-- Email --}}
                 <div class="mb-3">
                     <label for="email" class="form-label text-light fw-semibold">E-mail</label>
