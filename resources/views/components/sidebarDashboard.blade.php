@@ -1,6 +1,7 @@
 <aside class="sidebar d-flex flex-column justify-content-between">
     <div class="p-4">
         {{-- Liens Super Admin --}}
+        @if (Auth::user()->role === 'superadmin')
         <div class="mb-4">
             <h6 class="text-uppercase small fw-bold mb-2 section-title">Pages Super-Admin</h6>
             <ul class="list-unstyled mb-0">
@@ -9,8 +10,10 @@
                 <li><a href="#" data-page="logs-security" class="nav-link d-block py-2 px-3 rounded text-decoration-none">Logs & Sécurité</a></li>
             </ul>
         </div>
+        @endif
 
         {{-- Liens Admin --}}
+        @if (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
         <div class="mb-4">
             <h6 class="text-uppercase small fw-bold mb-2 section-title">Pages Admin</h6>
             <ul class="list-unstyled mb-0">
@@ -19,8 +22,10 @@
                 <li><a href="#" data-page="conges-rh" class="nav-link d-block py-2 px-3 rounded text-decoration-none">Congés</a></li>
             </ul>
         </div>
+        @endif
 
         {{-- Liens Employés --}}
+        @if (Auth::user()->role === 'user' || Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
         <div>
             <h6 class="text-uppercase small fw-bold mb-2 section-title">Pages Employés</h6>
             <ul class="list-unstyled mb-0">
@@ -29,14 +34,18 @@
                 <li><a href="#" data-page="evaluations" class="nav-link d-block py-2 px-3 rounded text-decoration-none">Évaluations</a></li>
             </ul>
         </div>
+        @endif
+    </div>
+    {{-- Déconnexion --}}
+    <div class="deconnexion p-3 border-top">
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn w-100 fw-semibold">
+                <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
+            </button>
+        </form>
     </div>
 
-    {{-- Déconnexion --}}
-    <div class="p-3 border-top logout">
-        <button class="btn w-100 fw-semibold">
-            <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
-        </button>
-    </div>
 
     {{-- Script pour le chargement dynamique --}}
     @push('js')

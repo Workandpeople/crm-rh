@@ -6,6 +6,9 @@
 /* === Partials === */
 @import "./partials/headerDashboard.css";
 
+/* === Layouts === */
+@import "./layouts/auth.css";
+
 /* === Composants === */
 @import "./components/dashboard.css";
 @import "./components/sidebar.css";

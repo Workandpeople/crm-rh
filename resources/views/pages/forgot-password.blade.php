@@ -3,13 +3,10 @@
 @section('title', 'Mot de passe oublié - CRM RH')
 
 @section('content')
-<div class="min-vh-100 d-flex align-items-center justify-content-center text-light"
-     style="background: linear-gradient(160deg, #1e1e2f 0%, #2c2c3e 100%);">
-    <div class="card shadow-lg border-0"
-         style="background: linear-gradient(180deg, rgba(46,46,70,0.9) 0%, rgba(34,34,54,0.95) 100%);
-                max-width: 420px; width: 100%; border-radius: 1.2rem;">
-        <div class="card-body p-5">
+<div class="forgot-password min-vh-100 d-flex align-items-center justify-content-center text-light">
+    <div class="card shadow-lg border-0">
 
+        <div class="card-body p-5">
             {{-- Logo + titre --}}
             <div class="text-center mb-4">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 60px;">

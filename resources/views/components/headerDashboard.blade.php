@@ -20,7 +20,12 @@
          style="display: none; position: absolute; top: 70px; right: 20px; background-color: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: 0.75rem; width: 220px;">
         <a href="#" class="d-block py-2 px-3 text-decoration-none" style="color: var(--color-text);">Mon profil</a>
         <a href="#" class="d-block py-2 px-3 text-decoration-none" style="color: var(--color-text);">Paramètres</a>
-        <a href="#" class="d-block py-2 px-3 text-decoration-none text-danger fw-semibold">Déconnexion</a>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="w-100 text-start py-2 px-3 border-0 bg-transparent text-danger fw-semibold">
+                <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
+            </button>
+        </form>
     </div>
 
     @push('js')
