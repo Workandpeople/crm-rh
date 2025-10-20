@@ -1,0 +1,66 @@
+/* === ORGANIGRAMME ADMIN === */
+
+.organigramme-admin-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+    text-align: center;
+}
+
+.organigramme-admin-page h2 {
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+}
+
+/* ORGANIGRAMME */
+.organigramme {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+}
+
+/* NIVEAUX */
+.niveau {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.niveau.direction .poste {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+.niveau.managers .poste {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.niveau.employes .poste {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+}
+
+/* POSTES */
+.poste {
+    padding: 1rem 1.5rem;
+    border-radius: 0.8rem;
+    min-width: 200px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.poste:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+.poste h5, .poste h6 {
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-hover);
+}
+.poste p {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}

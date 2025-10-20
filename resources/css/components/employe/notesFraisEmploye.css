@@ -1,0 +1,58 @@
+.notes-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+.notes-page h2 {
+    color: var(--color-primary);
+}
+
+.btn-new-note {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+}
+.btn-new-note:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* NOTES LIST */
+.notes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+.note-card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.note-type {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+.note-status {
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.note-status.valide {
+    background-color: #22c55e;
+    color: #fff;
+}
+.note-status.en-attente {
+    background-color: #facc15;
+    color: #1e1e2f;
+}

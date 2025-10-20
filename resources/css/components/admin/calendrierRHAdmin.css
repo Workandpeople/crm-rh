@@ -1,0 +1,120 @@
+/* === CALENDRIER RH ADMIN === */
+
+.calendar-admin-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+
+.calendar-admin-page h2 {
+    color: var(--color-primary);
+}
+
+/* HEADER */
+.month-title {
+    color: var(--color-text);
+    font-weight: 600;
+}
+.calendar-nav {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+.calendar-nav:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+/* LEGENDE */
+.calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+.legend-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+.legend-dot.conge {
+    background-color: #4f46e5;
+}
+.legend-dot.maladie {
+    background-color: #ef4444;
+}
+.legend-dot.formation {
+    background-color: #22c55e;
+}
+.legend-dot.entretien {
+    background-color: #facc15;
+}
+.legend-dot.evenement {
+    background-color: #60a5fa;
+}
+
+/* GRILLE DU CALENDRIER */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.75rem;
+}
+.day-name {
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 0.5rem 0;
+}
+.day-cell {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    min-height: 120px;
+    padding: 0.5rem;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.day-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+.day-number {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* ÉVÉNEMENTS */
+.event {
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.4rem;
+    color: #fff;
+    text-align: center;
+}
+.event.conge {
+    background-color: #4f46e5;
+}
+.event.maladie {
+    background-color: #ef4444;
+}
+.event.formation {
+    background-color: #22c55e;
+}
+.event.entretien {
+    background-color: #facc15;
+    color: #1e1e2f;
+}
+.event.evenement {
+    background-color: #60a5fa;
+}

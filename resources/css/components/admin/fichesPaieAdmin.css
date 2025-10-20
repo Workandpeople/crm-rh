@@ -1,0 +1,139 @@
+/* === FICHES DE PAIE ADMIN === */
+
+.paie-admin-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+
+.paie-admin-page h2 {
+    color: var(--color-primary);
+}
+
+/* HEADER BUTTONS */
+.btn-upload, .btn-export {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    transition: all 0.2s ease;
+}
+.btn-upload:hover, .btn-export:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+/* FILTRES */
+.paie-filters {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+.filter-group label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.3rem;
+}
+.filter-group select {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+}
+
+/* TABLE */
+.paie-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.paie-table th, .paie-table td {
+    padding: 1rem;
+    text-align: left;
+}
+.paie-table thead {
+    background-color: var(--color-bg-secondary);
+}
+.paie-table th {
+    font-weight: 600;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+}
+.paie-table tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s ease;
+}
+.paie-table tr:hover {
+    background-color: rgba(255,255,255,0.03);
+}
+.paie-table td {
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+/* STATUTS */
+.status {
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.status.disponible { background-color: #22C55E; color: #fff; }
+.status.manquante { background-color: #EF4444; color: #fff; }
+.status.archive { background-color: #9CA3AF; color: #fff; }
+
+/* ACTIONS */
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.btn-action {
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 0.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-action:hover {
+    transform: scale(1.05);
+}
+
+/* COULEURS SPÉCIFIQUES */
+.btn-action.download {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+.btn-action.download:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+.btn-action.upload {
+    border-color: #22C55E;
+    color: #22C55E;
+}
+.btn-action.upload:hover {
+    background-color: #22C55E;
+    color: #fff;
+}
+.btn-action.delete {
+    border-color: #EF4444;
+    color: #EF4444;
+}
+.btn-action.delete:hover {
+    background-color: #EF4444;
+    color: #fff;
+}

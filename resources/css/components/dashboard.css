@@ -1,0 +1,25 @@
+/* === DASHBOARD CONTENT === */
+
+#dashboardContent {
+    margin-left: 15rem;
+    margin-top: 4rem;
+
+    background-color: var(--color-bg);
+    min-height: calc(100vh - 4rem);
+}
+
+.dashboard-card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.dashboard-card h5 {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.dashboard-card p {
+    color: var(--color-text-muted);
+}

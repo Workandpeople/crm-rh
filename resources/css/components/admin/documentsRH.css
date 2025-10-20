@@ -1,0 +1,192 @@
+/* === DOCUMENTS RH (UNIFIÉ) === */
+
+.documents-admin-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+
+.documents-admin-page h2 {
+    color: var(--color-primary);
+}
+
+/* EXPORT */
+.btn-export {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+}
+.btn-export:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* FILTRES */
+.documents-filters {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+.filter-group label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.3rem;
+}
+.filter-group select {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+}
+
+/* STATS */
+.document-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+.stat-card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+.stat-card h6 {
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+.stat-card p {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* TABLE */
+.documents-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.documents-table th,
+.documents-table td {
+    padding: 1rem;
+    text-align: left;
+}
+.documents-table thead {
+    background-color: var(--color-bg-secondary);
+}
+.documents-table tr {
+    border-bottom: 1px solid var(--color-border);
+}
+.documents-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+.documents-table th {
+    color: var(--color-text);
+    font-weight: 600;
+}
+.documents-table td {
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+/* STATUTS */
+.status {
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.status.valide {
+    background-color: #22c55e;
+    color: #fff;
+}
+.status.en-attente {
+    background-color: #facc15;
+    color: #1e1e2f;
+}
+.status.refuse {
+    background-color: #ef4444;
+    color: #fff;
+}
+.status.expire {
+    background-color: #9ca3af;
+    color: #fff;
+}
+
+/* ACTIONS */
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.btn-action {
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 0.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-action:hover {
+    transform: scale(1.05);
+}
+
+/* ACTION COLORS */
+.btn-action.valide {
+    border-color: #22c55e;
+    color: #22c55e;
+}
+.btn-action.valide:hover {
+    background-color: #22c55e;
+    color: #fff;
+}
+
+.btn-action.refuse {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.btn-action.refuse:hover {
+    background-color: #ef4444;
+    color: #fff;
+}
+
+.btn-action.upload {
+    border-color: #22c55e;
+    color: #22c55e;
+}
+.btn-action.upload:hover {
+    background-color: #22c55e;
+    color: #fff;
+}
+
+.btn-action.download {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+.btn-action.download:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+.btn-action.delete {
+    border-color: #9ca3af;
+    color: #9ca3af;
+}
+.btn-action.delete:hover {
+    background-color: #9ca3af;
+    color: #1e1e2f;
+}

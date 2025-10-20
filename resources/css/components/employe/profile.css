@@ -1,0 +1,137 @@
+/* === Page Profil Employé === */
+
+.profil-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+
+/* TITRES */
+.profil-page h2,
+.profil-page h5 {
+    color: var(--color-primary);
+}
+
+.profil-page h6,
+.profil-page label {
+    color: var(--color-text);
+}
+
+/* CARTES GLOBALES */
+.profil-page .card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.profil-page .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* SECTION AVATAR */
+.profil-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.profil-avatar img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-primary);
+    margin-bottom: 1rem;
+}
+.profil-avatar h5 {
+    margin-bottom: 0.3rem;
+    color: var(--color-text);
+}
+.profil-avatar p {
+    margin-bottom: 0;
+    color: var(--color-text-muted);
+}
+.profil-avatar .badge {
+    background-color: var(--color-primary);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+}
+
+/* INFO BOXES */
+.profil-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+.profil-info-item label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+.profil-info-item p {
+    font-size: 1rem;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+/* PROGRESS BAR */
+.profil-progress {
+    background-color: var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 18px;
+}
+.profil-progress .bar {
+    background-color: var(--color-primary);
+    height: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* ACTIONS RAPIDES */
+.profil-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+.profil-actions .card {
+    text-align: center;
+    cursor: pointer;
+}
+.profil-actions i {
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+.profil-actions h6 {
+    color: var(--color-text);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+.profil-actions a {
+    color: var(--color-primary-hover);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+.profil-actions a:hover {
+    text-decoration: underline;
+}
+
+/* BOUTON MODIFIER */
+.btn-edit-profile {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+.btn-edit-profile:hover {
+    background-color: var(--color-primary-hover);
+}
