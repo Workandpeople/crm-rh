@@ -38,18 +38,16 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-Route::middleware(['auth','role:superadmin'])->group(function () {
-    Route::get('/superadmin', function () {
-        return 'Section superadmin';
-    });
-});
-Route::middleware(['auth','role:admin'])->group(function () {
-    Route::get('/admin', function () {
-        return 'Section admin';
-    });
-});
-Route::middleware(['auth','role:user'])->group(function () {
-    Route::get('/user', function () {
-        return 'Section utilisateur';
-    });
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/{role}/{page}', function ($role, $page) {
+        $viewPath = "components.sidebarContent.{$role}.{$page}";
+
+        if (View::exists($viewPath)) {
+            return view($viewPath);
+        }
+
+        return response("<div class='p-4 text-warning'>
+            ⚠️ Vue introuvable pour le rôle {$role} : {$page}
+        </div>", 404);
+    })->name('dashboard.dynamic');
 });

@@ -1,0 +1,62 @@
+.paie-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+.paie-page h2 {
+    color: var(--color-primary);
+}
+
+.btn-download-all {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+}
+.btn-download-all:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* LISTE DES FICHES DE PAIE */
+.paie-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.paie-item {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.paie-item .info {
+    flex-grow: 1;
+    margin-left: 1rem;
+}
+.paie-item h6 {
+    margin-bottom: 0.3rem;
+    color: var(--color-text);
+}
+.paie-item p {
+    margin-bottom: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+.btn-download {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    transition: all 0.2s ease;
+}
+.btn-download:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}

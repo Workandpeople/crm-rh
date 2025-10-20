@@ -12,7 +12,7 @@
         <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid var(--color-primary);">
             <img src="{{ asset('images/avatar.png') }}" alt="Profil" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-        <span style="color: var(--color-text); font-weight: 600;">Nom Prénom</span>
+        <span class="fw-bold mb-1">{{ auth()->user()->name ?? 'Nom et Prénom' }}</span>
     </div>
 
     {{-- Dropdown profil --}}
@@ -39,6 +39,11 @@
             if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.style.display = 'none';
             }
+        });
+
+        // Toggle sidebar on menu icon click
+        document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+            document.querySelector('.sidebar-dashboard')?.classList.toggle('active');
         });
     </script>
     @endpush

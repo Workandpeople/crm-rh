@@ -8,10 +8,39 @@
 
 /* === Layouts === */
 @import "./layouts/auth.css";
+@import "./layouts/index.css";
 
 /* === Composants === */
 @import "./components/dashboard.css";
 @import "./components/sidebar.css";
+@import "./components/searchBar.css";
+
+/* === Composants EMPLOYE === */
+@import "./components/employe/profile.css";
+@import "./components/employe/ticketingEmploye.css";
+@import "./components/employe/calendrierEmploye.css";
+@import "./components/employe/dossierRHEmploye.css";
+@import "./components/employe/congesEmploye.css";
+@import "./components/employe/fichesPaieEmploye.css";
+@import "./components/employe/notesFraisEmploye.css";
+
+/* === Composants ADMIN === */
+@import "./components/admin/ticketingAdmin.css";
+@import "./components/admin/dossierRHAdmin.css";
+@import "./components/admin/documentsRH.css";
+@import "./components/admin/calendrierRHAdmin.css";
+@import "./components/admin/notesFraisAdmin.css";
+@import "./components/admin/congesAdmin.css";
+@import "./components/admin/fichesPaieAdmin.css";
+@import "./components/admin/organigrammeAdmin.css";
+@import "./components/admin/entretiensAdmin.css";
+
+/* === Composants SUPER ADMIN === */
+@import "./components/superadmin/userManagement.css";
+@import "./components/superadmin/societes.css";
+@import "./components/superadmin/equipes.css";
+@import "./components/superadmin/parametresSysteme.css";
+
 /*
 @import "./components/landing/modals.css";
 @import "./components/landing/header.css";

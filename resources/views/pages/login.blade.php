@@ -26,7 +26,7 @@
             @endif
 
             {{-- Formulaire --}}
-            <form method="POST" class="text-start">
+            <form method="POST" action="{{ route('login.attempt') }}" class="text-start">
                 @csrf
                 {{-- Email --}}
                 <div class="mb-3">

@@ -1,0 +1,136 @@
+/* === ÉQUIPE (SUPER ADMIN) === */
+
+.equipe-admin-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+
+.equipe-admin-page h2 {
+    color: var(--color-primary);
+}
+
+/* BOUTON AJOUT */
+.btn-new-equipe {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    transition: background 0.2s ease;
+}
+.btn-new-equipe:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* FILTRES */
+.equipe-filters {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+.filter-group label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.3rem;
+}
+.filter-group select {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+}
+
+/* LISTE DES ÉQUIPES */
+.equipe-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARTE ÉQUIPE */
+.equipe-card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.equipe-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+/* TITRES */
+.equipe-header h4 {
+    color: var(--color-text);
+}
+.badge.societe {
+    background-color: var(--color-primary);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+}
+
+/* MEMBRES */
+.members-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.member {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+}
+
+/* ACTIONS */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.btn-action {
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 0.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-action:hover {
+    transform: scale(1.05);
+}
+.btn-action.edit {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+.btn-action.edit:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+.btn-action.delete {
+    border-color: #EF4444;
+    color: #EF4444;
+}
+.btn-action.delete:hover {
+    background-color: #EF4444;
+    color: #fff;
+}

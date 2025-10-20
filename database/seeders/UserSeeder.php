@@ -25,6 +25,10 @@ class UserSeeder extends Seeder
         ]);
 
         // Employés
-        User::factory()->count(3)->user()->create();
+        User::factory()->user()->create([
+            'name' => 'random Employee',
+            'email' => 'random@workandpeople.fr',
+            'password' => Hash::make('admin123'),
+        ]);
     }
 }

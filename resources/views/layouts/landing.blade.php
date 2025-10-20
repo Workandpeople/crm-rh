@@ -59,7 +59,9 @@
     @include('partials.landing.footer')
 
     {{-- Scripts additionnels --}}
+
     @stack('js')
+
 
     {{-- Modals globaux --}}
     @stack('modals')

@@ -1,0 +1,169 @@
+/* === DOSSIER RH ADMIN === */
+
+.dossier-admin-page {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
+}
+
+.dossier-admin-page h2 {
+    color: var(--color-primary);
+}
+
+/* EXPORT BUTTON */
+.btn-export {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    transition: background 0.2s ease;
+}
+.btn-export:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* PROGRESS BAR */
+.dossier-progress {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+.dossier-progress h5 {
+    color: var(--color-primary);
+}
+.progress {
+    background-color: var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 18px;
+}
+.progress .bar {
+    background-color: var(--color-primary);
+    height: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* TABLE */
+.dossier-documents table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.dossier-documents th,
+.dossier-documents td {
+    padding: 1rem;
+    text-align: left;
+}
+.dossier-documents thead {
+    background-color: var(--color-bg-secondary);
+}
+.dossier-documents th {
+    font-weight: 600;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+}
+.dossier-documents tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s ease;
+}
+.dossier-documents tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+.dossier-documents td {
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+/* STATUTS */
+.status {
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.status.valide {
+    background-color: #22c55e;
+    color: #fff;
+}
+.status.en-attente {
+    background-color: #facc15;
+    color: #1e1e2f;
+}
+.status.refuse {
+    background-color: #ef4444;
+    color: #fff;
+}
+.status.manquant {
+    background-color: #9ca3af;
+    color: #fff;
+}
+
+/* ACTIONS */
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.btn-action {
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 0.4rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-action:hover {
+    transform: scale(1.05);
+}
+
+/* COULEURS SPÉCIFIQUES */
+.btn-action.download {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+.btn-action.download:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+.btn-action.upload {
+    border-color: #22c55e;
+    color: #22c55e;
+}
+.btn-action.upload:hover {
+    background-color: #22c55e;
+    color: #fff;
+}
+.btn-action.valide {
+    border-color: #22c55e;
+    color: #22c55e;
+}
+.btn-action.valide:hover {
+    background-color: #22c55e;
+    color: #fff;
+}
+.btn-action.refuse {
+    border-color: #facc15;
+    color: #facc15;
+}
+.btn-action.refuse:hover {
+    background-color: #facc15;
+    color: #1e1e2f;
+}
+.btn-action.delete {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.btn-action.delete:hover {
+    background-color: #ef4444;
+    color: #fff;
+}

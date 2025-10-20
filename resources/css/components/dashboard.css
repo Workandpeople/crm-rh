@@ -3,7 +3,7 @@
 #dashboardContent {
     margin-left: 15rem;
     margin-top: 4rem;
-    padding: 2rem;
+
     background-color: var(--color-bg);
     min-height: calc(100vh - 4rem);
 }
