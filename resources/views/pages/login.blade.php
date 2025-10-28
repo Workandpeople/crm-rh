@@ -19,6 +19,12 @@
                 <div class="alert alert-danger text-center py-2">Identifiants invalides.</div>
             @endif
 
+            @if (session('error'))
+                <div class="alert alert-danger text-center py-2">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @if (session('success'))
                 <div class="alert alert-success text-center py-2">
                     {{ session('success') }}

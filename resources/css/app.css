@@ -41,16 +41,6 @@
 @import "./components/superadmin/equipes.css";
 @import "./components/superadmin/parametresSysteme.css";
 
-/*
-@import "./components/landing/modals.css";
-@import "./components/landing/header.css";
-@import "./components/landing/banner.css";
-@import "./components/landing/cta.css";
-@import "./components/landing/slogan.css";
-@import "./components/landing/advantages.css";
-@import "./components/landing/events.css";
-*/
-
 /* === Variables globales === */
 :root {
     --font-title: "Castoro Titling", serif;

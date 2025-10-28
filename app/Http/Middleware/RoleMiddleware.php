@@ -10,7 +10,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, string $role)
     {
         $user = $request->user();
-        if (!$user || $user->role !== $role) {
+        if (!$user || $user->role?->name !== $role) {
             abort(403, 'Accès refusé.');
         }
         return $next($request);

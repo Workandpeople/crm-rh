@@ -4,35 +4,23 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use App\Models\{Team, Company, Role};
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    public function definition(): array
+    public function definition()
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'password' => Hash::make('password123'),
-            'role' => 'user',
+            'team_id' => Team::factory(),
+            'company_id' => Company::factory(),
+            'role_id' => Role::inRandomOrder()->first()?->id ?? Role::factory(),
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'password' => Hash::make('password'),
+            'phone' => $this->faker->phoneNumber(),
+            'status' => 'active',
+            'onboarding_completed_at' => now(),
         ];
-    }
-
-    public function superadmin(): static
-    {
-        return $this->state(fn () => ['role' => 'superadmin']);
-    }
-
-    public function admin(): static
-    {
-        return $this->state(fn () => ['role' => 'admin']);
-    }
-
-    public function user(): static
-    {
-        return $this->state(fn () => ['role' => 'user']);
     }
 }

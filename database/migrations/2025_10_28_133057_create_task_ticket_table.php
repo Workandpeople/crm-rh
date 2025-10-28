@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('password_reset', function (Blueprint $table) {
-            $table->string('email')->index();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        Schema::create('task_ticket', function (Blueprint $table) {
+            $table->foreignUuid('task_id')->constrained('tasks')->cascadeOnDelete();
+            $table->foreignUuid('ticket_id')->constrained('tickets')->cascadeOnDelete();
+            $table->primary(['task_id', 'ticket_id']);
         });
     }
 
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('password_reset');
+        Schema::dropIfExists('task_ticket');
     }
 };
