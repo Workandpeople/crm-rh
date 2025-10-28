@@ -24,3 +24,11 @@ initAlpine();
 initAOS();
 initEcho();
 monitorReverb();
+
+// --- en bas de app.js ---
+import initUsersManagement from './components/usersManagement';
+
+// on stocke dans un registre global
+window.pageScripts = {
+    usersManagement: initUsersManagement,
+};

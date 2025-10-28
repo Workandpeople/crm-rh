@@ -62,43 +62,55 @@
             </button>
         </form>
     </div>
-
-    @push('js')
-    <script>
-    (function() {
-        let isLoading = false;
-        async function loadContent(page) {
-            if (isLoading) return;
-            isLoading = true;
-            const contentDiv = document.getElementById('dashboardContent');
-            contentDiv.innerHTML = `<p class="p-3">Chargement...</p>`;
-            try {
-                const response = await fetch(`/dashboard/${page}`, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-                if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-                const html = await response.text();
-                contentDiv.innerHTML = html.trim().length
-                    ? html
-                    : `<p class="text-warning p-3">⚠️ Aucun contenu trouvé pour "${page}".</p>`;
-            } catch (error) {
-                contentDiv.innerHTML = `<p class="text-danger p-3">Erreur : ${error.message}</p>`;
-            } finally {
-                isLoading = false;
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const links = document.querySelectorAll('.nav-link');
-            links.forEach(link => link.addEventListener('click', e => {
-                e.preventDefault();
-                links.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                loadContent(link.dataset.page);
-            }));
-            loadContent('profil'); // page par défaut
-        });
-    })();
-    </script>
-    @endpush
 </aside>
+
+@push('js')
+<script>
+(function() {
+    let isLoading = false;
+
+    async function loadContent(page) {
+        if (isLoading) return;
+        isLoading = true;
+
+        const contentDiv = document.getElementById('dashboardContent');
+        contentDiv.innerHTML = `<p class="p-3">Chargement...</p>`;
+
+        try {
+            const response = await fetch(`/dashboard/${page}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+
+            const html = await response.text();
+            contentDiv.innerHTML = html.trim().length
+                ? html
+                : `<p class="text-warning p-3">⚠️ Aucun contenu trouvé pour "${page}".</p>`;
+
+            // --- Nouvelle logique ---
+            const scriptKey = contentDiv.querySelector('[data-script]')?.dataset.script;
+            if (scriptKey && window.pageScripts?.[scriptKey]) {
+                console.log(`[sidebar] Initialisation du script "${scriptKey}"`);
+                window.pageScripts[scriptKey]();
+            }
+        } catch (error) {
+            console.error('[sidebar] Erreur loadContent():', error);
+            contentDiv.innerHTML = `<p class="text-danger p-3">Erreur : ${error.message}</p>`;
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach(link => link.addEventListener('click', e => {
+            e.preventDefault();
+            links.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            loadContent(link.dataset.page);
+        }));
+        loadContent('profil'); // page par défaut
+    });
+})();
+</script>
+@endpush

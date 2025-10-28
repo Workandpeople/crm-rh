@@ -36,10 +36,20 @@ Route::post('/logout', [LogoutController::class, 'logout'])
 // ======================================
 //  ZONE AUTHENTIFIÉE
 // ======================================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Chargement AJAX des sous-pages
     Route::get('/dashboard/{page}', [DashboardController::class, 'loadPage'])
+        ->where('page', '^[A-Za-z0-9_-]+$')
         ->name('dashboard.page');
+
+    // === Super Admin actions ===
+    Route::prefix('admin')->middleware('auth')->group(function () {
+        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('admin.users.show');
+        Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('admin.users.store');
+        Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.users.update');
+        Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
+    });
 });
