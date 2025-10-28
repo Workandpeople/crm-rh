@@ -14,6 +14,6 @@ class LogoutController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login.show')->with('success', 'Vous êtes déconnecté.');
+        return redirect()->route('login')->with('success', 'Vous êtes déconnecté.');
     }
 }

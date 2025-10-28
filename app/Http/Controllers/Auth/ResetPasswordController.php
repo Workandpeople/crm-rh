@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+use App\Models\User;
 
 class ResetPasswordController extends Controller
 {
@@ -26,18 +29,26 @@ class ResetPasswordController extends Controller
             'password' => ['required','confirmed','min:8'],
         ]);
 
-        $status = Password::reset(
-            $request->only('email','password','password_confirmation','token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
-            }
-        );
+        // Vérifie la validité du token
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login.show')->with('success', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+        if (!$record || Carbon::parse($record->created_at)->addHours(2)->isPast()) {
+            return back()->withErrors(['email' => 'Le lien de réinitialisation est invalide ou expiré.']);
+        }
+
+        // Met à jour le mot de passe
+        $user = User::where('email', $request->email)->firstOrFail();
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        // Supprime le token
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return redirect()->route('login')->with('success', 'Votre mot de passe a été réinitialisé avec succès.');
     }
 }

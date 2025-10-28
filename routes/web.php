@@ -19,19 +19,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login'])
         ->name('login.attempt');
 
-    // --- Mot de passe oublié ---
-    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequest'])
-        ->name('password.request');
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequest'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
 
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
-        ->name('password.email');
-
-    // --- Réinitialisation du mot de passe ---
-    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
-        ->name('password.reset');
-
-    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
-        ->name('password.update');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 // ======================================
