@@ -13,6 +13,11 @@
         <div class="d-flex flex-wrap gap-3 align-items-center">
 
             <div class="filter-group">
+                <label for="filter-search">Recherche</label>
+                <input type="text" id="filter-search" class="form-control" placeholder="Nom ou prénom...">
+            </div>
+
+            <div class="filter-group">
                 <label for="filter-role">Rôle</label>
                 <select id="filter-role" class="form-select">
                     <option value="">Tous</option>
@@ -62,5 +67,10 @@
                 </tr>
             </tbody>
         </table>
+
+        {{-- PAGINATION --}}
+        <nav>
+            <ul class="pagination justify-content-center mt-4" id="usersPagination"></ul>
+        </nav>
     </div>
 </div>

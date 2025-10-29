@@ -46,10 +46,27 @@ Route::middleware(['auth'])->group(function () {
 
     // === Super Admin actions ===
     Route::prefix('admin')->middleware('auth')->group(function () {
-        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
-        Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('admin.users.show');
-        Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('admin.users.store');
-        Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.users.update');
-        Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
+        // 🔹 D'abord les routes fixes
+        Route::get('/users/options', [\App\Http\Controllers\Admin\UserController::class, 'options'])
+            ->name('admin.users.options');
+
+        // 🔹 Ensuite les CRUD dynamiques
+        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])
+            ->name('admin.users.index');
+
+        Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])
+            ->name('admin.users.show');
+
+        Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])
+            ->name('admin.users.store');
+
+        Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])
+            ->name('admin.users.update');
+
+        Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])
+            ->name('admin.users.destroy');
+
+        Route::post('/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])
+            ->name('admin.users.reset');
     });
 });

@@ -64,10 +64,34 @@
     </div>
 </aside>
 
+@push('modals')
+    @include('components.sidebarContent.superadmin.userModals')
+@endpush
+
+
 @push('js')
 <script>
 (function() {
     let isLoading = false;
+    const DEFAULT_PAGE = 'profil';
+    const storageKey = 'dashboard:lastPage:{{ Auth::id() ?? 'guest' }}';
+
+    function rememberPage(page) {
+        try {
+            window.localStorage.setItem(storageKey, page);
+        } catch (error) {
+            console.warn('[sidebar] Impossible de sauvegarder la page active', error);
+        }
+    }
+
+    function readStoredPage() {
+        try {
+            return window.localStorage.getItem(storageKey);
+        } catch (error) {
+            console.warn('[sidebar] Impossible de lire la page sauvegardée', error);
+            return null;
+        }
+    }
 
     async function loadContent(page) {
         if (isLoading) return;
@@ -85,7 +109,9 @@
             const html = await response.text();
             contentDiv.innerHTML = html.trim().length
                 ? html
-                : `<p class="text-warning p-3">⚠️ Aucun contenu trouvé pour "${page}".</p>`;
+                : `<p class="text-warning p-3">Aucun contenu trouvé pour "${page}".</p>`;
+
+            rememberPage(page);
 
             // --- Nouvelle logique ---
             const scriptKey = contentDiv.querySelector('[data-script]')?.dataset.script;
@@ -103,13 +129,26 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const links = document.querySelectorAll('.nav-link');
+        const setActiveLink = (page) => {
+            links.forEach(link => {
+                if (link.dataset.page === page) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        };
+
         links.forEach(link => link.addEventListener('click', e => {
             e.preventDefault();
-            links.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-            loadContent(link.dataset.page);
+            const targetPage = link.dataset.page;
+            setActiveLink(targetPage);
+            loadContent(targetPage);
         }));
-        loadContent('profil'); // page par défaut
+
+        const initialPage = readStoredPage() || DEFAULT_PAGE;
+        setActiveLink(initialPage);
+        loadContent(initialPage);
     });
 })();
 </script>

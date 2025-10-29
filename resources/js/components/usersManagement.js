@@ -1,36 +1,106 @@
 /**
- * resources/js/components/usersManagement.js
- * Gère la page "Gestion des utilisateurs" du CRM RH.
+ * Gestion CRUD des utilisateurs (Super Admin)
+ * + Recherche + Pagination + Toasts Bootstrap + Reset Password
  */
-
 export default function initUsersManagement() {
     console.log('%c[usersManagement] Initialisation', 'color: cyan');
 
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const bs = window.bootstrap;
+    if (!bs?.Modal) return console.error('Bootstrap manquant');
+
+    // === Sélecteurs ===
     const tableBody = document.getElementById('usersTableBody');
     const roleFilter = document.getElementById('filter-role');
     const statusFilter = document.getElementById('filter-statut');
     const companyFilter = document.getElementById('filter-societe');
-    if (!tableBody) return; // sécurité si le DOM ne correspond pas
+    const searchInput = document.getElementById('filter-search');
+    const paginationEl = document.getElementById('usersPagination');
 
+    // === Modals ===
+    const modalCreate = document.getElementById('modalUserCreate') ? new bs.Modal('#modalUserCreate') : null;
+    const modalEdit = document.getElementById('modalUserEdit') ? new bs.Modal('#modalUserEdit') : null;
+    const modalDelete = document.getElementById('modalUserDelete') ? new bs.Modal('#modalUserDelete') : null;
+
+    // === Données ===
+    let usersCache = [];
+    let rolesCache = [];
+    let companiesCache = [];
+    let currentPage = 1;
+    const perPage = 15;
+    let toDelete = null;
+
+    // === UTILITAIRE : Toast Bootstrap ===
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return console.warn('Aucun conteneur de toast trouvé');
+
+        const bg = type === 'success' ? 'bg-success' : 'bg-danger';
+        const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+        const id = `toast-${Date.now()}`;
+
+        container.insertAdjacentHTML(
+            'beforeend',
+            `
+            <div id="${id}" class="toast align-items-center text-white ${bg} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="d-flex">
+                <div class="toast-body">
+                  <i class="fa-solid ${icon} me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+              </div>
+            </div>`
+        );
+
+        const toastEl = document.getElementById(id);
+        const toast = new bs.Toast(toastEl, { delay: 3500 });
+        toast.show();
+        toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+    }
+
+    const formatDate = d =>
+        new Date(d).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+
+    // === OPTIONS ===
+    async function fetchOptions() {
+        try {
+            const res = await fetch('/admin/users/options', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!res.ok) throw new Error('Erreur lors du chargement des options');
+            const data = await res.json();
+            rolesCache = data.roles;
+            companiesCache = data.companies;
+            fillRoleCompanySelects();
+        } catch (e) {
+            showToast(e.message, 'error');
+        }
+    }
+
+    function fillRoleCompanySelects() {
+        const roleSelects = document.querySelectorAll('#createRoleSelect, #editRoleSelect');
+        const companySelects = document.querySelectorAll('#createCompanySelect, #editCompanySelect');
+
+        const rolesHTML =
+            `<option value="">-- Choisir un rôle --</option>` +
+            rolesCache.map(r => `<option value="${r.id}">${r.label || r.name}</option>`).join('');
+        roleSelects.forEach(s => (s.innerHTML = rolesHTML));
+
+        const compHTML =
+            `<option value="">Aucune</option>` +
+            companiesCache.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        companySelects.forEach(s => (s.innerHTML = compHTML));
+    }
+
+    // === CHARGEMENT UTILISATEURS ===
     async function loadUsers() {
-        console.log('[usersManagement] Chargement des utilisateurs…');
         tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4">Chargement...</td></tr>`;
         try {
-            const res = await fetch('/admin/users', {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                credentials: 'same-origin'
-            });
+            const res = await fetch('/admin/users', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const users = await res.json();
-
-            renderUsers(users);
-            fillCompanyFilter(users);
-            console.log(`[usersManagement] ${users.length} utilisateurs reçus`);
-        } catch (error) {
-            console.error('[usersManagement] Erreur:', error);
-            tableBody.innerHTML = `<tr><td colspan="7" class="text-danger text-center py-4">
-                Erreur de chargement (${error.message})
-            </td></tr>`;
+            usersCache = await res.json();
+            fillCompanyFilter(usersCache);
+            renderUsers();
+        } catch (err) {
+            showToast('Erreur chargement utilisateurs', 'error');
         }
     }
 
@@ -39,56 +109,202 @@ export default function initUsersManagement() {
         companyFilter.innerHTML = `<option value="">Toutes</option>` + companies.map(c => `<option>${c}</option>`).join('');
     }
 
-    function renderUsers(users) {
-        const roleVal = roleFilter.value;
-        const statusVal = statusFilter.value;
-        const companyVal = companyFilter.value;
+    // === RENDU TABLE + PAGINATION ===
+    function renderUsers() {
+        const rf = roleFilter.value;
+        const sf = statusFilter.value;
+        const cf = companyFilter.value;
+        const searchVal = searchInput.value.trim().toLowerCase();
 
-        const filtered = users.filter(u => {
-            const matchRole = !roleVal || u.role?.name === roleVal;
-            const matchStatus = !statusVal || u.status === statusVal;
-            const matchCompany = !companyVal || u.company?.name === companyVal;
-            return matchRole && matchStatus && matchCompany;
+        const filtered = usersCache.filter(u => {
+            const matchRole = !rf || u.role?.name === rf;
+            const matchStatus = !sf || u.status === sf;
+            const matchCompany = !cf || u.company?.name === cf;
+            const matchSearch = !searchVal || `${u.first_name} ${u.last_name}`.toLowerCase().includes(searchVal);
+            return matchRole && matchStatus && matchCompany && matchSearch;
         });
 
-        if (!filtered.length) {
-            tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Aucun utilisateur trouvé.</td></tr>`;
-            return;
-        }
+        const totalPages = Math.ceil(filtered.length / perPage);
+        if (currentPage > totalPages) currentPage = 1;
+        const start = (currentPage - 1) * perPage;
+        const pageData = filtered.slice(start, start + perPage);
 
-        tableBody.innerHTML = filtered.map(u => `
-            <tr>
-                <td><strong>${u.first_name} ${u.last_name}</strong></td>
-                <td>${u.email}</td>
-                <td><span class="role ${u.role?.name ?? ''}">${roleLabel(u.role?.name)}</span></td>
-                <td>${u.company?.name ?? '-'}</td>
-                <td><span class="status ${statusClass(u.status)}">${statusLabel(u.status)}</span></td>
-                <td>${u.last_login_at ? formatDate(u.last_login_at) : '-'}</td>
-                <td>
-                    <div class="table-actions">
-                        <button class="btn-action edit" data-id="${u.id}"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn-action delete" data-id="${u.id}"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
+        tableBody.innerHTML = pageData.length
+            ? pageData
+                  .map(
+                      u => `
+                <tr>
+                    <td><strong>${u.first_name} ${u.last_name}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.role?.name ?? '-'}</td>
+                    <td>${u.company?.name ?? '-'}</td>
+                    <td>${u.status}</td>
+                    <td>${u.last_login_at ? formatDate(u.last_login_at) : '-'}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="btn-action edit" data-id="${u.id}" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-action password" data-id="${u.id}" title="Réinitialiser le mot de passe"><i class="fa-solid fa-key"></i></button>
+                            <button class="btn-action delete" data-id="${u.id}" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>`
+                  )
+                  .join('')
+            : `<tr><td colspan="7" class="text-center py-4 text-muted">Aucun utilisateur trouvé</td></tr>`;
+
+        renderPagination(totalPages);
     }
 
-    // === utilitaires ===
-    const roleLabel = r => {
-        if (r === 'superadmin') return 'Super Admin';
-        if (r === 'admin') return 'Admin';
-        if (r === 'chef_equipe') return 'Chef d’équipe';
-        if (r === 'employe') return 'Employé';
-        return '-';
-    };
-    const statusLabel = s => s === 'active' ? 'Actif' : (s === 'inactive' ? 'Inactif' : 'En attente');
-    const statusClass = s => s === 'active' ? 'actif' : (s === 'inactive' ? 'inactif' : 'pending');
-    const formatDate = d => {
-        const date = new Date(d);
-        return date.toLocaleDateString('fr-FR') + ' à ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    };
+    function renderPagination(totalPages) {
+        if (totalPages <= 1) {
+            paginationEl.innerHTML = '';
+            return;
+        }
+        let html = `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage - 1}">«</a>
+            </li>`;
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>`;
+        }
+        html += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}">»</a>
+            </li>`;
+        paginationEl.innerHTML = html;
 
-    [roleFilter, statusFilter, companyFilter].forEach(el => el.addEventListener('change', () => loadUsers()));
+        paginationEl.querySelectorAll('.page-link').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const page = parseInt(a.dataset.page);
+                if (page && page !== currentPage && page >= 1 && page <= totalPages) {
+                    currentPage = page;
+                    renderUsers();
+                }
+            });
+        });
+    }
+
+    // === FILTRES ===
+    [roleFilter, statusFilter, companyFilter, searchInput].forEach(el =>
+        el?.addEventListener('input', () => {
+            currentPage = 1;
+            renderUsers();
+        })
+    );
+
+    // === CRÉATION ===
+    document.getElementById('btnNewUser')?.addEventListener('click', () => {
+        fillRoleCompanySelects();
+        modalCreate?.show();
+    });
+
+    document.getElementById('formCreateUser')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const res = await fetch('/admin/users', {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                body: formData
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            modalCreate?.hide();
+            await loadUsers();
+            showToast('Utilisateur créé avec succès');
+        } catch (err) {
+            showToast('Erreur création : ' + err.message, 'error');
+        }
+    });
+
+    // === ÉDITION ===
+    tableBody.addEventListener('click', async e => {
+        const btn = e.target.closest('.btn-action.edit');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        try {
+            const res = await fetch(`/admin/users/${id}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const user = await res.json();
+            fillRoleCompanySelects();
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editFirstName').value = user.first_name;
+            document.getElementById('editLastName').value = user.last_name;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editRoleSelect').value = user.role_id ?? '';
+            document.getElementById('editCompanySelect').value = user.company_id ?? '';
+            document.getElementById('editStatusSelect').value = user.status ?? 'active';
+            modalEdit?.show();
+        } catch (err) {
+            showToast('Erreur chargement : ' + err.message, 'error');
+        }
+    });
+
+    document.getElementById('formEditUser')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const id = document.getElementById('editUserId').value;
+        const formData = new FormData(e.target);
+        try {
+            const res = await fetch(`/admin/users/${id}`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken },
+                body: formData
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            modalEdit?.hide();
+            await loadUsers();
+            showToast('Utilisateur mis à jour');
+        } catch (err) {
+            showToast('Erreur édition : ' + err.message, 'error');
+        }
+    });
+
+    // === SUPPRESSION ===
+    tableBody.addEventListener('click', e => {
+        const btn = e.target.closest('.btn-action.delete');
+        if (!btn) return;
+        toDelete = btn.dataset.id;
+        modalDelete?.show();
+    });
+
+    document.getElementById('btnConfirmDelete')?.addEventListener('click', async () => {
+        if (!toDelete) return;
+        try {
+            const res = await fetch(`/admin/users/${toDelete}`, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            modalDelete?.hide();
+            await loadUsers();
+            showToast('Utilisateur supprimé');
+        } catch (err) {
+            showToast('Erreur suppression : ' + err.message, 'error');
+        }
+    });
+
+    // === RESET PASSWORD ===
+    tableBody.addEventListener('click', async e => {
+        const btn = e.target.closest('.btn-action.password');
+        if (!btn) return;
+        const id = btn.dataset.id;
+        try {
+            const res = await fetch(`/admin/users/${id}/reset-password`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': csrfToken }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            showToast(data.message || 'Email de réinitialisation envoyé');
+        } catch (err) {
+            showToast('Erreur réinitialisation : ' + err.message, 'error');
+        }
+    });
+
+    // === INIT ===
+    fetchOptions();
     loadUsers();
 }

@@ -6,6 +6,7 @@
     <meta name="description" content="@yield('description', 'Page d’accueil générique pour votre projet.')" />
     <meta name="keywords" content="@yield('keywords', 'landing, projet, générique, exemple')" />
     <meta name="author" content="VotreProjet" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Landing Générique')</title>
 
@@ -65,6 +66,9 @@
 
     {{-- Modals globaux --}}
     @stack('modals')
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
 
 </body>
 </html>
