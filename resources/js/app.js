@@ -25,10 +25,11 @@ initAOS();
 initEcho();
 monitorReverb();
 
-// --- en bas de app.js ---
 import initUsersManagement from './components/usersManagement';
+import initCompaniesManagement from './components/companiesManagement';
 
-// on stocke dans un registre global
+// Registre global appelé par le loader de la sidebar via data-script
 window.pageScripts = {
-    usersManagement: initUsersManagement,
+  usersManagement: initUsersManagement,
+  companiesManagement: initCompaniesManagement,
 };

@@ -3,17 +3,34 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use App\Models\{
-    Role, Company, Team, User, EmployeeProfile, Document, Vehicle,
-    Epi, Leave, Overtime, Review, Ticket, TicketComment, Task,
-    Expense, Balance, BlogPost, Notification
+    Role,
+    Company,
+    Team,
+    User,
+    EmployeeProfile,
+    Document,
+    Vehicle,
+    Epi,
+    Leave,
+    Overtime,
+    Review,
+    Ticket,
+    TicketComment,
+    Task,
+    Expense,
+    Balance,
+    BlogPost,
+    Notification
 };
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // === Rôles fixes ===
+        // === RÔLES FIXES ===
         $roles = collect([
             ['name' => 'superadmin', 'label' => 'Super administrateur'],
             ['name' => 'admin', 'label' => 'Administrateur'],
@@ -21,48 +38,64 @@ class DatabaseSeeder extends Seeder
             ['name' => 'employe', 'label' => 'Employé'],
         ])->map(fn($r) => Role::firstOrCreate(['name' => $r['name']], $r));
 
-        // === Sociétés principales ===
+        // === SOCIÉTÉS ===
         $work = Company::factory()->create([
             'name' => 'Work And People',
             'domain' => '@workandpeople.fr',
+            'email' => 'contact@workandpeople.fr',
+            'phone' => '04 66 12 45 78',
+            'address' => '12 Rue du Travail, 34000 Montpellier',
         ]);
 
         $genius = Company::factory()->create([
             'name' => 'Genius Contrôle',
             'domain' => '@geniuscontrole.fr',
+            'email' => 'contact@geniuscontrole.fr',
+            'phone' => '04 67 25 98 32',
+            'address' => '24 Avenue de la Technologie, 13000 Marseille',
         ]);
 
-        // === Super admin (client ou dev) ===
-        User::factory()->create([
+        // === SUPER ADMIN GLOBAL ===
+        $lucas = User::factory()->create([
+            'id'          => Str::uuid(),
             'first_name'  => 'Lucas',
-            'last_name'   => 'Dev',
+            'last_name'   => 'Dinnichert',
             'email'       => 'lucas@crm.dev',
+            'password'    => Hash::make('Wap92!'),
             'company_id'  => $work->id,
             'role_id'     => $roles->firstWhere('name', 'superadmin')->id,
             'status'      => 'active',
         ]);
 
-        // === Admin principal ===
-        User::factory()->create([
+        // === ADMIN PRINCIPAL SOCIÉTÉ ===
+        $myriam = User::factory()->create([
+            'id'          => Str::uuid(),
             'first_name'  => 'Myriam',
             'last_name'   => 'Admin',
             'email'       => 'myriam@workandpeople.fr',
+            'password'    => Hash::make('Wap92!'),
             'company_id'  => $work->id,
             'role_id'     => $roles->firstWhere('name', 'admin')->id,
             'status'      => 'active',
         ]);
 
-        // === Équipes et utilisateurs ===
+        // === LIAISON ADMIN ↔ SOCIÉTÉ ===
+        $work->update(['admin_user_id' => $myriam->id]);
+        $genius->update(['admin_user_id' => $lucas->id]);
+
+        // === ÉQUIPES + UTILISATEURS ===
         Company::all()->each(function ($company) use ($roles) {
             $teams = Team::factory(2)->for($company)->create();
 
             $teams->each(function ($team) use ($roles, $company) {
                 // Chef d’équipe
                 User::factory()->create([
+                    'id'          => Str::uuid(),
                     'team_id'     => $team->id,
                     'company_id'  => $company->id,
                     'role_id'     => $roles->firstWhere('name', 'chef_equipe')->id,
                     'status'      => 'active',
+                    'password'    => Hash::make('Wap92!'),
                 ]);
 
                 // Employés
@@ -71,11 +104,12 @@ class DatabaseSeeder extends Seeder
                     'company_id'  => $company->id,
                     'role_id'     => $roles->firstWhere('name', 'employe')->id,
                     'status'      => 'active',
+                    'password'    => Hash::make('Wap92!'),
                 ]);
             });
         });
 
-        // === Modules RH ===
+        // === MODULES RH ===
         EmployeeProfile::factory(15)->create();
         Document::factory(40)->create();
         Vehicle::factory(5)->create();
@@ -84,19 +118,26 @@ class DatabaseSeeder extends Seeder
         Overtime::factory(10)->create();
         Review::factory(10)->create();
 
-        // === Tickets & tâches ===
+        // === TICKETS & TÂCHES ===
         $tickets = Ticket::factory(15)->create();
         TicketComment::factory(30)->create();
         $tasks = Task::factory(15)->create();
 
+        // Association aléatoire ticket ↔ tâche
         foreach ($tickets as $ticket) {
             $ticket->tasks()->attach($tasks->random(rand(1, 3))->pluck('id'));
         }
 
-        // === Finances & communication ===
+        // === FINANCES & COMMUNICATION ===
         Expense::factory(20)->create();
         Balance::factory(3)->create();
         BlogPost::factory(6)->create();
         Notification::factory(20)->create();
+
+        // === LOG FINAL ===
+        echo "\n✅ Base de données peuplée avec succès.\n";
+        echo "   → Sociétés : " . Company::count() . "\n";
+        echo "   → Utilisateurs : " . User::count() . "\n";
+        echo "   → Équipes : " . Team::count() . "\n";
     }
 }

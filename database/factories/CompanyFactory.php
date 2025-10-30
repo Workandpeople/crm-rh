@@ -11,13 +11,20 @@ class CompanyFactory extends Factory
     {
         $name = $this->faker->unique()->company();
         $slug = Str::slug($name);
-        $rand = Str::random(5); // ajoute un suffixe pour garantir l'unicité
+        $rand = Str::random(4);
 
         return [
             'name' => $name,
             'domain' => '@' . $slug . $rand . '.fr',
+            'email' => 'contact@' . $slug . '.fr',
+            'phone' => $this->faker->phoneNumber(),
+            'address' => $this->faker->address(),
             'logo_path' => null,
-            'policies_json' => ['max_conges' => 25, 'auto_validation' => false],
+            'policies_json' => [
+                'max_conges' => 25,
+                'auto_validation' => false,
+            ],
+            'admin_user_id' => null,
         ];
     }
 }

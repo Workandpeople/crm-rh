@@ -68,5 +68,24 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])
             ->name('admin.users.reset');
+
+        // === Companies ===
+        Route::get('/companies/options', [\App\Http\Controllers\Admin\CompanyController::class, 'options'])
+            ->name('admin.companies.options');
+
+        Route::get('/companies', [\App\Http\Controllers\Admin\CompanyController::class, 'index'])
+            ->name('admin.companies.index');
+
+        Route::get('/companies/{company}', [\App\Http\Controllers\Admin\CompanyController::class, 'show'])
+            ->name('admin.companies.show');
+
+        Route::post('/companies', [\App\Http\Controllers\Admin\CompanyController::class, 'store'])
+            ->name('admin.companies.store');
+
+        Route::put('/companies/{company}', [\App\Http\Controllers\Admin\CompanyController::class, 'update'])
+            ->name('admin.companies.update');
+
+        Route::delete('/companies/{company}', [\App\Http\Controllers\Admin\CompanyController::class, 'destroy'])
+            ->name('admin.companies.destroy');
     });
 });
