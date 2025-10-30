@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use App\Models\{
     Role,
     Company,
@@ -24,7 +25,6 @@ use App\Models\{
     BlogPost,
     Notification
 };
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -40,18 +40,18 @@ class DatabaseSeeder extends Seeder
 
         // === SOCIÉTÉS ===
         $work = Company::factory()->create([
-            'name' => 'Work And People',
-            'domain' => '@workandpeople.fr',
-            'email' => 'contact@workandpeople.fr',
-            'phone' => '04 66 12 45 78',
+            'name'    => 'Work And People',
+            'domain'  => '@workandpeople.fr',
+            'email'   => 'contact@workandpeople.fr',
+            'phone'   => '04 66 12 45 78',
             'address' => '12 Rue du Travail, 34000 Montpellier',
         ]);
 
         $genius = Company::factory()->create([
-            'name' => 'Genius Contrôle',
-            'domain' => '@geniuscontrole.fr',
-            'email' => 'contact@geniuscontrole.fr',
-            'phone' => '04 67 25 98 32',
+            'name'    => 'Genius Contrôle',
+            'domain'  => '@geniuscontrole.fr',
+            'email'   => 'contact@geniuscontrole.fr',
+            'phone'   => '04 67 25 98 32',
             'address' => '24 Avenue de la Technologie, 13000 Marseille',
         ]);
 
@@ -88,15 +88,21 @@ class DatabaseSeeder extends Seeder
             $teams = Team::factory(2)->for($company)->create();
 
             $teams->each(function ($team) use ($roles, $company) {
-                // Chef d’équipe
-                User::factory()->create([
+                // Création du chef d’équipe
+                $leader = User::factory()->create([
                     'id'          => Str::uuid(),
+                    'first_name'  => fake()->firstName(),
+                    'last_name'   => fake()->lastName(),
+                    'email'       => fake()->unique()->safeEmail(),
                     'team_id'     => $team->id,
                     'company_id'  => $company->id,
                     'role_id'     => $roles->firstWhere('name', 'chef_equipe')->id,
                     'status'      => 'active',
                     'password'    => Hash::make('Wap92!'),
                 ]);
+
+                // Mise à jour du lien chef → équipe
+                $team->update(['leader_user_id' => $leader->id]);
 
                 // Employés
                 User::factory(5)->create([

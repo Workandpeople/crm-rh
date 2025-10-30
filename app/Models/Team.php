@@ -10,11 +10,21 @@ class Team extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $fillable = ['company_id', 'name', 'description'];
+    protected $fillable = [
+        'company_id',
+        'leader_user_id',
+        'name',
+        'description',
+    ];
 
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function leader()
+    {
+        return $this->belongsTo(User::class, 'leader_user_id');
     }
 
     public function users()

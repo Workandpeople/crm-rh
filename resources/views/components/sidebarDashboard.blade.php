@@ -67,6 +67,7 @@
 @push('modals')
     @include('components.sidebarContent.superadmin.userModals')
     @include('components.sidebarContent.superadmin.companyModals')
+    @include('components.sidebarContent.superadmin.teamsModals')
 @endpush
 
 

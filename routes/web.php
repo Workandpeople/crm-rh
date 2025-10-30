@@ -87,5 +87,24 @@ Route::middleware(['auth'])->group(function () {
 
         Route::delete('/companies/{company}', [\App\Http\Controllers\Admin\CompanyController::class, 'destroy'])
             ->name('admin.companies.destroy');
+
+        // === Teams ===
+        Route::get('/teams/options', [\App\Http\Controllers\Admin\TeamController::class, 'options'])
+            ->name('admin.teams.options');
+
+        Route::get('/teams', [\App\Http\Controllers\Admin\TeamController::class, 'index'])
+            ->name('admin.teams.index');
+
+        Route::get('/teams/{team}', [\App\Http\Controllers\Admin\TeamController::class, 'show'])
+            ->name('admin.teams.show');
+
+        Route::post('/teams', [\App\Http\Controllers\Admin\TeamController::class, 'store'])
+            ->name('admin.teams.store');
+
+        Route::put('/teams/{team}', [\App\Http\Controllers\Admin\TeamController::class, 'update'])
+            ->name('admin.teams.update');
+
+        Route::delete('/teams/{team}', [\App\Http\Controllers\Admin\TeamController::class, 'destroy'])
+            ->name('admin.teams.destroy');
     });
 });
