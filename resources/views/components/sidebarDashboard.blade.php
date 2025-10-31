@@ -1,157 +1,204 @@
 <aside class="sidebar d-flex flex-column justify-content-between">
-    <div class="p-4">
-        @php($roleName = Auth::user()->role->name ?? 'employe')
+  <div class="p-4">
+    @php($roleName = Auth::user()->role->name ?? 'employe')
+    <div id="sidebar-sections"></div>
+  </div>
 
-        {{-- === Super Admin === --}}
-        @if ($roleName === 'superadmin')
-        <div class="mb-4">
-            <h6 class="text-uppercase small fw-bold mb-2 section-title">Pages Super-Admin</h6>
-            <ul class="list-unstyled mb-0">
-                <li><a href="#" data-page="usersManagement" class="nav-link d-block py-2 px-3 rounded">Utilisateurs & rôles</a></li>
-                <li><a href="#" data-page="societes" class="nav-link d-block py-2 px-3 rounded">Sociétés</a></li>
-                <li><a href="#" data-page="equipes" class="nav-link d-block py-2 px-3 rounded">Gestion équipes</a></li>
-                <li><a href="#" data-page="parametresSysteme" class="nav-link d-block py-2 px-3 rounded">Paramètres système</a></li>
-            </ul>
-        </div>
-        @endif
-
-        {{-- === Admin === --}}
-        @if (in_array($roleName, ['admin', 'superadmin']))
-        <div class="mb-4">
-            <h6 class="text-uppercase small fw-bold mb-2 section-title">Pages Admin</h6>
-            <ul class="list-unstyled mb-0">
-                <li><a href="#" data-page="ticketing" class="nav-link d-block py-2 px-3 rounded">Ticketing RH</a></li>
-                <li><a href="#" data-page="dossierRH" class="nav-link d-block py-2 px-3 rounded">Dossier RH</a></li>
-                <li><a href="#" data-page="documentsRH" class="nav-link d-block py-2 px-3 rounded">Documents RH</a></li>
-                <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded">Congés / absences</a></li>
-                <li><a href="#" data-page="calendrierRH" class="nav-link d-block py-2 px-3 rounded">Calendrier RH</a></li>
-                <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded">Notes de frais</a></li>
-                <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded">Fiches de paie</a></li>
-                <li><a href="#" data-page="organigramme" class="nav-link d-block py-2 px-3 rounded">Organigramme</a></li>
-                <li><a href="#" data-page="entretiens" class="nav-link d-block py-2 px-3 rounded">Entretiens</a></li>
-                <li><a href="#" data-page="statsRH" class="nav-link d-block py-2 px-3 rounded">Statistiques RH</a></li>
-                <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded">Blog & actualités</a></li>
-            </ul>
-        </div>
-        @endif
-
-        {{-- === Chef d’équipe & Employés === --}}
-        @if (in_array($roleName, ['employe', 'chef_equipe', 'admin', 'superadmin']))
-        <div>
-            <h6 class="text-uppercase small fw-bold mb-2 section-title">Espace Employé</h6>
-            <ul class="list-unstyled mb-0">
-                <li><a href="#" data-page="profil" class="nav-link d-block py-2 px-3 rounded">Mon profil</a></li>
-                <li><a href="#" data-page="ticketing" class="nav-link d-block py-2 px-3 rounded">Mes tickets</a></li>
-                <li><a href="#" data-page="dossierRH" class="nav-link d-block py-2 px-3 rounded">Mes documents</a></li>
-                <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded">Mes congés</a></li>
-                <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded">Notes de frais</a></li>
-                <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded">Fiches de paie</a></li>
-                <li><a href="#" data-page="calendrier" class="nav-link d-block py-2 px-3 rounded">Calendrier</a></li>
-                <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded">Actualités</a></li>
-            </ul>
-        </div>
-        @endif
-    </div>
-
-    {{-- === Déconnexion === --}}
-    <div class="deconnexion p-3 border-top">
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn w-100 fw-semibold">
-                <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
-            </button>
-        </form>
-    </div>
+  <div class="deconnexion p-3 border-top">
+    <form action="{{ route('logout') }}" method="POST">
+      @csrf
+      <button type="submit" class="btn w-100 fw-semibold">
+        <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
+      </button>
+    </form>
+  </div>
 </aside>
 
 @push('modals')
-    @include('components.sidebarContent.superadmin.userModals')
-    @include('components.sidebarContent.superadmin.companyModals')
-    @include('components.sidebarContent.superadmin.teamsModals')
+  @include('components.sidebarContent.superadmin.userModals')
+  @include('components.sidebarContent.superadmin.companyModals')
+  @include('components.sidebarContent.superadmin.teamsModals')
 @endpush
-
 
 @push('js')
 <script>
 (function() {
-    let isLoading = false;
-    const DEFAULT_PAGE = 'profil';
-    const storageKey = 'dashboard:lastPage:{{ Auth::id() ?? 'guest' }}';
+  const contentDiv = document.getElementById('dashboardContent');
+  const storageCompanyKey = 'selectedCompanyId';
+  const storageTeamKey = 'selectedTeamId';
+  const storagePageKey = 'dashboard:lastPage:{{ Auth::id() ?? "guest" }}';
+  const role = @json($roleName);
+  let isLoading = false;
 
-    function rememberPage(page) {
-        try {
-            window.localStorage.setItem(storageKey, page);
-        } catch (error) {
-            console.warn('[sidebar] Impossible de sauvegarder la page active', error);
-        }
+  function renderSidebar() {
+    const container = document.getElementById('sidebar-sections');
+    if (!container) return;
+
+    const companyId = localStorage.getItem(storageCompanyKey);
+    const teamId = localStorage.getItem(storageTeamKey);
+    const companyName = localStorage.getItem('selectedCompanyName');
+    const teamName = localStorage.getItem('selectedTeamName');
+    const savedPage = localStorage.getItem(storagePageKey) || 'profil';
+    let html = '';
+
+    const icon = {
+      users: 'fa-users',
+      building: 'fa-building',
+      gear: 'fa-gear',
+      backlog: 'fa-list-check',
+      calendar: 'fa-calendar-days',
+      doc: 'fa-file-lines',
+      plane: 'fa-plane-departure',
+      receipt: 'fa-receipt',
+      money: 'fa-money-check-dollar',
+      org: 'fa-diagram-project',
+      chat: 'fa-comments',
+      blog: 'fa-newspaper',
+      user: 'fa-user',
+      ticket: 'fa-ticket',
+      folder: 'fa-folder-open',
+      news: 'fa-bullhorn'
+    };
+
+    // === SUPER ADMIN ===
+    if (role === 'superadmin') {
+      html += `
+      <details>
+        <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">Super-Admin</summary>
+        <ul class="list-unstyled mb-0">
+          <li><a href="#" data-page="usersManagement" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.users} me-2"></i>Utilisateurs & rôles</a></li>
+          <li><a href="#" data-page="societes" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.building} me-2"></i>Sociétés</a></li>
+          <li><a href="#" data-page="equipes" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.org} me-2"></i>Équipes</a></li>
+          <li><a href="#" data-page="parametresSysteme" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.gear} me-2"></i>Paramètres système</a></li>
+        </ul>
+      </details>`;
     }
 
-    function readStoredPage() {
-        try {
-            return window.localStorage.getItem(storageKey);
-        } catch (error) {
-            console.warn('[sidebar] Impossible de lire la page sauvegardée', error);
-            return null;
-        }
+    // === ENTREPRISE ===
+    if (['admin', 'superadmin'].includes(role) && companyId) {
+      html += `
+      <details>
+        <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">${companyName ?? 'Entreprise'}</summary>
+        <ul class="list-unstyled mb-0">
+          <li><a href="#" data-page="backlogs" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.backlog} me-2"></i>Backlogs</a></li>
+          <li><a href="#" data-page="calendrierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier RH</a></li>
+          <li><a href="#" data-page="documentsRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.doc} me-2"></i>Documents RH</a></li>
+          <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Congés / absences</a></li>
+          <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
+          <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
+          <li><a href="#" data-page="entretiens" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.chat} me-2"></i>Entretiens</a></li>
+          <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.blog} me-2"></i>Blog & actualités</a></li>
+        </ul>
+      </details>`;
     }
 
-    async function loadContent(page) {
-        if (isLoading) return;
-        isLoading = true;
-
-        const contentDiv = document.getElementById('dashboardContent');
-        contentDiv.innerHTML = `<p class="p-3">Chargement...</p>`;
-
-        try {
-            const response = await fetch(`/dashboard/${page}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
-
-            const html = await response.text();
-            contentDiv.innerHTML = html.trim().length
-                ? html
-                : `<p class="text-warning p-3">Aucun contenu trouvé pour "${page}".</p>`;
-
-            rememberPage(page);
-
-            // --- Nouvelle logique ---
-            const scriptKey = contentDiv.querySelector('[data-script]')?.dataset.script;
-            if (scriptKey && window.pageScripts?.[scriptKey]) {
-                console.log(`[sidebar] Initialisation du script "${scriptKey}"`);
-                window.pageScripts[scriptKey]();
-            }
-        } catch (error) {
-            console.error('[sidebar] Erreur loadContent():', error);
-            contentDiv.innerHTML = `<p class="text-danger p-3">Erreur : ${error.message}</p>`;
-        } finally {
-            isLoading = false;
-        }
+    // === ÉQUIPE ===
+    if (teamId || companyId) {
+      const sectionTitle = teamId ? (teamName ?? 'Équipe') : 'Mes équipes';
+      html += `
+      <details>
+        <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">${sectionTitle}</summary>
+        <ul class="list-unstyled mb-0">
+          <li><a href="#" data-page="backlogs" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.backlog} me-2"></i>Backlogs</a></li>
+          <li><a href="#" data-page="calendrierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier RH</a></li>
+          <li><a href="#" data-page="documentsRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.doc} me-2"></i>Documents RH</a></li>
+          <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Congés / absences</a></li>
+          <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
+          <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
+          <li><a href="#" data-page="entretiens" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.chat} me-2"></i>Entretiens</a></li>
+          <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.blog} me-2"></i>Actualités</a></li>
+        </ul>
+      </details>`;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const links = document.querySelectorAll('.nav-link');
-        const setActiveLink = (page) => {
-            links.forEach(link => {
-                if (link.dataset.page === page) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        };
+    // === ESPACE EMPLOYÉ ===
+    if (['employe', 'chef_equipe', 'admin', 'superadmin'].includes(role)) {
+      html += `
+      <details>
+        <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">Espace Employé</summary>
+        <ul class="list-unstyled mb-0">
+          <li><a href="#" data-page="profil" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.user} me-2"></i>Mon profil</a></li>
+          <li><a href="#" data-page="ticketing" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.ticket} me-2"></i>Mes tickets</a></li>
+          <li><a href="#" data-page="dossierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.folder} me-2"></i>Mes documents</a></li>
+          <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Mes congés</a></li>
+          <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
+          <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
+          <li><a href="#" data-page="calendrier" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier</a></li>
+          <li><a href="#" data-page="organigramme" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.org} me-2"></i>Organigramme</a></li>
+          <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.news} me-2"></i>Actualités</a></li>
+        </ul>
+      </details>`;
+    }
 
-        links.forEach(link => link.addEventListener('click', e => {
-            e.preventDefault();
-            const targetPage = link.dataset.page;
-            setActiveLink(targetPage);
-            loadContent(targetPage);
-        }));
+    container.innerHTML = html;
+    applyAccordionBehavior();
+    bindSidebarLinks(savedPage);
+  }
 
-        const initialPage = readStoredPage() || DEFAULT_PAGE;
-        setActiveLink(initialPage);
-        loadContent(initialPage);
+  // === Accordion unique ===
+  function applyAccordionBehavior() {
+    const details = document.querySelectorAll('#sidebar-sections details');
+    details.forEach(d => {
+      d.addEventListener('toggle', () => {
+        if (d.open) details.forEach(o => { if (o !== d) o.removeAttribute('open'); });
+      });
     });
+  }
+
+  async function loadContent(page) {
+    if (isLoading) return;
+    isLoading = true;
+    contentDiv.innerHTML = `<p class="p-3">Chargement...</p>`;
+    try {
+      const response = await fetch(`/dashboard/${page}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+      const html = await response.text();
+      contentDiv.innerHTML = html.trim().length ? html : `<p class="text-warning p-3">Aucun contenu pour "${page}".</p>`;
+      localStorage.setItem(storagePageKey, page);
+      const scriptKey = contentDiv.querySelector('[data-script]')?.dataset.script;
+      if (scriptKey && window.pageScripts?.[scriptKey]) window.pageScripts[scriptKey]();
+    } catch (e) {
+      contentDiv.innerHTML = `<p class="text-danger p-3">Erreur : ${e.message}</p>`;
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function bindSidebarLinks(savedPage) {
+    const links = document.querySelectorAll('.nav-link');
+    const setActive = (page) => links.forEach(l => l.classList.toggle('active', l.dataset.page === page));
+    links.forEach(l => l.addEventListener('click', e => {
+      e.preventDefault();
+      const page = l.dataset.page;
+      setActive(page);
+      openParentSection(l);
+      loadContent(page);
+    }));
+
+    setActive(savedPage);
+    openSectionForPage(savedPage);
+    loadContent(savedPage);
+  }
+
+  function openParentSection(link) {
+    const parent = link.closest('details');
+    if (parent) {
+      parent.setAttribute('open', '');
+      document.querySelectorAll('#sidebar-sections details').forEach(d => {
+        if (d !== parent) d.removeAttribute('open');
+      });
+    }
+  }
+
+  function openSectionForPage(page) {
+    const link = document.querySelector(`.nav-link[data-page="${page}"]`);
+    if (link) openParentSection(link);
+  }
+
+  renderSidebar();
+  window.addEventListener('storage', (e) => {
+    if ([storageCompanyKey, storageTeamKey].includes(e.key)) renderSidebar();
+  });
 })();
 </script>
 @endpush

@@ -106,5 +106,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::delete('/teams/{team}', [\App\Http\Controllers\Admin\TeamController::class, 'destroy'])
             ->name('admin.teams.destroy');
+
+        Route::get('/backlogs', [\App\Http\Controllers\Admin\BacklogController::class, 'index'])
+        ->middleware('can:view-backlogs')
+        ->name('admin.backlogs.index');
     });
 });

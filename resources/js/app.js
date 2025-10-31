@@ -28,11 +28,12 @@ monitorReverb();
 import initUsersManagement from './components/usersManagement';
 import initCompaniesManagement from './components/companiesManagement';
 import initTeamsManagement from './components/teamsManagement';
-
+import initBacklogsManagement from './components/backlogsManagement';
 
 // Registre global appelé par le loader de la sidebar via data-script
 window.pageScripts = {
   usersManagement: initUsersManagement,
   companiesManagement: initCompaniesManagement,
   teamsManagement: initTeamsManagement,
+  backlogsManagement: initBacklogsManagement,
 };
