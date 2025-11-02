@@ -3,15 +3,13 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\{User, Company};
-
 class ExpenseFactory extends Factory
 {
     public function definition()
     {
         return [
-            'user_id' => User::factory(),
-            'company_id' => Company::factory(),
+            'user_id' => null,
+            'company_id' => null,
             'type' => $this->faker->randomElement(['peage','repas','hebergement','km']),
             'amount' => $this->faker->randomFloat(2, 5, 150),
             'description' => $this->faker->sentence(),

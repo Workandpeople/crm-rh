@@ -48,16 +48,10 @@
 
 <body class="bg-[--color-bg] text-[--color-text] font-body antialiased selection:bg-[--color-primary]/30">
 
-    {{-- Header global --}}
-    @include('partials.landing.header')
-
     {{-- Contenu spécifique à la page --}}
     <main>
         @yield('content')
     </main>
-
-    {{-- Footer global --}}
-    @include('partials.landing.footer')
 
     {{-- Scripts additionnels --}}
 

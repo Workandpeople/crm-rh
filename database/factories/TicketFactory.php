@@ -3,15 +3,13 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\{Company, User};
-
 class TicketFactory extends Factory
 {
     public function definition()
     {
         return [
-            'company_id' => Company::factory(),
-            'created_by' => User::factory(),
+            'company_id' => null,
+            'created_by' => null,
             'assigned_to' => null,
             'type' => $this->faker->randomElement(['rh','incident','materiel','autre']),
             'title' => ucfirst($this->faker->words(3, true)),

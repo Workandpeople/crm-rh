@@ -3,6 +3,9 @@
 @import "../../public/fonts/fontAwesome/css/all.css";
 @import url("https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Quicksand:wght@400;500;600;700&display=swap");
 
+/* === Common === */
+@import "../css/common.css";
+
 /* === Partials === */
 @import "./partials/headerDashboard.css";
 
@@ -40,50 +43,3 @@
 @import "./components/superadmin/societes.css";
 @import "./components/superadmin/equipes.css";
 @import "./components/superadmin/parametresSysteme.css";
-
-/* === Variables globales === */
-:root {
-    --font-title: "Castoro Titling", serif;
-    --font-body: "Quicksand", sans-serif;
-}
-
-/* === Typographie === */
-.font-title {
-    font-family: var(--font-title);
-}
-
-.font-body {
-    font-family: var(--font-body);
-}
-/* === SUPPRESSION DU CONTOUR BLEU (focus Bootstrap) === */
-button:focus,
-button:active,
-.btn:focus,
-.btn:active,
-.btn-close:focus,
-.btn-close:active,
-a.btn:focus,
-a.btn:active {
-    outline: none !important;
-    box-shadow: none !important;
-}
-/* === Styles globaux modifier par Moha === */
-body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    font-family: "Inter", sans-serif;
-}
-
-/*(Moha) J'ai pensé mettre ces couleurs */
-:root {
-    --color-bg: #1e1e2f;
-    --color-bg-secondary: #2c2c3e;
-    --color-text: #e4e4eb;
-    --color-text-muted: #a0a0b2;
-    --color-border: #3c3c50;
-
-    --color-primary: #4f46e5;
-    --color-primary-hover: #6366f1;
-
-    --radius-card: 1rem;
-}
