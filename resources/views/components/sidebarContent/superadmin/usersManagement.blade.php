@@ -1,76 +1,76 @@
-<div class="user-management-page" data-script="usersManagement">
+<div class="sa-users" data-script="usersManagement">
+  {{-- header --}}
+  <div class="head">
+    <div>
+      <h2>Gestion des utilisateurs</h2>
+      <p class="subhead">Visualisez, filtrez et gérez l’ensemble des utilisateurs de votre CRM RH.</p>
+    </div>
+    <button id="btnNewUser" class="btn-add">
+      <i class="fa-solid fa-user-plus me-2"></i> Nouvel utilisateur
+    </button>
+  </div>
 
-    {{-- HEADER --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Gestion des utilisateurs</h2>
-        <button id="btnNewUser" class="btn btn-new-user">
-            <i class="fa-solid fa-user-plus me-2"></i> Nouvel utilisateur
-        </button>
+  {{-- filtres --}}
+  <div class="filters">
+    <div class="fg search-field">
+      <label for="filter-search">Recherche</label>
+      <div class="input-icon">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="filter-search" class="input" placeholder="Nom ou prénom…">
+      </div>
     </div>
 
-    {{-- FILTRES --}}
-    <div class="user-filters mb-4">
-        <div class="d-flex flex-wrap gap-3 align-items-center">
-
-            <div class="filter-group">
-                <label for="filter-search">Recherche</label>
-                <input type="text" id="filter-search" class="form-control" placeholder="Nom ou prénom...">
-            </div>
-
-            <div class="filter-group">
-                <label for="filter-role">Rôle</label>
-                <select id="filter-role" class="form-select">
-                    <option value="">Tous</option>
-                    <option value="superadmin">Super Admin</option>
-                    <option value="admin">Admin</option>
-                    <option value="chef_equipe">Chef d’équipe</option>
-                    <option value="employe">Employé</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="filter-societe">Société</label>
-                <select id="filter-societe" class="form-select">
-                    <option value="">Toutes</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="filter-statut">Statut</label>
-                <select id="filter-statut" class="form-select">
-                    <option value="">Tous</option>
-                    <option value="active">Actif</option>
-                    <option value="inactive">Inactif</option>
-                    <option value="pending">En attente</option>
-                </select>
-            </div>
-        </div>
+    <div class="fg">
+      <label for="filter-role">Rôle</label>
+      <select id="filter-role" class="select">
+        <option value="">Tous</option>
+        <option value="superadmin">Super Admin</option>
+        <option value="admin">Admin</option>
+        <option value="chef_equipe">Chef d’équipe</option>
+        <option value="employe">Employé</option>
+      </select>
     </div>
 
-    {{-- TABLEAU UTILISATEURS --}}
-    <div class="user-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Rôle</th>
-                    <th>Société</th>
-                    <th>Statut</th>
-                    <th>Dernière connexion</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="usersTableBody">
-                <tr>
-                    <td colspan="7" class="text-center py-4">Chargement...</td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- PAGINATION --}}
-        <nav>
-            <ul class="pagination justify-content-center mt-4" id="usersPagination"></ul>
-        </nav>
+    <div class="fg">
+      <label for="filter-societe">Société</label>
+      <select id="filter-societe" class="select">
+        <option value="">Toutes</option>
+      </select>
     </div>
+
+    <div class="fg">
+      <label for="filter-statut">Statut</label>
+      <select id="filter-statut" class="select">
+        <option value="">Tous</option>
+        <option value="active">Actif</option>
+        <option value="inactive">Inactif</option>
+        <option value="pending">En attente</option>
+      </select>
+    </div>
+  </div>
+
+  {{-- table --}}
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th>Société</th>
+          <th>Statut</th>
+          <th>Dernière connexion</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="usersTableBody">
+        <tr><td colspan="7" class="empty">Chargement…</td></tr>
+      </tbody>
+    </table>
+
+    {{-- pagination --}}
+    <nav aria-label="Pagination utilisateurs">
+      <ul class="pagination" id="usersPagination"></ul>
+    </nav>
+  </div>
 </div>

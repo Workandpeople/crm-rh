@@ -10,9 +10,9 @@
     {{-- FILTRES --}}
     <div class="equipe-filters mb-4">
         <div class="d-flex flex-wrap gap-3 align-items-center">
-            <div class="filter-group">
+            <div class="fg">
                 <label for="filter-societe">Société</label>
-                <select id="filter-societe" class="form-select">
+                <select id="filter-societe" class="select">
                     <option value="">Toutes</option>
                 </select>
             </div>
@@ -25,7 +25,7 @@
     </div>
 
     {{-- PAGINATION --}}
-    <nav aria-label="Pagination équipes" class="mt-3">
+    <nav aria-label="Pagination équipes">
         <ul id="teamsPagination" class="pagination pagination-sm mb-0"></ul>
     </nav>
 </div>

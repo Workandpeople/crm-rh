@@ -36,8 +36,8 @@
               <div class="mb-2">
                 <img id="createLogoPreview" src="{{ asset('images/placeholder-logo.png') }}" alt="Preview" style="max-height:80px;">
               </div>
-              <p class="mb-1 text-muted">Glissez-déposez une image, ou cliquez pour parcourir</p>
-              <small class="text-muted">PNG, JPG, JPEG, WEBP. Max 2 Mo</small>
+              <p class="mb-1 ">Glissez-déposez une image, ou cliquez pour parcourir</p>
+              <small class="">PNG, JPG, JPEG, WEBP. Max 2 Mo</small>
               <input id="createLogoFile" name="logo" type="file" accept="image/*" class="d-none">
             </div>
           </div>
@@ -87,11 +87,11 @@
               <div class="mb-2">
                 <img id="editLogoPreview" src="{{ asset('images/placeholder-logo.png') }}" alt="Preview" style="max-height:80px;">
               </div>
-              <p class="mb-1 text-muted">Glissez-déposez une image, ou cliquez pour parcourir</p>
-              <small class="text-muted">PNG, JPG, JPEG, WEBP. Max 2 Mo</small>
+              <p class="mb-1 ">Glissez-déposez une image, ou cliquez pour parcourir</p>
+              <small class="">PNG, JPG, JPEG, WEBP. Max 2 Mo</small>
               <input id="editLogoFile" name="logo" type="file" accept="image/*" class="d-none">
             </div>
-            <small class="text-muted d-block mt-2">Logo actuel : <span id="editLogoCurrentPath">—</span></small>
+            <small class=" d-block mt-2">Logo actuel : <span id="editLogoCurrentPath">—</span></small>
           </div>
 
           <div class="mb-3">

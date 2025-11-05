@@ -43,3 +43,5 @@
 @import "./components/superadmin/societes.css";
 @import "./components/superadmin/equipes.css";
 @import "./components/superadmin/parametresSysteme.css";
+@import "./components/superadmin/filters-pagination.css";
+@import "./components/superadmin/modalsSuperadmin.css";

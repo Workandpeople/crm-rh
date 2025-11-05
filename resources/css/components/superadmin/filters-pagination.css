@@ -1,0 +1,157 @@
+/* =========================================================
+   Filtres & Pagination — styles communs
+   Couvre : .filters, .societes-filters, .equipe-filters
+           .fg, .input, .select, .search-field, .input-icon
+           .pagination (+ .pagination-sm)
+   ========================================================= */
+
+/* ===== Barres de filtres (toutes variantes) ===== */
+.filters,
+.societes-filters,
+.equipe-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  padding: 1.1rem 1.4rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+/* Groupes */
+.fg {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
+
+/* Labels */
+.fg label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+/* Champs */
+.input,
+.select {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  outline: 0;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+.input:focus,
+.select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.25);
+}
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Champ de recherche avec icône (si présent) */
+.search-field .input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-field .input-icon i {
+  position: absolute;
+  left: 0.8rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+.search-field .input-icon .input {
+  padding-left: 2rem;
+}
+
+/* États */
+.select:disabled,
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== Pagination générique ===== */
+/* Structure attendue : <ul class="pagination"> <li><button>1</button></li> ... */
+.pagination {
+  display: flex;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 1rem;
+  margin: 0;
+  justify-content: center;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Boutons de page (button OU a) */
+.pagination li > button,
+.pagination li > a {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  min-width: 2.25rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* Hover */
+.pagination li > button:hover,
+.pagination li > a:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(79,70,229,0.25);
+}
+
+/* Actif (supporte .active et aria-current) */
+.pagination li.active > button,
+.pagination li.active > a,
+.pagination li > button[aria-current="page"],
+.pagination li > a[aria-current="page"] {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.3);
+}
+
+/* Désactivé (supporte .disabled) */
+.pagination li.disabled > button,
+.pagination li.disabled > a {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Variante compacte */
+.pagination-sm li > button,
+.pagination-sm li > a {
+  padding: 0.35rem 0.6rem;
+  min-width: 1.9rem;
+  font-size: 0.9rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .filters,
+  .societes-filters,
+  .equipe-filters {
+    flex-direction: column;
+  }
+  .fg {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+}

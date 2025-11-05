@@ -1,0 +1,206 @@
+/* =========================================================
+   MODALS — Styles communs (Users / Sociétés / Équipes)
+   Thème sombre + focus propres + boutons cohérents
+   ========================================================= */
+
+/* Backdrop sombre */
+.modal-backdrop.show {
+    background: rgba(0, 0, 0, 0.65);
+    opacity: 1;
+}
+
+/* Boîte modale */
+.modal-content {
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+}
+
+/* Header & Footer */
+.modal-header,
+.modal-footer {
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.02), transparent);
+    border-color: var(--color-border);
+}
+.modal-title {
+    color: var(--color-text);
+    font-weight: 800 !important;
+    letter-spacing: 0.2px;
+}
+
+/* Bouton close en dark */
+.btn-close {
+    filter: invert(85%);
+    opacity: 0.85;
+}
+.btn-close:hover {
+    opacity: 1;
+}
+
+/* Corps */
+.modal-body {
+    padding: 1.2rem 1.25rem;
+}
+
+/* Labels + champs */
+.form-label {
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+.modal-content .form-control,
+.modal-content .form-select,
+.modal-content textarea.form-control {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    outline: 0;
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease,
+        background 0.2s ease;
+    width: 100%;
+}
+.modal-content .form-control::placeholder {
+    color: var(--color-text-muted);
+}
+.modal-content .form-control:focus,
+.modal-content .form-select:focus,
+.modal-content textarea.form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+.modal-body .mb-3 {
+    margin-bottom: 1rem !important;
+}
+textarea.form-control {
+    resize: vertical;
+    min-height: 110px;
+}
+
+/* Boutons footer — variantes cohérentes */
+.modal-footer .btn {
+    border-radius: 0.55rem;
+    font-weight: 700;
+    padding: 0.55rem 0.95rem;
+}
+
+/* Primaire (Créer) & Success (Mettre à jour) en dégradé */
+.modal-footer .btn-primary,
+.modal-footer .btn-success {
+    background: linear-gradient(
+        90deg,
+        var(--color-primary),
+        var(--color-primary-hover)
+    );
+    border: 0;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+}
+.modal-footer .btn-primary:hover,
+.modal-footer .btn-success:hover {
+    filter: brightness(1.04);
+    transform: translateY(-1px);
+}
+
+/* Secondaire (Annuler) */
+.modal-footer .btn-secondary {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+.modal-footer .btn-secondary:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Danger (Supprimer) */
+.modal-footer .btn-danger {
+    background: #ef4444;
+    border: 0;
+    font-weight: 800;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.35);
+    color: #fff;
+}
+.modal-footer .btn-danger:hover {
+    filter: brightness(1.05);
+}
+
+/* Titres spécifiques suppr */
+#modalCompanyDelete .modal-title,
+#modalTeamDelete .modal-title,
+#modalUserDelete .modal-title {
+    color: #ef4444;
+}
+
+/* ============================
+   Zones drag & drop (Sociétés)
+   ============================ */
+#createLogoDrop,
+#editLogoDrop {
+    background: var(--color-bg);
+    border: 2px dashed var(--color-border) !important;
+    border-radius: 0.8rem !important;
+    padding: 1rem !important;
+    transition: border-color 0.2s ease, background 0.2s ease,
+        box-shadow 0.2s ease;
+    cursor: pointer;
+}
+#createLogoDrop:hover,
+#editLogoDrop:hover {
+    border-color: var(--color-primary) !important;
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+#createLogoDrop.is-dragover,
+#editLogoDrop.is-dragover {
+    border-color: var(--color-primary) !important;
+    background: rgba(79, 70, 229, 0.08);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.22);
+}
+#createLogoPreview,
+#editLogoPreview {
+    max-height: 90px;
+    border-radius: 0.5rem;
+    background: var(--color-primary);
+    border: 1px solid var(--color-border);
+    padding: 0.25rem;
+}
+#editLogoCurrentPath {
+    color: var(--color-text);
+    font-weight: 700;
+}
+
+/* ============================
+   Accessibilité / Focus visible
+   ============================ */
+.modal-content .btn:focus-visible,
+.modal-content .form-control:focus-visible,
+.modal-content .form-select:focus-visible,
+.modal-content textarea.form-control:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.35);
+}
+
+/* ============================
+   Responsive
+   ============================ */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.75rem;
+    }
+    .modal-content {
+        border-radius: 0.8rem;
+    }
+    .modal-footer {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
