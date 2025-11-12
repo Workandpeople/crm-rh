@@ -1,163 +1,147 @@
-/* container */
-.sa-users {
-    background: var(--color-bg);
-    color: var(--color-text);
-    min-height: calc(100vh - 4rem);
-    padding: 2rem;
+/* =========================================================
+   USER MANAGEMENT — styles page & tableau (hors filtres/pagination)
+   ========================================================= */
+
+/* Container */
+.sa-users{
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: calc(100vh - 4rem);
+  padding: 2rem;
 }
-.sa-users .head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+
+/* Header */
+.sa-users .head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: 1.25rem;
 }
-.sa-users .head h2 {
+.sa-users .head h2{
   color: var(--color-primary);
-  margin:0;
-  font-size:1.6rem;
-  font-weight:700;
+  margin:0; font-size:1.6rem; font-weight:700;
+}
+.sa-users .head .subhead{
+  color: var(--color-text-muted);
+  margin: .25rem 0 0; font-size:.92rem;
 }
 
-/* bouton principal */
-.btn-add {
-    background: var(--color-primary);
-    color: #fff;
-    border: 0;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    padding: 0.55rem 0.9rem;
-    transition: 0.2s;
+/* Bouton principal */
+.btn-add{
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+  color:#fff; border:0; border-radius:.6rem; font-weight:700;
+  padding:.6rem 1.1rem; box-shadow:0 3px 10px rgba(79,70,229,.3);
+  transition: all .25s ease;
 }
-.btn-add:hover {
-    background: var(--color-primary-hover);
+.btn-add:hover{ transform: translateY(-2px); box-shadow:0 4px 15px rgba(79,70,229,.45); }
+
+/* Inputs locaux (si tu n'utilises pas le fichier commun, sinon garde le commun) */
+.input-icon{ position:relative; display:flex; align-items:center; }
+.input-icon i{ position:absolute; left:.8rem; color:var(--color-text-muted); font-size:.9rem; pointer-events:none; }
+.input-icon .input{ padding-left:2rem; }
+.input,.select{
+  background: var(--color-bg); color: var(--color-text);
+  border:1px solid var(--color-border); border-radius:.5rem; padding:.5rem .75rem; outline:0;
+  transition: all .2s ease;
 }
-/* Recherche */
-.input-icon {
-    position: relative;
-    display: flex;
-    align-items: center;
+.input:focus,.select:focus{ border-color: var(--color-primary); box-shadow:0 0 0 3px rgba(79,70,229,.25); }
+
+/* =========================
+   TABLE
+   ========================= */
+.tbl-wrap{
+  background: var(--color-bg-secondary);
+  border:1px solid var(--color-border);
+  border-radius:1rem; overflow:hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,.15);
+}
+.tbl{
+  width:100%; border-collapse: collapse; table-layout: fixed;
+}
+.tbl thead{
+  background: rgba(255,255,255,.05);
+  position: sticky; top: 0; z-index: 1;
+}
+.tbl th{
+  padding: .9rem 1rem; text-align:left; border-bottom:2px solid var(--color-border);
+  font-weight:700; font-size:.95rem; color: var(--color-text);
+  text-transform: uppercase; letter-spacing:.35px;
+}
+.tbl td{
+  padding: .9rem 1rem; border-bottom:1px solid var(--color-border); vertical-align: middle;
+  color: var(--color-text);
+}
+.tbl tbody tr:hover{ background: rgba(255,255,255,.04); }
+
+/* Colonnes : largeur & ellipses pour garder le tableau propre */
+.tbl td, .tbl th{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tbl th:nth-child(2), .tbl td:nth-child(2){ width: 22rem; }     /* Email */
+.tbl th:nth-child(6), .tbl td:nth-child(6){ width: 14rem; }     /* Dernière connexion */
+.col-actions{ width: 160px; }
+
+/* États */
+.empty{ text-align:center; color: var(--color-text-muted); padding: 2rem 1rem; }
+
+/* =========================
+   BADGES (role & statut)
+   ========================= */
+.rb,.sb{
+  display:inline-block; padding:.25rem .55rem; border-radius:.45rem;
+  font-weight:700; font-size:.85rem;
+}
+.r-sa{ background:#4F46E5; color:#fff; }
+.r-ad{ background:#6366F1; color:#fff; }
+.r-ce{ background:#22C55E; color:#fff; }
+.r-em{ background:#0ea5e9; color:#fff; }
+
+.s-ok{ background:#22C55E; color:#fff; }
+.s-off{ background:#EF4444; color:#fff; }
+.s-pd{ background:#F59E0B; color:#1E1E2F; }
+
+/* =========================
+   ACTIONS (alignées à droite du td)
+   ========================= */
+.table-actions{
+  display:flex; align-items:center; justify-content:flex-start; gap:.45rem; flex-wrap:wrap;
+}
+.btn-action{
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  background: transparent; color: var(--color-text);
+  border:1px solid var(--color-border); border-radius:.45rem;
+  transition: all .2s ease; cursor:pointer;
+}
+.btn-action:hover{ transform: scale(1.05); }
+.btn-action.edit{ border-color: var(--color-primary); color: var(--color-primary); }
+.btn-action.edit:hover{ background: var(--color-primary); color:#fff; }
+.btn-action.password{ border-color: #F59E0B; color:#F59E0B; }
+.btn-action.password:hover{ background:#F59E0B; color:#1E1E2F; }
+.btn-action.delete{ border-color:#EF4444; color:#EF4444; }
+.btn-action.delete:hover{ background:#EF4444; color:#fff; }
+
+/* =========================
+   ACCESSIBILITÉ / FOCUS
+   ========================= */
+.btn-action:focus-visible,
+.btn-add:focus-visible,
+.input:focus-visible,
+.select:focus-visible{
+  outline:none; box-shadow: 0 0 0 3px rgba(99,102,241,.35);
 }
 
-.input-icon i {
-    position: absolute;
-    left: 0.8rem;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 1200px){
+  .tbl th:nth-child(6), .tbl td:nth-child(6){ display:none; }    /* cache "Dernière connexion" */
 }
-
-.input-icon .input {
-    padding-left: 2rem;
+@media (max-width: 992px){
+  .tbl th:nth-child(4), .tbl td:nth-child(4){ display:none; }    /* cache "Société" */
 }
-
-.input,
-.select {
-    background: var(--color-bg);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    padding: 0.45rem 0.7rem;
-    outline: 0;
+@media (max-width: 768px){
+  .sa-users{ padding: 1rem; }
+  .tbl th:nth-child(3), .tbl td:nth-child(3){ display:none; }    /* cache "Rôle" */
+  .col-actions{ width: 120px; }
 }
-.input:focus,
-.select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
-}
-
-/* table */
-.tbl-wrap {
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: 1rem;
-    overflow: hidden;
-}
-.tbl {
-    width: 100%;
-    border-collapse: collapse;
-}
-.tbl thead {
-    background: rgba(255, 255, 255, 0.04);
-}
-.tbl th,
-.tbl td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border);
-}
-.col-actions {
-    width: 140px;
-}
-
-/* badges rôle & statut (classes à poser côté JS si besoin) */
-.rb,
-.sb {
-    display: inline-block;
-    padding: 0.25rem 0.55rem;
-    border-radius: 0.4rem;
-    font-weight: 700;
-    font-size: 0.85rem;
-}
-.r-sa {
-    background: #4f46e5;
-    color: #fff;
-}
-.r-ad {
-    background: #6366f1;
-    color: #fff;
-}
-.r-ce {
-    background: #22c55e;
-    color: #fff;
-}
-.r-em {
-    background: #0ea5e9;
-    color: #fff;
-}
-.s-ok {
-    background: #22c55e;
-    color: #fff;
-}
-.s-off {
-    background: #ef4444;
-    color: #fff;
-}
-.s-pd {
-    background: #f59e0b;
-    color: #1e1e2f;
-}
-
-/* actions */
-.actions {
-    display: flex;
-    gap: 0.4rem;
-}
-.act {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    border-radius: 0.4rem;
-    transition: 0.2s;
-}
-.act:hover {
-    transform: scale(1.05);
-}
-.act-ed {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-}
-.act-del {
-    border-color: #ef4444;
-    color: #ef4444;
-}
-
-/* états */
-.empty {
-    text-align: center;
-    color: var(--color-text-muted);
-    padding: 2rem 1rem;
+@media (max-width: 576px){
+  .sa-users .head{ flex-direction:column; align-items:flex-start; gap:.6rem; }
+  .btn-add{ width:100%; }
+  .tbl th:nth-child(2), .tbl td:nth-child(2){ width: auto; }
 }

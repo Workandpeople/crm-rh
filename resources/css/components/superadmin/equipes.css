@@ -143,8 +143,80 @@
 }
 @keyframes teamShimmer{ to{ transform: translateX(100%);} }
 
+/* Carte : relief, gradient subtil, hover net */
+/* Carte */
+.equipe-card,
+.equipe-list > div{
+  position: relative;
+  background: linear-gradient(180deg, var(--color-bg-secondary), color-mix(in oklab, var(--color-bg-secondary) 85%, #000 15%));
+  border:1px solid var(--color-border);
+  border-radius:1rem;
+  padding:1.1rem;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+.equipe-card:hover,
+.equipe-list > div:hover{
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--color-border) 55%, var(--color-primary) 45%);
+  box-shadow:0 10px 26px rgba(0,0,0,.28);
+}
+
+/* Header */
+.equipe-header{ display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.65rem; }
+.equipe-header h4{
+  margin:0; font-size:1.05rem; font-weight:800; color: var(--color-text);
+  white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+}
+
+/* ===== Badge société dynamique (HSL via style="--badge-h;--badge-s;--badge-l") ===== */
+.badge.societe{
+  display:inline-flex; align-items:center; gap:.45rem;
+  padding:.28rem .65rem; border-radius:999px; font-weight:800; font-size:.8rem; letter-spacing:.2px;
+  border:1px solid transparent; white-space:nowrap;
+  /* Couleurs = variables CSS injectées par le JS */
+  background: color-mix(in oklab, hsl(var(--badge-h) var(--badge-s) var(--badge-l)) 18%, transparent);
+  color: hsl(var(--badge-h) calc(var(--badge-s) - 20%) calc(var(--badge-l) - 20%));
+  border-color: color-mix(in oklab, hsl(var(--badge-h) var(--badge-s) var(--badge-l)) 50%, transparent);
+}
+.badge.societe::before{
+  content:""; width:.46rem; height:.46rem; border-radius:50%;
+  background: hsl(var(--badge-h) var(--badge-s) var(--badge-l));
+  display:inline-block;
+}
+
+/* Lignes d’info */
+.equipe-card p{ margin:.15rem 0; color: var(--color-text); }
+
+/* Icônes — couleurs dédiées par type */
+.icon-leader{ color:#22C55E; }   /* chef d’équipe (vert) */
+.icon-members{ color:#0EA5E9; }  /* membres (bleu)    */
+.icon-company{ color:#6366F1; }  /* société (indigo)  */
+
+/* Footer + actions */
+.equipe-card .actions{ display:flex; align-items:center; gap:.45rem; }
+.equipe-card .btn-action{
+  width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--color-border); border-radius:.5rem;
+  background: color-mix(in oklab, var(--color-bg) 92%, #000 8%);
+  color: var(--color-text);
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+  cursor:pointer;
+}
+.equipe-card .btn-action:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.25); }
+.equipe-card .btn-action.edit{ border-color: var(--color-primary); color: var(--color-primary); }
+.equipe-card .btn-action.edit:hover{ background: var(--color-primary); color:#fff; }
+.equipe-card .btn-action.delete{ border-color:#EF4444; color:#EF4444; }
+.equipe-card .btn-action.delete:hover{ background:#EF4444; color:#fff; }
+
+/* État vide */
+#teamsList .text-muted{ padding:1.2rem .75rem; color: var(--color-text-muted) !important; text-align:center; }
+
 /* Responsive */
-@media (max-width: 768px){
-  .equipe-admin-page .d-flex{ flex-direction:column; align-items:flex-start !important; gap:.75rem; }
-  .btn-new-equipe{ width:100%; }
+@media (max-width: 992px){
+  .equipe-list{ grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+}
+@media (max-width: 576px){
+  .equipe-admin-page{ padding: 1rem; }
+  .equipe-card{ padding: .9rem; }
 }

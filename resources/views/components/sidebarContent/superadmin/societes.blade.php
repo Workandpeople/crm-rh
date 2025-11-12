@@ -3,7 +3,7 @@
   <div class="head-soc">
     <h2>Gestion des sociétés</h2>
     <button id="btnNewCompany" class="btn-add">
-      <i class="fa-solid fa-building-circle-plus me-2"></i> Nouvelle société
+      <i class="fa-solid fa-circle-plus me-2"></i> Nouvelle société
     </button>
   </div>
 

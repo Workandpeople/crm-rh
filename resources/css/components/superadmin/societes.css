@@ -1,162 +1,448 @@
 /* === SOCIÉTÉS (SUPER ADMIN) === */
 
-
 /* Container global */
-.societes-admin-page{
-  background: var(--color-bg);
-  color: var(--color-text);
-  min-height: calc(100vh - 4rem);
-  padding: 2rem;
+.societes-admin-page {
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
 }
 
 /* Header */
-.head-soc{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:1rem;
-  margin-bottom:1.25rem;
+.head-soc {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
 }
-.head-soc h2{
-  color: var(--color-primary);
-  margin:0;
-  font-size:1.6rem;
-  font-weight:700;
+.head-soc h2 {
+    color: var(--color-primary);
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
 }
 
 /* Bouton "Nouvelle société" */
-#btnNewCompany.btn-add{
-  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
-  color:#fff;
-  border:0;
-  border-radius:.6rem;
-  font-weight:600;
-  padding:.6rem 1.1rem;
-  box-shadow:0 3px 10px rgba(79,70,229,.3);
-  transition:all .25s ease;
+#btnNewCompany.btn-add {
+    background: linear-gradient(
+        90deg,
+        var(--color-primary),
+        var(--color-primary-hover)
+    );
+    color: #fff;
+    border: 0;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+    transition: all 0.25s ease;
 }
-#btnNewCompany.btn-add:hover{
-  transform: translateY(-2px);
-  box-shadow:0 4px 15px rgba(79,70,229,.45);
+#btnNewCompany.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.45);
 }
 
 /* Liste des sociétés (cartes injectées par JS) */
-.societes-list{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap:1.1rem;
-  margin-bottom: .75rem;
+.societes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 1.1rem;
+    margin-bottom: 0.75rem;
 }
 
 /* Cartes — supporte :
    1) .societe-card (préféré)
    2) fallback: .societes-list > div si le JS n'ajoute pas la classe */
 .societe-card,
-.societes-list > div{
-  background: var(--color-bg-secondary);
-  border:1px solid var(--color-border);
-  border-radius:1rem;
-  padding:1.1rem;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+.societes-list > div {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 .societe-card:hover,
-.societes-list > div:hover{
-  transform: translateY(-3px);
-  box-shadow:0 4px 16px rgba(0,0,0,.25);
-  border-color: color-mix(in oklab, var(--color-border) 60%, var(--color-primary) 40%);
+.societes-list > div:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border-color: color-mix(
+        in oklab,
+        var(--color-border) 60%,
+        var(--color-primary) 40%
+    );
 }
 
 /* En-tête de carte : logo + nom + statut */
-.societe-head{
-  display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.75rem;
+.societe-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
 }
-.societe-id{
-  display:flex; align-items:center; gap:.75rem; min-width:0;
+.societe-id {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
 }
-.societe-logo{
-  width:56px; height:56px; border-radius:.6rem; object-fit:contain;
-  border:1px solid var(--color-border); background:#fff;
+.societe-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 0.6rem;
+    object-fit: contain;
+    border: 1px solid var(--color-border);
+    background: #fff;
 }
-.societe-title{
-  display:flex; flex-direction:column; min-width:0;
+.societe-title {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
-.societe-title h4{
-  margin:0; font-size:1.05rem; font-weight:700; color: var(--color-text);
-  white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+.societe-title h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
-.societe-title small{
-  color: var(--color-text-muted);
+.societe-title small {
+    color: var(--color-text-muted);
 }
 
 /* Badge statut (classes à affecter côté JS : .active / .inactive) */
-.badge-status{
-  display:inline-block;
-  padding:.28rem .6rem; border-radius:.5rem; font-size:.8rem; font-weight:700; text-transform:capitalize;
+.badge-status {
+    display: inline-block;
+    padding: 0.28rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: capitalize;
 }
-.badge-status.active{ background:#22C55E; color:#fff; }
-.badge-status.inactive{ background:#EF4444; color:#fff; }
+.badge-status.active {
+    background: #22c55e;
+    color: #fff;
+}
+.badge-status.inactive {
+    background: #ef4444;
+    color: #fff;
+}
 
 /* Corps de carte : infos */
-.societe-info{
-  display:grid; row-gap:.35rem; margin:.25rem 0 .5rem;
-  color: var(--color-text);
+.societe-info {
+    display: grid;
+    row-gap: 0.35rem;
+    margin: 0.25rem 0 0.5rem;
+    color: var(--color-text);
 }
-.societe-info .row{
-  display:flex; align-items:center; gap:.5rem;
+.societe-info .row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
-.societe-info i{ color: var(--color-primary); opacity:.95; }
+.societe-info i {
+    color: var(--color-primary);
+    opacity: 0.95;
+}
 
 /* Pied de carte : admin + actions */
-.societe-foot{
-  margin-top:.6rem; padding-top:.6rem;
-  border-top:1px solid var(--color-border);
-  display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+.societe-foot {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
 }
-.societe-admin{
-  color: var(--color-text-muted);
-  font-size:.9rem;
+.societe-admin {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
 }
-.societe-admin strong{ color: var(--color-text); }
+.societe-admin strong {
+    color: var(--color-text);
+}
 
 /* Actions */
-.soc-actions{ display:flex; gap:.45rem; }
-.soc-act{
-  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
-  background:transparent; color: var(--color-text);
-  border:1px solid var(--color-border); border-radius:.45rem; transition:all .2s ease; cursor:pointer;
+.soc-actions {
+    display: flex;
+    gap: 0.45rem;
 }
-.soc-act:hover{ transform:scale(1.05); }
-.soc-act.edit{ border-color: var(--color-primary); color: var(--color-primary); }
-.soc-act.edit:hover{ background: var(--color-primary); color:#fff; }
-.soc-act.del{ border-color:#EF4444; color:#EF4444; }
-.soc-act.del:hover{ background:#EF4444; color:#fff; }
+.soc-act {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.45rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.soc-act:hover {
+    transform: scale(1.05);
+}
+.soc-act.edit {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+.soc-act.edit:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+.soc-act.del {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.soc-act.del:hover {
+    background: #ef4444;
+    color: #fff;
+}
 
 /* États vides / chargement */
 .societes-list .empty,
-#companiesList .empty{
-  grid-column: 1 / -1;
-  text-align:center; color: var(--color-text-muted);
-  padding:1.25rem .75rem;
+#companiesList .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 1.25rem 0.75rem;
 }
 
 /* Skeleton (optionnel si tu injectes des placeholders) */
-.societe-skeleton{
-  background: var(--color-bg-secondary);
-  border:1px solid var(--color-border);
-  border-radius:1rem;
-  padding:1.1rem;
-  position:relative;
-  overflow:hidden;
+.societe-skeleton {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.1rem;
+    position: relative;
+    overflow: hidden;
 }
-.societe-skeleton::after{
-  content:""; position:absolute; inset:0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
-  transform: translateX(-100%); animation: socShimmer 1.2s infinite;
+.societe-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.06),
+        transparent
+    );
+    transform: translateX(-100%);
+    animation: socShimmer 1.2s infinite;
 }
-@keyframes socShimmer{ to{ transform: translateX(100%);} }
+@keyframes socShimmer {
+    to {
+        transform: translateX(100%);
+    }
+}
 
-/* Responsive */
-@media (max-width: 768px){
-  .head-soc{ flex-direction:column; align-items:flex-start; }
-  #btnNewCompany.btn-add{ width:100%; }
+/* Carte : relief + border dynamique au hover */
+.societe-card {
+    position: relative;
+    background: linear-gradient(
+        180deg,
+        var(--color-bg-secondary),
+        color-mix(in oklab, var(--color-bg-secondary) 85%, #000 15%)
+    );
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease,
+        border-color 0.2s ease, background 0.2s;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+.societe-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(
+        in oklab,
+        var(--color-border) 55%,
+        var(--color-primary) 45%
+    );
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+/* Header de carte (tes classes actuelles) */
+.societe-header h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-text);
+}
+.societe-header p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* Logo avec léger ring et fond blanc (pour logos transparents) */
+.societe-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 0.65rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* ======= BADGE DE STATUT (utilise .status .active/.inactive/.pending de ton HTML/JS) ======= */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.65rem;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+    letter-spacing: 0.2px;
+    text-transform: capitalize;
+}
+.status::before {
+    content: "";
+    width: 0.46rem;
+    height: 0.46rem;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* vert */
+.status.active {
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.35);
+}
+.status.active::before {
+    background: #22c55e;
+}
+
+/* rouge */
+.status.inactive {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+}
+.status.inactive::before {
+    background: #ef4444;
+}
+
+/* orange (si besoin plus tard) */
+.status.pending {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.35);
+}
+.status.pending::before {
+    background: #f59e0b;
+}
+
+/* Infos (email / tel / adresse) */
+.societe-info {
+    display: grid;
+    row-gap: 0.4rem;
+    color: var(--color-text);
+}
+.societe-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text);
+}
+.societe-info i {
+    color: var(--color-primary);
+    opacity: 0.95;
+}
+
+/* Footer : admin + actions */
+.societe-footer {
+    margin-top: 0.7rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--color-border);
+}
+.societe-footer .admin-info small {
+    color: var(--color-text-muted);
+}
+.societe-footer .admin-info strong {
+    color: var(--color-text);
+}
+
+/* Boutons d’actions — on respecte .btn-action existant */
+.societe-card .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.societe-card .btn-action {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background: color-mix(in oklab, var(--color-bg) 92%, #000 8%);
+    color: var(--color-text);
+    transition: transform 0.15s ease, box-shadow 0.2s ease,
+        border-color 0.2s ease, background 0.2s ease;
+}
+.societe-card .btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.societe-card .btn-action.edit {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+.societe-card .btn-action.edit:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+.societe-card .btn-action.delete {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.societe-card .btn-action.delete:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* État vide */
+#companiesList .text-muted {
+    padding: 1.2rem 0.75rem;
+    color: var(--color-text-muted) !important;
+    text-align: center;
+}
+
+/* ======= Drag & Drop logo (tes classes .border-primary, etc.) ======= */
+/* on améliore le feedback visuel sans changer le JS */
+#editLogoDrop.border-primary,
+#createLogoDrop.border-primary {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.22);
+    background: rgba(79, 70, 229, 0.08);
+    transition: box-shadow 0.2s ease, background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+/* ======= Responsive grille ======= */
+@media (max-width: 992px) {
+    .societes-list {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .societes-admin-page {
+        padding: 1rem;
+    }
+    .societe-card {
+        padding: 0.9rem;
+    }
 }

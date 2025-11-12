@@ -1,0 +1,125 @@
+/* =========================================================
+   Badges (rôle, statut, société)
+   ========================================================= */
+
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+/* Petit point coloré */
+.badge-pill .dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ---- STATUT ---- */
+.badge-status--active {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.35);
+}
+.badge-status--active .dot {
+    background: #22c55e;
+}
+
+.badge-status--inactive {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.35);
+}
+.badge-status--inactive .dot {
+    background: #ef4444;
+}
+
+.badge-status--pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+.badge-status--pending .dot {
+    background: #f59e0b;
+}
+
+/* ---- RÔLE ---- */
+.badge-role--superadmin {
+    background: rgba(79, 70, 229, 0.15);
+    color: #a5b4fc;
+    border-color: rgba(79, 70, 229, 0.45);
+}
+.badge-role--superadmin .dot {
+    background: #4f46e5;
+}
+
+.badge-role--admin {
+    background: rgba(99, 102, 241, 0.15);
+    color: #c7d2fe;
+    border-color: rgba(99, 102, 241, 0.45);
+}
+.badge-role--admin .dot {
+    background: #6366f1;
+}
+
+.badge-role--chef_equipe {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border-color: rgba(34, 197, 94, 0.45);
+}
+.badge-role--chef_equipe .dot {
+    background: #22c55e;
+}
+
+.badge-role--employe {
+    background: rgba(14, 165, 233, 0.15);
+    color: #7dd3fc;
+    border-color: rgba(14, 165, 233, 0.45);
+}
+.badge-role--employe .dot {
+    background: #0ea5e9;
+}
+
+/* ---- SOCIÉTÉ ----
+   Par défaut on prend des variables pour permettre une couleur dynamique.
+   JS peut poser style="--badge-h:210; --badge-s:85%; --badge-l:60%" par exemple.
+   Si jamais le HSL veut dire :
+    H = Hue → teinte (la couleur sur le cercle chromatique, en degrés : 0 à 360)
+    S = Saturation → intensité de la couleur (0% = gris, 100% = très vive)
+    L = Luminosité → clarté de la couleur (0% = noir, 50% = normal, 100% = blanc)
+*/
+.badge-company {
+    --badge-h: 260; /* teinte par défaut */
+    --badge-s: 70%;
+    --badge-l: 65%;
+    background: color-mix(
+        in oklab,
+        hsl(var(--badge-h) var(--badge-s) var(--badge-l)) 20%,
+        transparent
+    );
+    color: hsl(
+        var(--badge-h) calc(var(--badge-s) - 40%) calc(var(--badge-l) - 20%)
+    );
+    border-color: color-mix(
+        in oklab,
+        hsl(var(--badge-h) var(--badge-s) var(--badge-l)) 50%,
+        transparent
+    );
+}
+.badge-company .dot {
+    background: hsl(var(--badge-h) var(--badge-s) var(--badge-l));
+}
+
+/* Exemples “fixes” si tu veux binder des sociétés connues à la main : */
+/*
+.badge-company--GeniusControle { --badge-h: 210; --badge-s: 80%; --badge-l: 60%; }
+.badge-company--WorkAndPeople  { --badge-h: 20;  --badge-s: 85%; --badge-l: 65%; }
+*/

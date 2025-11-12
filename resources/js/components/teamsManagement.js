@@ -90,23 +90,46 @@ export default function initTeamsManagement() {
     bindActions();
   }
 
-  function cardHTML(t) {
+  // Hue déterministe à partir du nom de société (0..360)
+    function hashHue(str){
+    let h=0; for(let i=0;i<str.length;i++){ h = str.charCodeAt(i) + ((h<<5) - h); h|=0; }
+    return Math.abs(h)%360;
+    }
+    // Construit l’attribut style pour le badge société
+    function companyBadgeStyle(name){
+    if(!name) return '';
+    const h = hashHue(String(name));
+    return `--badge-h:${h};--badge-s:75%;--badge-l:60%`;
+    }
+
+
+    function cardHTML(t) {
     const companyName = t.company?.name ?? '-';
     const leaderName = t.leader ? `${t.leader.first_name} ${t.leader.last_name}` : '-';
+    const styleHsl   = companyName && companyName !== '-' ? ` style="${companyBadgeStyle(companyName)}"` : '';
+
     return `
-      <div class="equipe-card" data-id="${t.id}">
+        <div class="equipe-card" data-id="${t.id}">
         <div class="equipe-header d-flex justify-content-between align-items-center mb-3">
-          <h4 class="fw-semibold mb-0">${t.name}</h4>
-          <span class="badge societe">${companyName}</span>
+            <h4 class="fw-semibold mb-0">${t.name}</h4>
+            <span class="badge societe"${styleHsl}>${companyName}</span>
         </div>
-        <p class="mb-2"><i class="fa-solid fa-user-tie me-2 text-primary"></i> Chef d’équipe : <strong>${leaderName}</strong></p>
-        <p class="mb-2"><i class="fa-solid fa-users me-2 text-primary"></i> Membres : ${t.users_count ?? 0} employés</p>
+
+        <p class="mb-2">
+            <i class="fa-solid fa-user-tie me-2 icon-leader"></i>
+            Chef d’équipe : <strong>${leaderName}</strong>
+        </p>
+        <p class="mb-2">
+            <i class="fa-solid fa-users me-2 icon-members"></i>
+            Membres : ${t.users_count ?? 0} employés
+        </p>
+
         <div class="actions mt-3">
-          <button class="btn-action edit"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn-action delete"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn-action edit" title="Modifier"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn-action delete" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
         </div>
-      </div>`;
-  }
+        </div>`;
+    }
 
   function renderPagination(totalPages) {
     if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
