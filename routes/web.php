@@ -110,5 +110,24 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/backlogs', [\App\Http\Controllers\Admin\BacklogController::class, 'index'])
         ->middleware('can:view-backlogs')
         ->name('admin.backlogs.index');
+        
+        // Options (assignés possibles)
+        Route::get('/backlogs/options', [\App\Http\Controllers\Admin\BacklogController::class, 'options'])
+            ->middleware('can:view-backlogs')
+            ->name('admin.backlogs.options');
+
+        // Création d’un ticket
+        Route::post('/backlogs', [\App\Http\Controllers\Admin\BacklogController::class, 'store'])
+            ->middleware('can:view-backlogs') // tu pourras raffiner en
+            ->name('admin.backlogs.store');
+
+        // Changement de statut
+        Route::patch('/backlogs/{ticket}/status', [\App\Http\Controllers\Admin\BacklogController::class, 'updateStatus'])
+            ->middleware('can:view-backlogs') // idem ici, à affiner après
+            ->name('admin.backlogs.status');
+
+        Route::get('/backlogs/{ticket}', [\App\Http\Controllers\Admin\BacklogController::class, 'show'])
+            ->middleware('can:view-backlogs')
+            ->name('admin.backlogs.show');
     });
 });

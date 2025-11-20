@@ -1,51 +1,54 @@
-<div class="conges-admin-page">
+<div class="conges-admin-page" data-script="congesManagement">
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Gestion des congés</h2>
+        <div>
+            <h2 class="fw-bold">Gestion des congés</h2>
+            <p class=" mb-0" style="font-size: .9rem;">
+                Suivez et validez les demandes de congés et absences pour la société sélectionnée.
+            </p>
+        </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-filter">
-                <i class="fa-solid fa-filter me-2"></i> Filtres
-            </button>
+            {{-- On garde Export pour plus tard (CSV / Excel) --}}
             <button class="btn btn-export">
                 <i class="fa-solid fa-file-export me-2"></i> Exporter
             </button>
         </div>
     </div>
 
-    {{-- STATISTIQUES RAPIDES --}}
+    {{-- STATISTIQUES RAPIDES (remplies en JS) --}}
     <div class="conge-stats mb-4">
         <div class="stat-card">
             <h6>Total demandes</h6>
-            <p>42</p>
+            <p id="statTotalConges">—</p>
         </div>
         <div class="stat-card">
             <h6>En attente</h6>
-            <p>8</p>
+            <p id="statPendingConges">—</p>
         </div>
         <div class="stat-card">
             <h6>Validées</h6>
-            <p>30</p>
+            <p id="statValidatedConges">—</p>
         </div>
         <div class="stat-card">
             <h6>Refusées</h6>
-            <p>4</p>
+            <p id="statRefusedConges">—</p>
         </div>
     </div>
 
-    {{-- FILTRES --}}
+    {{-- FILTRES PAR TYPE DE CONGÉ (chips) --}}
     <div class="conge-filters mb-4">
         <div class="d-flex flex-wrap gap-2">
-            <button class="filter-btn active">Tous</button>
-            <button class="filter-btn">Congés payés</button>
-            <button class="filter-btn">RTT</button>
-            <button class="filter-btn">Sans solde</button>
-            <button class="filter-btn">Absence exceptionnelle</button>
+            <button class="filter-btn active" data-kind="all">Tous</button>
+            <button class="filter-btn" data-kind="conges_payes">Congés payés</button>
+            <button class="filter-btn" data-kind="rtt">RTT</button>
+            <button class="filter-btn" data-kind="sans_solde">Sans solde</button>
+            <button class="filter-btn" data-kind="absence_exceptionnelle">Absence exceptionnelle</button>
         </div>
     </div>
 
-    {{-- TABLEAU DES DEMANDES --}}
+    {{-- TABLEAU DES DEMANDES (dynamique) --}}
     <div class="conge-table">
-        <table>
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
                     <th>Employé</th>
@@ -53,49 +56,21 @@
                     <th>Période</th>
                     <th>Durée</th>
                     <th>Statut</th>
-                    <th>Action</th>
+                    <th class="text-end">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="congesTableBody">
                 <tr>
-                    <td><strong>Julien Dupont</strong></td>
-                    <td>Congé payé</td>
-                    <td>15/11/2025 → 20/11/2025</td>
-                    <td>5 jours</td>
-                    <td><span class="status en-attente">En attente</span></td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="btn-action valide"><i class="fa-solid fa-check"></i></button>
-                            <button class="btn-action refuse"><i class="fa-solid fa-xmark"></i></button>
-                            <button class="btn-action details"><i class="fa-solid fa-eye"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Amélie Dubois</strong></td>
-                    <td>RTT</td>
-                    <td>05/09/2025 → 06/09/2025</td>
-                    <td>2 jours</td>
-                    <td><span class="status valide">Validé</span></td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="btn-action details"><i class="fa-solid fa-eye"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Marc Lefèvre</strong></td>
-                    <td>Sans solde</td>
-                    <td>02/10/2025 → 04/10/2025</td>
-                    <td>3 jours</td>
-                    <td><span class="status refuse">Refusé</span></td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="btn-action details"><i class="fa-solid fa-eye"></i></button>
-                        </div>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        Chargement des demandes...
                     </td>
                 </tr>
             </tbody>
         </table>
+
+        {{-- PAGINATION --}}
+        <nav aria-label="Pagination des congés" class="mt-2">
+            <ul class="pagination justify-content-center mb-0" id="congesPagination"></ul>
+        </nav>
     </div>
 </div>

@@ -15,9 +15,13 @@
 </aside>
 
 @push('modals')
-  @include('components.sidebarContent.superadmin.userModals')
-  @include('components.sidebarContent.superadmin.companyModals')
-  @include('components.sidebarContent.superadmin.teamsModals')
+    {{-- SUPER ADMIN MODALS --}}
+    @include('components.sidebarContent.superadmin.userModals')
+    @include('components.sidebarContent.superadmin.companyModals')
+    @include('components.sidebarContent.superadmin.teamsModals')
+
+    {{-- ADMIN MODALS--}}
+    @include('components.sidebarContent.admin.backlogModals')
 @endpush
 
 @push('js')
