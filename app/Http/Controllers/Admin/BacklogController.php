@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class BacklogController extends Controller
 {
@@ -87,4 +88,139 @@ class BacklogController extends Controller
             return response()->json(['error' => true, 'message' => $e->getMessage()], 500);
         }
     }
+   /**
+     * Options : utilisateurs pouvant recevoir un ticket.
+     */
+    public function options(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin'])) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $companyId = $request->query('company_id', $user->company_id);
+
+        $assignees = User::where('company_id', $companyId)
+            ->orderBy('last_name')
+            ->get(['id', 'first_name', 'last_name', 'email']);
+
+        // Pour que t.creator.full_name fonctionne dans le JS :
+        $assignees->each(fn ($u) => $u->full_name = trim($u->first_name . ' ' . $u->last_name));
+
+        return response()->json([
+            'assignees' => $assignees,
+        ]);
+    }
+
+    /**
+     * Création d'un ticket.
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+
+        // Qui a le droit de créer un ticket ?
+        if (!in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        // Validation des champs
+        $validated = $request->validate([
+            'title'           => 'required|string|max:255',
+            'type'            => 'required|in:conge,note_frais,incident,autre',
+            'description'     => 'nullable|string',
+            'assignee_id'     => 'nullable|exists:users,id',
+            'priority'        => 'nullable|in:basse,moyenne,haute',
+            'due_date'        => 'nullable|date',
+            'related_user_id' => 'nullable|exists:users,id',
+            'company_id'      => 'required|exists:companies,id',
+        ]);
+
+        // Création du ticket
+        $ticket = Ticket::create([
+            'company_id'      => $validated['company_id'],
+            'created_by'      => $user->id,
+            'assigned_to'     => $validated['assignee_id'] ?? null,
+            'type'            => $validated['type'],
+            'title'           => $validated['title'],
+            'description'     => $validated['description'] ?? '',
+            'priority'        => $validated['priority'] ?? 'moyenne',
+            'status'          => 'en_attente',
+            'due_date'        => $validated['due_date'] ?? null,
+            'related_user_id' => $validated['related_user_id'] ?? null,
+        ]);
+
+        // On renvoie le ticket avec les relations si tu veux les exploiter côté JS plus tard
+        return response()->json([
+            'success' => true,
+            'ticket'  => $ticket->load(['creator', 'assignee']),
+        ], 201);
+    }
+
+
+    /**
+     * Mise à jour du statut (valide / refuse / en_attente).
+     */
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
+        $user = Auth::user();
+
+        if (!in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin'])) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $data = $request->validate([
+            'status' => 'required|in:en_attente,valide,refuse',
+        ]);
+
+        $ticket->status = $data['status'];
+        $ticket->save();
+
+        return response()->json([
+            'success' => true,
+            'ticket'  => $ticket,
+        ]);
+    }
+
+    public function show(Ticket $ticket)
+{
+    $user = Auth::user();
+
+    if (!in_array($user->role->name ?? '', ['admin','chef_equipe','superadmin'])) {
+        return response()->json(['message' => 'Accès non autorisé'], 403);
+    }
+
+    $ticket->load(['company', 'creator', 'assignee', 'relatedUser']);
+
+    return response()->json([
+        'id'          => $ticket->id,
+        'title'       => $ticket->title,
+        'description' => $ticket->description,
+        'type'        => $ticket->type,
+        'priority'    => $ticket->priority,
+        'status'      => $ticket->status,
+        'created_at'  => $ticket->created_at,
+        'due_date'    => $ticket->due_date,
+        'company'     => [
+            'id'   => $ticket->company?->id,
+            'name' => $ticket->company?->name,
+        ],
+        'creator'     => [
+            'id'        => $ticket->creator?->id,
+            'full_name' => $ticket->creator?->full_name,
+            'email'     => $ticket->creator?->email,
+        ],
+        'assignee'    => $ticket->assignee ? [
+            'id'        => $ticket->assignee->id,
+            'full_name' => $ticket->assignee->full_name,
+            'email'     => $ticket->assignee->email,
+        ] : null,
+        'related_user'=> $ticket->relatedUser ? [
+            'id'        => $ticket->relatedUser->id,
+            'full_name' => $ticket->relatedUser->full_name,
+            'email'     => $ticket->relatedUser->email,
+        ] : null,
+    ]);
+}
 }

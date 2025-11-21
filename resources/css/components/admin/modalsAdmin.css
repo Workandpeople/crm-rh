@@ -1,0 +1,577 @@
+/* ========================================================= */
+/* === MODALES BACKLOG ADMIN =============================== */
+/* ========================================================= */
+
+/* Fond sombre + bordure propre */
+#modalTicketCreate .modal-content,
+#modalTicketDetails.modal-dark .modal-content {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border-radius: 0.9rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Header */
+#modalTicketCreate .modal-header,
+#modalTicketDetails .modal-header {
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.14), transparent);
+}
+
+#modalTicketCreate .modal-title,
+#modalTicketDetails .modal-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Bouton de fermeture */
+#modalTicketCreate .btn-close,
+#modalTicketDetails .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.8;
+}
+#modalTicketDetails .btn-close-white {
+    filter: none; /* tu as déjà btn-close-white */
+}
+
+/* Body */
+#modalTicketCreate .modal-body,
+#modalTicketDetails .modal-body {
+    padding: 1.25rem 1.4rem;
+}
+
+/* Footer */
+#modalTicketCreate .modal-footer,
+#modalTicketDetails .modal-footer {
+    border-top: 1px solid var(--color-border);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Labels & textes trop sombres -> harmonisation */
+#modalTicketCreate .form-label,
+#modalTicketDetails .form-label,
+#modalTicketDetails small {
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+#modalTicketCreate .text-muted,
+#modalTicketDetails .text-muted {
+    color: var(--color-text-muted) !important;
+}
+
+/* Champs de formulaire */
+#modalTicketCreate .form-control,
+#modalTicketCreate .form-select,
+#modalTicketDetails .form-control,
+#modalTicketDetails .form-select {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.55rem;
+    padding: 0.45rem 0.7rem;
+    outline: none;
+}
+
+#modalTicketCreate .form-control::placeholder,
+#modalTicketDetails .form-control::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.8;
+}
+
+#modalTicketCreate .form-control:focus,
+#modalTicketCreate .form-select:focus,
+#modalTicketDetails .form-control:focus,
+#modalTicketDetails .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.35);
+}
+
+/* Boutons */
+#modalTicketCreate .btn-primary {
+    background: linear-gradient(
+        90deg,
+        var(--color-primary),
+        var(--color-primary-hover)
+    );
+    border: none;
+    font-weight: 600;
+    border-radius: 0.55rem;
+    padding-inline: 1.2rem;
+}
+#modalTicketCreate .btn-primary:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.6);
+}
+
+#modalTicketCreate .btn-secondary,
+#modalTicketDetails .btn-outline-secondary {
+    border-radius: 0.55rem;
+    font-weight: 500;
+}
+
+/* === BADGES DANS LA MODALE DÉTAIL === */
+
+.ticket-type-badge,
+.ticket-priority-badge,
+.ticket-status-badge {
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    letter-spacing: 0.02em;
+}
+
+/* Type */
+.ticket-type-badge {
+    background: rgba(79, 70, 229, 0.15);
+    color: var(--color-primary);
+    border: 1px solid rgba(79, 70, 229, 0.4);
+}
+
+/* Optionnel : variantes par type si tu ajoutes la classe (conge, note_frais, incident, autre) */
+.ticket-type-badge.conge {
+    background: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.5);
+    color: #bbf7d0;
+}
+.ticket-type-badge.note_frais {
+    background: rgba(14, 165, 233, 0.16);
+    border-color: rgba(14, 165, 233, 0.5);
+    color: #bae6fd;
+}
+.ticket-type-badge.incident {
+    background: rgba(239, 68, 68, 0.16);
+    border-color: rgba(239, 68, 68, 0.7);
+    color: #fecaca;
+}
+.ticket-type-badge.autre {
+    background: rgba(148, 163, 184, 0.16);
+    border-color: rgba(148, 163, 184, 0.6);
+    color: #e5e7eb;
+}
+
+/* Priorité */
+.ticket-priority-badge {
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    color: #e5e7eb;
+}
+
+.ticket-priority-badge.basse {
+    background: rgba(45, 212, 191, 0.18);
+    border-color: rgba(45, 212, 191, 0.6);
+    color: #ccfbf1;
+}
+.ticket-priority-badge.moyenne {
+    background: rgba(234, 179, 8, 0.18);
+    border-color: rgba(234, 179, 8, 0.7);
+    color: #fef9c3;
+}
+.ticket-priority-badge.haute {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(248, 113, 113, 0.9);
+    color: #fee2e2;
+}
+
+/* Statut */
+.ticket-status-badge {
+    text-transform: capitalize;
+}
+
+.ticket-status-badge.en_attente {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(234, 179, 8, 0.6);
+}
+.ticket-status-badge.valide {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.6);
+}
+.ticket-status-badge.refuse {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f97373;
+    border: 1px solid rgba(239, 68, 68, 0.7);
+}
+
+/* Titre + description */
+#modalTicketDetails #ticketDetailTitle {
+    color: var(--color-text);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+#modalTicketDetails #ticketDetailDescription {
+    font-size: 0.92rem;
+}
+
+/* Grille de métadonnées */
+#modalTicketDetails .row .mb-2 span {
+    color: var(--color-text);
+}
+
+/* Séparation commentaires */
+#modalTicketDetails .border-top {
+    border-color: var(--color-border) !important;
+}
+#modalTicketDetails .modal-body {
+    background: radial-gradient(
+            circle at top left,
+            rgba(79, 70, 229, 0.14),
+            transparent 55%
+        ),
+        var(--color-bg-secondary);
+    color: var(--color-text);
+}
+
+/* Titre du ticket bien mis en avant */
+#modalTicketDetails #ticketDetailTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.25rem;
+}
+
+/* Description visuellement séparée */
+#modalTicketDetails #ticketDetailDescription {
+    font-size: 0.95rem;
+    color: var(--color-text-muted) !important;
+    margin-bottom: 1.5rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-border);
+}
+
+/* Blocs infos (Créé par / Assigné à / etc.) */
+#modalTicketDetails .row.mb-3 .col-md-6,
+#modalTicketDetails .row:last-of-type .col-md-6 {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Label (Créé par, Assigné à…) */
+#modalTicketDetails .row.mb-3 small,
+#modalTicketDetails .row:last-of-type small {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.15rem;
+}
+
+/* Valeur (Lucas Dinnichert, EcoLab Services, etc.) */
+#modalTicketDetails .row.mb-3 span,
+#modalTicketDetails .row:last-of-type span {
+    display: inline-block;
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+/* Cas “—” ou “Non assigné” un peu plus doux */
+#ticketDetailAssignee,
+#ticketDetailRelatedUser {
+    font-style: italic;
+    opacity: 0.9;
+}
+
+/* Bloc commentaires mieux séparé */
+#modalTicketDetails .mt-3.border-top.pt-3 {
+    margin-top: 1.5rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px dashed var(--color-border) !important;
+}
+
+#modalTicketDetails .mt-3.border-top.pt-3 small {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+}
+
+#modalTicketDetails .mt-3.border-top.pt-3 p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    #modalTicketCreate .modal-dialog,
+    #modalTicketDetails .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    #modalTicketDetails .modal-body,
+    #modalTicketCreate .modal-body {
+        padding: 1rem 1rem;
+    }
+
+    #modalTicketDetails .d-flex.flex-wrap {
+        gap: 0.5rem;
+    }
+}
+
+/* ========================================================= */
+/* === MODALES CONGÉS / ABSENCES ADMIN ===================== */
+/* ========================================================= */
+
+/* Fond + bordure (même thème que backlog) */
+#modalLeaveDetails .modal-content {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border-radius: 0.9rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Header */
+#modalLeaveDetails .modal-header {
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.14), transparent);
+}
+
+#modalLeaveDetails .modal-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Bouton de fermeture */
+#modalLeaveDetails .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.8;
+}
+
+/* Body */
+#modalLeaveDetails .modal-body {
+    padding: 1.25rem 1.4rem;
+    background: radial-gradient(
+            circle at top left,
+            rgba(79, 70, 229, 0.14),
+            transparent 55%
+        ),
+        var(--color-bg-secondary);
+    color: var(--color-text);
+}
+
+/* Footer */
+#modalLeaveDetails .modal-footer {
+    border-top: 1px solid var(--color-border);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Labels & textes */
+#modalLeaveDetails .form-label,
+#modalLeaveDetails small {
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+#modalLeaveDetails .text-muted {
+    color: var(--color-text-muted) !important;
+}
+
+/* Champs (si jamais tu en ajoutes plus tard) */
+#modalLeaveDetails .form-control,
+#modalLeaveDetails .form-select {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.55rem;
+    padding: 0.45rem 0.7rem;
+    outline: none;
+}
+
+#modalLeaveDetails .form-control::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.8;
+}
+
+#modalLeaveDetails .form-control:focus,
+#modalLeaveDetails .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.35);
+}
+
+/* Boutons footer */
+#modalLeaveDetails .btn-outline-secondary {
+    border-radius: 0.55rem;
+    font-weight: 500;
+}
+
+/* === BADGES CONGÉS (type + statut + période) ================= */
+
+.leave-type-badge,
+.leave-status-badge,
+.leave-period-badge {
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    letter-spacing: 0.02em;
+}
+
+/* Type de congé */
+.leave-type-badge {
+    background: rgba(59, 130, 246, 0.16);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: #bfdbfe;
+}
+
+/* Variantes par type si tu ajoutes ces classes en JS : CP, SansSolde, Exceptionnel, Maladie */
+
+.leave-type-badge.CP {
+    background: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.5);
+    color: #bbf7d0;
+}
+.leave-type-badge.SansSolde {
+    background: rgba(234, 179, 8, 0.16);
+    border-color: rgba(234, 179, 8, 0.6);
+    color: #fef9c3;
+}
+.leave-type-badge.Exceptionnel {
+    background: rgba(14, 165, 233, 0.16);
+    border-color: rgba(14, 165, 233, 0.5);
+    color: #bae6fd;
+}
+.leave-type-badge.Maladie {
+    background: rgba(239, 68, 68, 0.16);
+    border-color: rgba(239, 68, 68, 0.6);
+    color: #fecaca;
+}
+
+/* Statut */
+.leave-status-badge {
+    text-transform: capitalize;
+}
+
+.leave-status-badge.pending {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(234, 179, 8, 0.6);
+}
+.leave-status-badge.approved {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.6);
+}
+.leave-status-badge.rejected {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f97373;
+    border: 1px solid rgba(239, 68, 68, 0.7);
+}
+
+/* Badge période (si tu l'utilises) */
+.leave-period-badge {
+    background: rgba(148, 163, 184, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    color: #e5e7eb;
+}
+
+/* === CONTENU : titre, description, blocs infos =============== */
+
+/* Titre du congé */
+#modalLeaveDetails #leaveDetailTitle {
+    color: var(--color-text);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.25rem;
+}
+
+/* Description */
+#modalLeaveDetails #leaveDetailDescription {
+    font-size: 0.95rem;
+    color: var(--color-text-muted) !important;
+    margin-bottom: 1.4rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-border);
+}
+
+/* Blocs infos (employé, dates, validateur, etc.) */
+#modalLeaveDetails .row.mb-3 .col-md-6,
+#modalLeaveDetails .row:last-of-type .col-md-6 {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    margin-bottom: 0.6rem;
+}
+
+/* Labels (Employé, Période, Validé par…) */
+#modalLeaveDetails .row.mb-3 small,
+#modalLeaveDetails .row:last-of-type small {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.15rem;
+}
+
+/* Valeurs */
+#modalLeaveDetails .row.mb-3 span,
+#modalLeaveDetails .row:last-of-type span {
+    display: inline-block;
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+/* Cas “—” ou non renseigné un peu plus doux */
+#leaveDetailValidator,
+#leaveDetailComments {
+    font-style: italic;
+    opacity: 0.9;
+}
+
+/* Lien justificatif */
+#leaveDetailJustif a {
+    font-size: 0.9rem;
+    text-decoration: underline;
+}
+
+/* Bloc commentaires / remarques */
+#modalLeaveDetails .mt-3.border-top.pt-3 {
+    margin-top: 1.5rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px dashed var(--color-border) !important;
+}
+
+#modalLeaveDetails .mt-3.border-top.pt-3 small {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+}
+
+#modalLeaveDetails .mt-3.border-top.pt-3 p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    #modalLeaveDetails .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    #modalLeaveDetails .modal-body {
+        padding: 1rem 1rem;
+    }
+
+    #modalLeaveDetails .d-flex.flex-wrap {
+        gap: 0.5rem;
+    }
+}

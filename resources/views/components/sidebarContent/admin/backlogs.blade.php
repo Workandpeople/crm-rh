@@ -1,12 +1,17 @@
 <div class="ticketing-admin-page" data-script="backlogsManagement">
   {{-- HEADER --}}
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Tickets RH</h2>
-    <div class="d-flex gap-2">
-      <button class="btn btn-filter"><i class="fa-solid fa-filter me-2"></i>Filtres</button>
-      <button class="btn btn-export"><i class="fa-solid fa-file-export me-2"></i>Exporter</button>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold">Tickets RH</h2>
+        <p class="text-muted mb-0" style="font-size: .9rem;">
+        Suivi des demandes (congés, notes de frais, incidents…) et validation RH.
+        </p>
     </div>
-  </div>
+    <button id="btnAddTicket" class="btn btn-add-ticket">
+        <i class="fa-solid fa-plus me-2"></i> Ajouter un ticket
+    </button>
+    </div>
+
 
   {{-- STATS (placeholder) --}}
   <div class="ticket-stats mb-4">
