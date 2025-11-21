@@ -107,10 +107,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/teams/{team}', [\App\Http\Controllers\Admin\TeamController::class, 'destroy'])
             ->name('admin.teams.destroy');
 
+        // === Backlogs ===
         Route::get('/backlogs', [\App\Http\Controllers\Admin\BacklogController::class, 'index'])
         ->middleware('can:view-backlogs')
         ->name('admin.backlogs.index');
-        
+
         // Options (assignés possibles)
         Route::get('/backlogs/options', [\App\Http\Controllers\Admin\BacklogController::class, 'options'])
             ->middleware('can:view-backlogs')
@@ -118,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Création d’un ticket
         Route::post('/backlogs', [\App\Http\Controllers\Admin\BacklogController::class, 'store'])
-            ->middleware('can:view-backlogs') // tu pourras raffiner en
+            ->middleware('can:view-backlogs') // a modifier en fonction des permissions plus tard
             ->name('admin.backlogs.store');
 
         // Changement de statut
@@ -129,5 +130,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/backlogs/{ticket}', [\App\Http\Controllers\Admin\BacklogController::class, 'show'])
             ->middleware('can:view-backlogs')
             ->name('admin.backlogs.show');
+
+        // === Congés / Absences (admin) ===
+        Route::get('/leaves', [\App\Http\Controllers\Admin\LeaveController::class, 'index'])
+            ->middleware('can:view-backlogs') // ou un autre gate si tu préfères
+            ->name('admin.leaves.index');
+
+        Route::get('/leaves/{leave}', [\App\Http\Controllers\Admin\LeaveController::class, 'show'])
+            ->name('admin.leaves.show');
+
+        Route::patch('/leaves/{leave}/status', [\App\Http\Controllers\Admin\LeaveController::class, 'updateStatus'])
+            ->name('admin.leaves.status');
     });
 });

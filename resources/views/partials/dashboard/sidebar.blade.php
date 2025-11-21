@@ -22,6 +22,7 @@
 
     {{-- ADMIN MODALS--}}
     @include('components.sidebarContent.admin.backlogModals')
+    @include('components.sidebarContent.admin.congesModals')
 @endpush
 
 @push('js')
