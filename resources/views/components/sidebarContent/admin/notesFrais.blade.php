@@ -31,6 +31,10 @@
             <h6>Refusés</h6>
             <p>—</p>
         </div>
+        <div class="stat-card">
+            <h6>Payés</h6>
+            <p>—</p>
+        </div>
     </div>
 
     {{-- FILTRES AVANCÉS --}}

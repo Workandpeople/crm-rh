@@ -1,118 +1,124 @@
 // resources/js/components/expensesManagement.js
 export default function initExpensesManagement() {
-    console.log('%c[expensesManagement] Initialisation', 'color: orange');
+    console.log("%c[expensesManagement] Initialisation", "color: orange");
 
-    const page = document.querySelector('.notes-admin-page');
+    const page = document.querySelector(".notes-admin-page");
     if (!page) return;
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const csrfToken = document.querySelector(
+        'meta[name="csrf-token"]'
+    )?.content;
 
-    const tableBody = document.getElementById('expensesTableBody');
-    const statsEls = page.querySelectorAll('.notes-stats .stat-card p');
+    const tableBody = document.getElementById("expensesTableBody");
+    const statsEls = page.querySelectorAll(".notes-stats .stat-card p");
 
-    const selectEmployee = document.getElementById('filter-expense-employee');
-    const selectStatus = document.getElementById('filter-expense-status');
-    const selectType = document.getElementById('filter-expense-type');
-    const inputStart = document.getElementById('filter-expense-start');
-    const inputEnd = document.getElementById('filter-expense-end');
-    const btnReset = document.getElementById('btnExpensesReset');
+    const selectEmployee = document.getElementById("filter-expense-employee");
+    const selectStatus = document.getElementById("filter-expense-status");
+    const selectType = document.getElementById("filter-expense-type");
+    const inputStart = document.getElementById("filter-expense-start");
+    const inputEnd = document.getElementById("filter-expense-end");
+    const btnReset = document.getElementById("btnExpensesReset");
 
-    const companyId = localStorage.getItem('selectedCompanyId');
-    const teamId = localStorage.getItem('selectedTeamId');
+    const companyId = localStorage.getItem("selectedCompanyId");
+    const teamId = localStorage.getItem("selectedTeamId");
 
     // Modal détails
-    const modalEl = document.getElementById('modalExpenseDetails');
+    const modalEl = document.getElementById("modalExpenseDetails");
     const modalDetails = modalEl ? new window.bootstrap.Modal(modalEl) : null;
 
-    const elDetailType = document.getElementById('expenseDetailType');
-    const elDetailStatus = document.getElementById('expenseDetailStatus');
-    const elDetailAmount = document.getElementById('expenseDetailAmount');
-    const elDetailDate = document.getElementById('expenseDetailDate');
-    const elDetailUser = document.getElementById('expenseDetailUser');
-    const elDetailCompany = document.getElementById('expenseDetailCompany');
-    const elDetailDescription = document.getElementById('expenseDetailDescription');
-    const elDetailReceipt = document.getElementById('expenseDetailReceipt');
+    const elDetailType = document.getElementById("expenseDetailType");
+    const elDetailStatus = document.getElementById("expenseDetailStatus");
+    const elDetailAmount = document.getElementById("expenseDetailAmount");
+    const elDetailDate = document.getElementById("expenseDetailDate");
+    const elDetailUser = document.getElementById("expenseDetailUser");
+    const elDetailCompany = document.getElementById("expenseDetailCompany");
+    const elDetailDescription = document.getElementById(
+        "expenseDetailDescription"
+    );
+    const elDetailReceipt = document.getElementById("expenseDetailReceipt");
 
     let expensesCache = [];
 
     /* ---------------------- Helpers ----------------------- */
 
     function formatDate(dateStr) {
-        if (!dateStr) return '—';
-        return new Date(dateStr).toLocaleDateString('fr-FR');
+        if (!dateStr) return "—";
+        return new Date(dateStr).toLocaleDateString("fr-FR");
     }
 
     function formatAmount(amount) {
-        if (amount == null) return '—';
+        if (amount == null) return "—";
         const n = Number(amount);
         if (Number.isNaN(n)) return amount;
-        return n.toFixed(2).replace('.', ',') + ' €';
+        return n.toFixed(2).replace(".", ",") + " €";
     }
 
     function typeLabel(type) {
         switch (type) {
-            case 'peage':
-                return 'Péage / autoroute';
-            case 'repas':
-                return 'Repas';
-            case 'hebergement':
-                return 'Hébergement';
-            case 'km':
-                return 'Kilométrage';
+            case "peage":
+                return "Péage / autoroute";
+            case "repas":
+                return "Repas";
+            case "hebergement":
+                return "Hébergement";
+            case "km":
+                return "Kilométrage";
             default:
-                return type || '—';
+                return type || "—";
         }
     }
 
     function statusLabel(status) {
         switch (status) {
-            case 'pending':
-                return 'En attente';
-            case 'approved':
-                return 'Validé';
-            case 'rejected':
-                return 'Refusé';
-            case 'paid':
-                return 'Payé';
+            case "pending":
+                return "En attente";
+            case "approved":
+                return "Validé";
+            case "rejected":
+                return "Refusé";
+            case "paid":
+                return "Payé";
             default:
-                return status || '—';
+                return status || "—";
         }
     }
 
     function statusClass(status) {
         switch (status) {
-            case 'pending':
-                return 'en-attente';
-            case 'approved':
-                return 'valide';
-            case 'rejected':
-                return 'refuse';
-            case 'paid':
-                return 'valide'; // ou "paid" si tu ajoutes un style spécifique
+            case "pending":
+                return "en-attente";
+            case "approved":
+                return "valide";
+            case "rejected":
+                return "refuse";
+            case "paid":
+                return "valide"; // ou "paid" si tu ajoutes un style spécifique
             default:
-                return '';
+                return "";
         }
     }
 
-    function showToast(message, type = 'success') {
+    function showToast(message, type = "success") {
         const bs = window.bootstrap;
         if (!bs?.Toast) {
             alert(message);
             return;
         }
         const container =
-            document.getElementById('toastContainer') ||
+            document.getElementById("toastContainer") ||
             (() => {
-                const c = document.createElement('div');
-                c.id = 'toastContainer';
-                c.className = 'toast-container position-fixed top-0 end-0 p-3';
+                const c = document.createElement("div");
+                c.id = "toastContainer";
+                c.className = "toast-container position-fixed top-0 end-0 p-3";
                 document.body.appendChild(c);
                 return c;
             })();
 
-        const wrap = document.createElement('div');
+        const wrap = document.createElement("div");
         wrap.innerHTML = `
-        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 mb-2" role="alert">
+        <div class="toast align-items-center text-white bg-${
+            type === "success" ? "success" : "danger"
+        } border-0 mb-2" role="alert">
           <div class="d-flex">
             <div class="toast-body">${message}</div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
@@ -135,18 +141,18 @@ export default function initExpensesManagement() {
         `;
 
         try {
-            const url = new URL('/admin/expenses', window.location.origin);
-            if (companyId) url.searchParams.set('company_id', companyId);
-            if (teamId) url.searchParams.set('team_id', teamId);
+            const url = new URL("/admin/expenses", window.location.origin);
+            if (companyId) url.searchParams.set("company_id", companyId);
+            if (teamId) url.searchParams.set("team_id", teamId);
 
             const res = await fetch(url.toString(), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { "X-Requested-With": "XMLHttpRequest" },
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const data = await res.json();
             // Selon ton controller : soit { expenses: [...], stats: {...} }, soit juste [...]
-            expensesCache = Array.isArray(data) ? data : (data.expenses || []);
+            expensesCache = Array.isArray(data) ? data : data.expenses || [];
 
             // Stats globales si renvoyées par le back
             if (!Array.isArray(data) && data.stats) {
@@ -176,7 +182,9 @@ export default function initExpensesManagement() {
             if (e.user) {
                 map.set(
                     e.user.id,
-                    `${e.user.first_name ?? ''} ${e.user.last_name ?? ''}`.trim()
+                    `${e.user.first_name ?? ""} ${
+                        e.user.last_name ?? ""
+                    }`.trim()
                 );
             }
         });
@@ -185,17 +193,17 @@ export default function initExpensesManagement() {
             `<option value="">Tous</option>` +
             Array.from(map.entries())
                 .map(([id, name]) => `<option value="${id}">${name}</option>`)
-                .join('');
+                .join("");
     }
 
     /* ---------------------- Filtres + rendu -------------- */
 
     function applyFiltersAndRender() {
-        const employeeId = selectEmployee?.value || '';
-        const status = selectStatus?.value || '';
-        const type = selectType?.value || '';
-        const startVal = inputStart?.value || '';
-        const endVal = inputEnd?.value || '';
+        const employeeId = selectEmployee?.value || "";
+        const status = selectStatus?.value || "";
+        const type = selectType?.value || "";
+        const startVal = inputStart?.value || "";
+        const endVal = inputEnd?.value || "";
 
         let filtered = expensesCache.slice();
 
@@ -248,8 +256,10 @@ export default function initExpensesManagement() {
         tableBody.innerHTML = expenses
             .map((e) => {
                 const employeeName = e.user
-                    ? `${e.user.first_name ?? ''} ${e.user.last_name ?? ''}`.trim()
-                    : '—';
+                    ? `${e.user.first_name ?? ""} ${
+                          e.user.last_name ?? ""
+                      }`.trim()
+                    : "—";
 
                 const type = typeLabel(e.type);
                 const amount = formatAmount(e.amount);
@@ -269,7 +279,7 @@ export default function initExpensesManagement() {
                     </button>
                 `;
 
-                if (e.status === 'pending') {
+                if (e.status === "pending") {
                     actions = `
                         <button class="btn-action valide" data-id="${e.id}" title="Valider">
                             <i class="fa-solid fa-check"></i>
@@ -279,7 +289,7 @@ export default function initExpensesManagement() {
                         </button>
                         ${actions}
                     `;
-                } else if (e.status === 'approved') {
+                } else if (e.status === "approved") {
                     actions = `
                         <button class="btn-action pay" data-id="${e.id}" title="Marquer comme payé">
                             <i class="fa-solid fa-money-bill-1-wave"></i>
@@ -292,7 +302,7 @@ export default function initExpensesManagement() {
                     <tr>
                         <td><strong>${employeeName}</strong></td>
                         <td>${type}</td>
-                        <td>${e.description ?? '—'}</td>
+                        <td>${e.description ?? "—"}</td>
                         <td>${amount}</td>
                         <td>${receiptHtml}</td>
                         <td>${date}</td>
@@ -305,25 +315,27 @@ export default function initExpensesManagement() {
                     </tr>
                 `;
             })
-            .join('');
+            .join("");
     }
 
     function updateStats(stats) {
-        const [totalEl, pendingEl, approvedEl, rejectedEl] = statsEls;
+        const [totalEl, pendingEl, approvedEl, rejectedEl, paidEl] = statsEls;
         if (!totalEl) return;
 
-        totalEl.textContent = stats.total ?? '0';
-        pendingEl.textContent = stats.pending ?? '0';
-        approvedEl.textContent = stats.approved ?? '0';
-        rejectedEl.textContent = stats.rejected ?? '0';
+        totalEl.textContent = stats.total ?? "0";
+        pendingEl.textContent = stats.pending ?? "0";
+        approvedEl.textContent = stats.approved ?? "0";
+        rejectedEl.textContent = stats.rejected ?? "0";
+        paidEl.textContent = stats.paid ?? "0";
     }
 
     function recomputeStatsFromCache() {
         const stats = {
             total: expensesCache.length,
-            pending: expensesCache.filter((e) => e.status === 'pending').length,
-            approved: expensesCache.filter((e) => e.status === 'approved').length,
-            rejected: expensesCache.filter((e) => e.status === 'rejected').length,
+            pending: expensesCache.filter((e) => e.status === "pending").length,
+            approved: expensesCache.filter((e) => e.status === "approved").length,
+            rejected: expensesCache.filter((e) => e.status === "rejected").length,
+            paid: expensesCache.filter((e) => e.status === "paid").length,
         };
         updateStats(stats);
     }
@@ -335,7 +347,7 @@ export default function initExpensesManagement() {
 
         try {
             const res = await fetch(`/admin/expenses/${id}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { "X-Requested-With": "XMLHttpRequest" },
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -343,13 +355,14 @@ export default function initExpensesManagement() {
 
             // Type badge
             elDetailType.textContent = typeLabel(e.type);
-            elDetailType.className = 'badge expense-type-badge ' + (e.type || '');
+            elDetailType.className =
+                "badge expense-type-badge " + (e.type || "");
 
             // Statut badge
             const sLabel = statusLabel(e.status);
             elDetailStatus.textContent = sLabel;
             elDetailStatus.className =
-                'badge expense-status-badge ' + (e.status || '');
+                "badge expense-status-badge " + (e.status || "");
 
             // Montant / date
             elDetailAmount.textContent = formatAmount(e.amount);
@@ -357,14 +370,14 @@ export default function initExpensesManagement() {
 
             // Employé / société
             const userName = e.user
-                ? `${e.user.first_name ?? ''} ${e.user.last_name ?? ''}`.trim()
-                : '—';
+                ? `${e.user.first_name ?? ""} ${e.user.last_name ?? ""}`.trim()
+                : "—";
             elDetailUser.textContent = userName;
 
-            elDetailCompany.textContent = e.company?.name ?? '—';
+            elDetailCompany.textContent = e.company?.name ?? "—";
 
             // Description
-            elDetailDescription.textContent = e.description ?? '—';
+            elDetailDescription.textContent = e.description ?? "—";
 
             // Justificatif
             if (e.receipt_url) {
@@ -372,7 +385,7 @@ export default function initExpensesManagement() {
             } else if (e.receipt_path) {
                 elDetailReceipt.textContent = e.receipt_path;
             } else {
-                elDetailReceipt.textContent = '—';
+                elDetailReceipt.textContent = "—";
             }
 
             modalDetails.show();
@@ -385,22 +398,22 @@ export default function initExpensesManagement() {
     async function updateStatus(id, newStatus) {
         try {
             const res = await fetch(`/admin/expenses/${id}/status`, {
-                method: 'PATCH',
+                method: "PATCH",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': csrfToken,
+                    "Content-Type": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": csrfToken,
                 },
                 body: JSON.stringify({ status: newStatus }),
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-            let msg = 'Statut mis à jour';
-            if (newStatus === 'approved') msg = 'Note de frais validée';
-            if (newStatus === 'rejected') msg = 'Note de frais refusée';
-            if (newStatus === 'paid') msg = 'Note de frais marquée comme payée';
+            let msg = "Statut mis à jour";
+            if (newStatus === "approved") msg = "Note de frais validée";
+            if (newStatus === "rejected") msg = "Note de frais refusée";
+            if (newStatus === "paid") msg = "Note de frais marquée comme payée";
 
-            showToast(msg, 'success');
+            showToast(msg, "success");
 
             // On recharge la liste depuis le serveur pour être sûr
             await loadExpenses();
@@ -410,11 +423,11 @@ export default function initExpensesManagement() {
         }
     }
 
-    tableBody.addEventListener('click', (e) => {
-        const btnDetails = e.target.closest('.btn-action.details');
-        const btnValide = e.target.closest('.btn-action.valide');
-        const btnRefuse = e.target.closest('.btn-action.refuse');
-        const btnPay = e.target.closest('.btn-action.pay');
+    tableBody.addEventListener("click", (e) => {
+        const btnDetails = e.target.closest(".btn-action.details");
+        const btnValide = e.target.closest(".btn-action.valide");
+        const btnRefuse = e.target.closest(".btn-action.refuse");
+        const btnPay = e.target.closest(".btn-action.pay");
 
         const btn = btnDetails || btnValide || btnRefuse || btnPay;
         if (!btn) return;
@@ -425,11 +438,11 @@ export default function initExpensesManagement() {
         if (btnDetails) {
             openDetails(id);
         } else if (btnValide) {
-            updateStatus(id, 'approved');
+            updateStatus(id, "approved");
         } else if (btnRefuse) {
-            updateStatus(id, 'rejected');
+            updateStatus(id, "rejected");
         } else if (btnPay) {
-            updateStatus(id, 'paid');
+            updateStatus(id, "paid");
         }
     });
 
@@ -437,18 +450,18 @@ export default function initExpensesManagement() {
 
     [selectEmployee, selectStatus, selectType, inputStart, inputEnd].forEach(
         (el) => {
-            el?.addEventListener('change', () => {
+            el?.addEventListener("change", () => {
                 applyFiltersAndRender();
             });
         }
     );
 
-    btnReset?.addEventListener('click', () => {
-        if (selectEmployee) selectEmployee.value = '';
-        if (selectStatus) selectStatus.value = '';
-        if (selectType) selectType.value = '';
-        if (inputStart) inputStart.value = '';
-        if (inputEnd) inputEnd.value = '';
+    btnReset?.addEventListener("click", () => {
+        if (selectEmployee) selectEmployee.value = "";
+        if (selectStatus) selectStatus.value = "";
+        if (selectType) selectType.value = "";
+        if (inputStart) inputStart.value = "";
+        if (inputEnd) inputEnd.value = "";
         applyFiltersAndRender();
     });
 
