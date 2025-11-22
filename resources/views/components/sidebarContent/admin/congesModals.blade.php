@@ -1,4 +1,4 @@
-{{-- MODALE DÉTAIL CONGÉ --}}
+{-- MODALE DÉTAIL CONGÉ --}}
 <div class="modal fade modal-dark" id="modalLeaveDetails" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -25,11 +25,11 @@
         {{-- Employé + validateur --}}
         <div class="row mb-3">
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Employé</small>
+            <small class=" d-block">Employé</small>
             <span id="leaveDetailEmployee">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Validé par</small>
+            <small class=" d-block">Validé par</small>
             <span id="leaveDetailValidator">—</span>
           </div>
         </div>
@@ -37,11 +37,11 @@
         {{-- Période + durée --}}
         <div class="row mb-3">
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Période</small>
+            <small class=" d-block">Période</small>
             <span id="leaveDetailPeriod">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Durée</small>
+            <small class=" d-block">Durée</small>
             <span id="leaveDetailDuration">—</span>
           </div>
         </div>
@@ -49,20 +49,20 @@
         {{-- Justificatif --}}
         <div class="row mb-3">
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Justificatif</small>
+            <small class=" d-block">Justificatif</small>
             <span id="leaveDetailJustification">—</span>
             {{-- ex: lien "Voir le justificatif" injecté en JS --}}
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Statut interne</small>
+            <small class=" d-block">Statut interne</small>
             <span id="leaveDetailInternalStatus">—</span>
           </div>
         </div>
 
         {{-- Commentaires --}}
         <div class="mt-3 border-top pt-3">
-          <small class="text-muted d-block mb-1">Commentaires</small>
-          <p id="leaveDetailComments" class="mb-0 text-muted" style="font-size:.9rem;">
+          <small class=" d-block mb-1">Commentaires</small>
+          <p id="leaveDetailComments" class="mb-0 " style="font-size:.9rem;">
             —
           </p>
         </div>
@@ -70,11 +70,11 @@
         {{-- Dates système --}}
         <div class="row mt-3">
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Créé le</small>
+            <small class=" d-block">Créé le</small>
             <span id="leaveDetailCreatedAt">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Dernière mise à jour</small>
+            <small class=" d-block">Dernière mise à jour</small>
             <span id="leaveDetailUpdatedAt">—</span>
           </div>
         </div>

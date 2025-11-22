@@ -141,5 +141,15 @@ Route::middleware(['auth'])->group(function () {
 
         Route::patch('/leaves/{leave}/status', [\App\Http\Controllers\Admin\LeaveController::class, 'updateStatus'])
             ->name('admin.leaves.status');
+
+        // === Expenses (notes de frais) ===
+        Route::get('/expenses', [\App\Http\Controllers\Admin\ExpenseController::class, 'index'])
+            ->name('admin.expenses.index');
+
+        Route::get('/expenses/{expense}', [\App\Http\Controllers\Admin\ExpenseController::class, 'show'])
+            ->name('admin.expenses.show');
+
+        Route::patch('/expenses/{expense}/status', [\App\Http\Controllers\Admin\ExpenseController::class, 'updateStatus'])
+            ->name('admin.expenses.status');
     });
 });

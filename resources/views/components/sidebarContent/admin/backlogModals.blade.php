@@ -87,24 +87,24 @@
 
         {{-- Titre --}}
         <h4 id="ticketDetailTitle" class="mb-2"></h4>
-        <p id="ticketDetailDescription" class="text-muted mb-3"></p>
+        <p id="ticketDetailDescription" class=" mb-3"></p>
 
         {{-- Métadonnées principales --}}
         <div class="row mb-3">
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Créé par</small>
+            <small class=" d-block">Créé par</small>
             <span id="ticketDetailCreator">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Assigné à</small>
+            <small class=" d-block">Assigné à</small>
             <span id="ticketDetailAssignee">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Employé concerné</small>
+            <small class=" d-block">Employé concerné</small>
             <span id="ticketDetailRelatedUser">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Société</small>
+            <small class=" d-block">Société</small>
             <span id="ticketDetailCompany">—</span>
           </div>
         </div>
@@ -112,19 +112,19 @@
         {{-- Dates --}}
         <div class="row">
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Créé le</small>
+            <small class=" d-block">Créé le</small>
             <span id="ticketDetailCreatedAt">—</span>
           </div>
           <div class="col-md-6 mb-2">
-            <small class="text-muted d-block">Échéance</small>
+            <small class=" d-block">Échéance</small>
             <span id="ticketDetailDueDate">—</span>
           </div>
         </div>
 
         {{-- Zone commentaires / historique (placeholder pour plus tard) --}}
         <div class="mt-3 border-top pt-3">
-          <small class="text-muted d-block mb-1">Commentaires (à venir)</small>
-          <p class="mb-0 text-muted" style="font-size: .85rem;">
+          <small class=" d-block mb-1">Commentaires (à venir)</small>
+          <p class="mb-0 " style="font-size: .85rem;">
             L’historique des échanges et commentaires sera affiché ici dans une prochaine étape.
           </p>
         </div>
