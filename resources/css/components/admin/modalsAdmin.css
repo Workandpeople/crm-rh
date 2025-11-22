@@ -575,3 +575,199 @@
         gap: 0.5rem;
     }
 }
+/* ========================================================= */
+/* === MODALE DÉTAIL NOTE DE FRAIS (ADMIN) ================= */
+/* ========================================================= */
+
+/* Fond, bordure, ombre */
+#modalExpenseDetails.modal-dark .modal-content {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text);
+    border-radius: 0.9rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Header */
+#modalExpenseDetails .modal-header {
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(
+        135deg,
+        rgba(79, 70, 229, 0.14),
+        transparent
+    );
+}
+
+#modalExpenseDetails .modal-title {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Bouton close */
+#modalExpenseDetails .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.85;
+}
+#modalExpenseDetails .btn-close-white {
+    filter: none;
+}
+
+/* Body */
+#modalExpenseDetails .modal-body {
+    padding: 1.25rem 1.4rem;
+    background: radial-gradient(
+            circle at top left,
+            rgba(79, 70, 229, 0.14),
+            transparent 55%
+        ),
+        var(--color-bg-secondary);
+}
+
+/* Footer */
+#modalExpenseDetails .modal-footer {
+    border-top: 1px solid var(--color-border);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Labels / textes */
+#modalExpenseDetails small {
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+#modalExpenseDetails span,
+#modalExpenseDetails p {
+    color: var(--color-text);
+}
+
+/* --------------------------------------------------------- */
+/* BADGES TYPE & STATUT                                      */
+/* --------------------------------------------------------- */
+
+.expense-type-badge,
+.expense-status-badge {
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    letter-spacing: 0.02em;
+}
+
+/* Type (base) */
+.expense-type-badge {
+    background: rgba(148, 163, 184, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    color: #e5e7eb;
+}
+
+/* Variantes par type : peage / repas / hebergement / km */
+.expense-type-badge.peage {
+    background: rgba(14, 165, 233, 0.16);
+    border-color: rgba(14, 165, 233, 0.6);
+    color: #bae6fd;
+}
+.expense-type-badge.repas {
+    background: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.6);
+    color: #bbf7d0;
+}
+.expense-type-badge.hebergement {
+    background: rgba(249, 115, 22, 0.16);
+    border-color: rgba(249, 115, 22, 0.7);
+    color: #fed7aa;
+}
+.expense-type-badge.km {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.7);
+    color: #bfdbfe;
+}
+
+/* Statut */
+.expense-status-badge {
+    text-transform: capitalize;
+}
+
+/* pending / approved / rejected / paid */
+.expense-status-badge.pending {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(234, 179, 8, 0.6);
+}
+.expense-status-badge.approved {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.6);
+}
+.expense-status-badge.rejected {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f97373;
+    border: 1px solid rgba(239, 68, 68, 0.7);
+}
+.expense-status-badge.paid {
+    background: rgba(22, 163, 74, 0.18);
+    color: #86efac;
+    border: 1px solid rgba(22, 163, 74, 0.7);
+}
+
+/* --------------------------------------------------------- */
+/* STRUCTURE INTERNE (rows, blocs infos)                     */
+/* --------------------------------------------------------- */
+
+/* Blocs de la grille (Montant/Date/Employé/Société) */
+#modalExpenseDetails .row.mb-3 .col-md-6 {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    margin-bottom: 0.6rem;
+}
+
+#modalExpenseDetails .row.mb-3 span {
+    display: inline-block;
+    font-size: 0.93rem;
+    font-weight: 500;
+}
+
+/* Description */
+#expenseDetailDescription {
+    font-size: 0.9rem;
+    color: var(--color-text-muted) !important;
+    margin-top: 0.15rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--color-border);
+}
+
+/* Justificatif : lien cliquable stylé */
+#expenseDetailReceipt a {
+    color: var(--color-primary);
+    font-weight: 500;
+    text-decoration: none;
+}
+#expenseDetailReceipt a:hover {
+    text-decoration: underline;
+}
+
+/* --------------------------------------------------------- */
+/* RESPONSIVE                                                */
+/* --------------------------------------------------------- */
+
+@media (max-width: 576px) {
+    #modalExpenseDetails .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    #modalExpenseDetails .modal-body {
+        padding: 1rem 1rem;
+    }
+
+    #modalExpenseDetails .d-flex.flex-wrap {
+        gap: 0.5rem;
+    }
+}

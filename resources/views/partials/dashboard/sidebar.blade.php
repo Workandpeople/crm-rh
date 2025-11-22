@@ -21,8 +21,9 @@
     @include('components.sidebarContent.superadmin.teamsModals')
 
     {{-- ADMIN MODALS--}}
-    @include('components.sidebarContent.admin.backlogModals')
-    @include('components.sidebarContent.admin.congesModals')
+    @include('components.sidebarContent.admin.backlogModals') {{-- Backlogs --}}
+    @include('components.sidebarContent.admin.congesModals') {{-- Congés / absences --}}
+    @include('components.sidebarContent.admin.notesFraisModals') {{-- Notes de frais --}}
 @endpush
 
 @push('js')
