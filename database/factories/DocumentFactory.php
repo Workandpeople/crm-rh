@@ -14,7 +14,7 @@ class DocumentFactory extends Factory
             'uploaded_at' => now(),
             'expires_at' => now()->addYear(),
             'signed' => $this->faker->boolean(70),
-            'status' => 'valid',
+            'status' => $this->faker->randomElement(['pending','validated','rejected']),
             'metadata' => ['source' => 'auto'],
         ];
     }
