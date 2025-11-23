@@ -31,6 +31,7 @@ import initTeamsManagement from "./components/teamsManagement";
 import initBacklogsManagement from "./components/backlogsManagement";
 import initLeavesManagement from "./components/leavesManagement";
 import initExpensesManagement from "./components/expensesManagement";
+import initDocumentsManagement from "./components/documentsManagement";
 
 // Registre global appelé par le loader de la sidebar via data-script
 window.pageScripts = {
@@ -40,4 +41,5 @@ window.pageScripts = {
     backlogsManagement: initBacklogsManagement,
     leavesManagement: initLeavesManagement,
     expensesManagement: initExpensesManagement,
+    documentsManagement: initDocumentsManagement,
 };

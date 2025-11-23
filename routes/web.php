@@ -151,5 +151,16 @@ Route::middleware(['auth'])->group(function () {
 
         Route::patch('/expenses/{expense}/status', [\App\Http\Controllers\Admin\ExpenseController::class, 'updateStatus'])
             ->name('admin.expenses.status');
+
+        // === Documents RH ===
+        Route::get('/documents', [\App\Http\Controllers\Admin\DocumentController::class, 'index'])
+            ->name('admin.documents.index');
+
+        Route::patch('/documents/{document}/status', [\App\Http\Controllers\Admin\DocumentController::class, 'updateStatus'])
+            ->name('admin.documents.updateStatus');
+
+        Route::delete('/documents/{document}', [\App\Http\Controllers\Admin\DocumentController::class, 'destroy'])
+            ->name('admin.documents.destroy');
+
     });
 });
