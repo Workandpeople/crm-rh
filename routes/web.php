@@ -162,5 +162,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/documents/{document}', [\App\Http\Controllers\Admin\DocumentController::class, 'destroy'])
             ->name('admin.documents.destroy');
 
+        Route::get('/calendar-rh/events', [\App\Http\Controllers\Admin\CalendarRHController::class, 'events'])
+            ->name('admin.calendar-rh.events');
     });
 });

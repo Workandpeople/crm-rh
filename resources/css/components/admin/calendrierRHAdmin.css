@@ -1,4 +1,6 @@
-/* === CALENDRIER RH ADMIN === */
+/* ========================================================= */
+/* === CALENDRIER RH (ADMIN) =============================== */
+/* ========================================================= */
 
 .calendar-admin-page {
     background-color: var(--color-bg);
@@ -7,114 +9,259 @@
     padding: 2rem;
 }
 
-.calendar-admin-page h2 {
+/* Header */
+.calendar-admin-page h2.fw-bold {
     color: var(--color-primary);
+    font-size: 1.6rem;
+    margin: 0;
 }
 
-/* HEADER */
-.month-title {
+/* Boutons navigation mois */
+.calendar-admin-page .calendar-nav {
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all .2s ease;
+}
+.calendar-admin-page .calendar-nav:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+
+/* Titre du mois */
+#calendarMonthTitle {
     color: var(--color-text);
     font-weight: 600;
-}
-.calendar-nav {
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-}
-.calendar-nav:hover {
-    background-color: var(--color-primary);
-    color: #fff;
+    font-size: 1.05rem;
 }
 
-/* LEGENDE */
+/* ========================================================= */
+/* LÉGENDE                                                   */
+/* ========================================================= */
+
 .calendar-legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.5rem;
-    font-size: 0.9rem;
+    gap: .75rem 1.5rem;
+    padding: .75rem 1rem;
+    background: var(--color-bg-secondary);
+    border-radius: .9rem;
+    border: 1px solid var(--color-border);
+    font-size: .85rem;
+}
+.calendar-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
     color: var(--color-text-muted);
 }
+
 .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    margin-right: 6px;
 }
+
+/* Couleurs légende = types d’événements */
 .legend-dot.conge {
-    background-color: #4f46e5;
+    background: #4f46e5;
 }
 .legend-dot.maladie {
-    background-color: #ef4444;
+    background: #ef4444;
 }
 .legend-dot.formation {
-    background-color: #22c55e;
+    background: #22c55e;
 }
 .legend-dot.entretien {
-    background-color: #facc15;
+    background: #eab308;
 }
 .legend-dot.evenement {
-    background-color: #60a5fa;
+    background: #0ea5e9;
 }
 
-/* GRILLE DU CALENDRIER */
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.75rem;
+/* ========================================================= */
+/* FULLCALENDAR WRAPPER                                      */
+/* ========================================================= */
+
+#rhCalendar {
+    margin-top: 1rem;
 }
-.day-name {
-    text-align: center;
-    font-weight: 600;
-    color: var(--color-primary);
-    padding: 0.5rem 0;
+
+/* Fond + bordures du calendrier */
+.calendar-admin-page .fc {
+    --fc-border-color: var(--color-border);
+    --fc-page-bg-color: transparent;
+    --fc-neutral-bg-color: rgba(15, 23, 42, 0.8);
+    --fc-today-bg-color: rgba(56, 189, 248, 0.12);
+
+    font-family: inherit;
+    font-size: .9rem;
 }
-.day-cell {
-    background-color: var(--color-bg-secondary);
+.calendar-admin-page .fc-theme-standard .fc-scrollgrid {
+    border-radius: 1rem;
+    overflow: hidden;
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    min-height: 120px;
-    padding: 0.5rem;
-    position: relative;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.day-cell:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-}
-.day-number {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-text);
+    background: var(--color-bg-secondary);
+    box-shadow: 0 8px 24px rgba(0,0,0,.45);
 }
 
-/* ÉVÉNEMENTS */
-.event {
-    margin-top: 0.3rem;
-    font-size: 0.8rem;
+/* En-tête des jours (Lun, Mar, ...) */
+.calendar-admin-page .fc-col-header-cell {
+    background: rgba(79, 70, 229, 0.16);
+    padding: .6rem .4rem;
+}
+.calendar-admin-page .fc-col-header-cell-cushion {
+    color: var(--color-text);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .75rem;
+}
+
+/* Cases jours */
+.calendar-admin-page .fc-daygrid-day {
+    background: rgba(15, 23, 42, 0.95);
+}
+.calendar-admin-page .fc-daygrid-day-frame {
+    padding: .35rem .35rem .4rem;
+}
+
+/* Numéro du jour */
+.calendar-admin-page .fc-daygrid-day-top {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.calendar-admin-page .fc-daygrid-day-number {
+    color: var(--color-text-muted);
+    font-size: .78rem;
+    padding: .1rem .25rem;
+    border-radius: .4rem;
+    text-decoration: none;
+}
+
+/* Aujourd’hui mieux mis en valeur */
+.calendar-admin-page .fc-day-today .fc-daygrid-day-number {
+    color: #0ea5e9;
+    font-weight: 700;
+    background: rgba(14,165,233,0.15);
+}
+
+/* Week-end légèrement grisé */
+.calendar-admin-page .fc-day-sat,
+.calendar-admin-page .fc-day-sun {
+    background: rgba(15, 23, 42, 0.9);
+}
+
+/* Hover sur case */
+.calendar-admin-page .fc-daygrid-day:hover {
+    background: rgba(148, 163, 184, 0.12);
+}
+
+/* ========================================================= */
+/* EVENTS FULLCALENDAR                                       */
+/* ========================================================= */
+
+/* Style de base des events */
+.calendar-admin-page .fc-daygrid-event {
+    border-radius: .5rem;
+    padding: 0;
+    margin-top: .2rem;
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+.calendar-admin-page .fc-daygrid-event:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+
+/* Contenu texte */
+.calendar-admin-page .fc-daygrid-event .fc-event-main {
+    padding: .15rem .4rem;
+    font-size: .75rem;
     font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.4rem;
-    color: #fff;
-    text-align: center;
 }
-.event.conge {
-    background-color: #4f46e5;
+
+/* Classe commune qu’on ajoute JS : rh-calendar-event */
+.rh-calendar-event {
+    border-radius: .5rem;
 }
-.event.maladie {
-    background-color: #ef4444;
+
+/* Couleurs par type (basé sur extendedProps.type) */
+.rh-event-conge {
+    background: rgba(79, 70, 229, 0.18);
+    border-color: rgba(79, 70, 229, 0.6);
 }
-.event.formation {
-    background-color: #22c55e;
+.rh-event-conge .fc-event-main {
+    color: #c7d2fe;
 }
-.event.entretien {
-    background-color: #facc15;
-    color: #1e1e2f;
+
+.rh-event-maladie {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(248, 113, 113, 0.85);
 }
-.event.evenement {
-    background-color: #60a5fa;
+.rh-event-maladie .fc-event-main {
+    color: #fecaca;
+}
+
+.rh-event-formation {
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(34, 197, 94, 0.65);
+}
+.rh-event-formation .fc-event-main {
+    color: #bbf7d0;
+}
+
+.rh-event-entretien {
+    background: rgba(234, 179, 8, 0.18);
+    border-color: rgba(234, 179, 8, 0.75);
+}
+.rh-event-entretien .fc-event-main {
+    color: #fef9c3;
+}
+
+.rh-event-evenement {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: rgba(59, 130, 246, 0.75);
+}
+.rh-event-evenement .fc-event-main {
+    color: #bae6fd;
+}
+
+/* Éventuel type "autre" */
+.rh-event-autre {
+    background: rgba(148, 163, 184, 0.2);
+    border-color: rgba(148, 163, 184, 0.8);
+}
+.rh-event-autre .fc-event-main {
+    color: #e5e7eb;
+}
+
+/* ========================================================= */
+/* RESPONSIVE                                                 */
+/* ========================================================= */
+
+@media (max-width: 768px) {
+    .calendar-admin-page {
+        padding: 1.25rem;
+    }
+
+    .calendar-legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #rhCalendar {
+        margin-top: .75rem;
+    }
 }
