@@ -29,6 +29,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('css')
 
+    @stack('stylesFullCalendar')
+
+    @include('partials.fullCalendar')
     {{-- Bloc JSON-LD principal (Organisation) --}}
     <script type="application/ld+json">
     {!! json_encode([
@@ -57,6 +60,8 @@
 
     @stack('js')
 
+
+    @stack('scriptsFullCalendar')
 
     {{-- Modals globaux --}}
     @stack('modals')
