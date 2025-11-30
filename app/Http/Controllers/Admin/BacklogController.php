@@ -4,91 +4,116 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Models\User;
 
 class BacklogController extends Controller
 {
     /**
-     * Retourne la liste filtrée des tickets (JSON).
+     * Liste filtrée des tickets (JSON).
      */
     public function index(Request $request)
     {
         try {
             $user = Auth::user();
+            $roleName = $user->role->name ?? null;
 
-            Log::info('[BacklogController@index] Début chargement', [
-                'user_id' => $user->id ?? null,
-                'role'    => $user->role->name ?? 'inconnu',
-            ]);
-
-            if (!in_array($user->role->name, ['admin', 'chef_equipe', 'superadmin'])) {
-                Log::warning('[BacklogController@index] Accès refusé pour le rôle : ' . $user->role->name);
+            if (!in_array($roleName, ['admin', 'chef_equipe', 'superadmin'])) {
                 abort(403, 'Accès non autorisé');
             }
 
-            $companyId = $request->query('company_id', $user->company_id);
-            $teamId    = $request->query('team_id');
-            $type      = $request->query('type', 'all');
+            // --- paramètres reçus ---
+            $companyId   = $request->query('company_id', $user->company_id);
+            $type        = $request->query('type');         // conge, note_frais…
+            $status      = $request->query('status');       // en_attente, valide, refuse
+            $employeeId  = $request->query('employee_id');  // créateur
+            $start       = $request->query('start');        // date YYYY-MM-DD
+            $end         = $request->query('end');          // date YYYY-MM-DD
+            $search      = $request->query('search');       // texte libre
 
-            Log::info('[BacklogController@index] Paramètres reçus', [
-                'company_id' => $companyId,
-                'team_id'    => $teamId,
-                'type'       => $type,
+            Log::info('[BacklogController@index] Filtres', [
+                'company_id'  => $companyId,
+                'type'        => $type,
+                'status'      => $status,
+                'employee_id' => $employeeId,
+                'start'       => $start,
+                'end'         => $end,
+                'search'      => $search,
             ]);
 
-            // Vérif existence de tickets pour cette entreprise
-            $exists = Ticket::where('company_id', $companyId)->exists();
-            Log::info('[BacklogController@index] Tickets existants pour company ?', ['exists' => $exists]);
-
-            $query = Ticket::with(['creator', 'assignee'])
+            // --- requête de base ---
+            $query = Ticket::with(['creator', 'assignee', 'company'])
                 ->where('company_id', $companyId)
-                ->latest();
+                ->latest('created_at');
 
-            if ($teamId) {
-                Log::info('[BacklogController@index] Filtrage par équipe', ['team_id' => $teamId]);
-                $query->whereHas('creator', fn($q) => $q->where('team_id', $teamId));
-            }
-
-            if ($type !== 'all') {
-                Log::info('[BacklogController@index] Filtrage par type', ['type' => $type]);
+            // type
+            if ($type) {
                 $query->where('type', $type);
             }
 
-            $tickets = $query->get();
-            Log::info('[BacklogController@index] Tickets récupérés', ['count' => $tickets->count()]);
-
-            // Détail rapide du premier ticket pour vérif
-            if ($tickets->isNotEmpty()) {
-                Log::debug('[BacklogController@index] Exemple ticket', [
-                    'id'    => $tickets->first()->id,
-                    'title' => $tickets->first()->title,
-                    'type'  => $tickets->first()->type,
-                    'status'=> $tickets->first()->status,
-                ]);
+            // statut
+            if ($status) {
+                $query->where('status', $status);
             }
 
-            $stats = [
-                'total'     => Ticket::where('company_id', $companyId)->count(),
-                'pending'   => Ticket::where('company_id', $companyId)->where('status', 'en_attente')->count(),
-                'validated' => Ticket::where('company_id', $companyId)->where('status', 'valide')->count(),
-                'refused'   => Ticket::where('company_id', $companyId)->where('status', 'refuse')->count(),
-            ];
+            // créateur
+            if ($employeeId) {
+                $query->where('created_by', $employeeId);
+            }
 
-            Log::info('[BacklogController@index] Statistiques calculées', $stats);
+            // période sur created_at
+            if ($start) {
+                $query->whereDate('created_at', '>=', $start);
+            }
+            if ($end) {
+                $query->whereDate('created_at', '<=', $end);
+            }
+
+            // recherche texte : titre, description, nom/prénom créateur
+            if ($search) {
+                $s = '%' . trim($search) . '%';
+                $query->where(function ($q) use ($s) {
+                    $q->where('title', 'LIKE', $s)
+                      ->orWhere('description', 'LIKE', $s)
+                      ->orWhereHas('creator', function ($q2) use ($s) {
+                          $q2->where('first_name', 'LIKE', $s)
+                             ->orWhere('last_name', 'LIKE', $s)
+                             ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$s]);
+                      });
+                });
+            }
+
+            $tickets = $query->get();
+
+            // stats globales de la société (on peut les laisser sans filtres détaillés)
+            $baseStats = Ticket::where('company_id', $companyId);
+            $stats = [
+                'total'     => (clone $baseStats)->count(),
+                'pending'   => (clone $baseStats)->where('status', 'en_attente')->count(),
+                'validated' => (clone $baseStats)->where('status', 'valide')->count(),
+                'refused'   => (clone $baseStats)->where('status', 'refuse')->count(),
+            ];
 
             return response()->json([
                 'tickets' => $tickets,
                 'stats'   => $stats,
-            ], 200);
+            ]);
         } catch (\Throwable $e) {
-            Log::error('[BacklogController@index] Erreur', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return response()->json(['error' => true, 'message' => $e->getMessage()], 500);
+            Log::error('[BacklogController@index] Erreur', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'error'   => true,
+                'message' => 'Erreur serveur',
+            ], 500);
         }
     }
-   /**
+
+    /**
      * Options : utilisateurs pouvant recevoir un ticket.
      */
     public function options(Request $request)
@@ -105,8 +130,9 @@ class BacklogController extends Controller
             ->orderBy('last_name')
             ->get(['id', 'first_name', 'last_name', 'email']);
 
-        // Pour que t.creator.full_name fonctionne dans le JS :
-        $assignees->each(fn ($u) => $u->full_name = trim($u->first_name . ' ' . $u->last_name));
+        $assignees->each(
+            fn($u) => $u->full_name = trim($u->first_name . ' ' . $u->last_name)
+        );
 
         return response()->json([
             'assignees' => $assignees,
@@ -119,13 +145,12 @@ class BacklogController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+        $role = $user->role->name ?? null;
 
-        // Qui a le droit de créer un ticket ?
-        if (!in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
+        if (! in_array($role, ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
             return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
-        // Validation des champs
         $validated = $request->validate([
             'title'           => 'required|string|max:255',
             'type'            => 'required|in:conge,note_frais,incident,autre',
@@ -137,7 +162,6 @@ class BacklogController extends Controller
             'company_id'      => 'required|exists:companies,id',
         ]);
 
-        // Création du ticket
         $ticket = Ticket::create([
             'company_id'      => $validated['company_id'],
             'created_by'      => $user->id,
@@ -151,23 +175,31 @@ class BacklogController extends Controller
             'related_user_id' => $validated['related_user_id'] ?? null,
         ]);
 
-        // On renvoie le ticket avec les relations si tu veux les exploiter côté JS plus tard
+        $ticket->load(['creator', 'assignee']);
+
+        if ($ticket->creator) {
+            $ticket->creator->full_name = trim(($ticket->creator->first_name ?? '') . ' ' . ($ticket->creator->last_name ?? ''));
+        }
+        if ($ticket->assignee) {
+            $ticket->assignee->full_name = trim(($ticket->assignee->first_name ?? '') . ' ' . ($ticket->assignee->last_name ?? ''));
+        }
+
         return response()->json([
             'success' => true,
-            'ticket'  => $ticket->load(['creator', 'assignee']),
+            'ticket'  => $ticket,
         ], 201);
     }
 
-
     /**
-     * Mise à jour du statut (valide / refuse / en_attente).
+     * Mise à jour du statut d’un ticket.
      */
     public function updateStatus(Request $request, Ticket $ticket)
     {
         $user = Auth::user();
+        $role = $user->role->name ?? null;
 
-        if (!in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin'])) {
-            abort(403, 'Accès non autorisé');
+        if (! in_array($role, ['admin', 'chef_equipe', 'superadmin'])) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
         $data = $request->validate([
@@ -183,44 +215,58 @@ class BacklogController extends Controller
         ]);
     }
 
+    /**
+     * Détail d’un ticket pour la modale.
+     */
     public function show(Ticket $ticket)
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
+        $role = $user->role->name ?? null;
 
-    if (!in_array($user->role->name ?? '', ['admin','chef_equipe','superadmin'])) {
-        return response()->json(['message' => 'Accès non autorisé'], 403);
+        if (! in_array($role, ['admin', 'chef_equipe', 'superadmin'])) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        $ticket->load(['company', 'creator', 'assignee', 'relatedUser']);
+
+        if ($ticket->creator) {
+            $ticket->creator->full_name = trim(($ticket->creator->first_name ?? '') . ' ' . ($ticket->creator->last_name ?? ''));
+        }
+        if ($ticket->assignee) {
+            $ticket->assignee->full_name = trim(($ticket->assignee->first_name ?? '') . ' ' . ($ticket->assignee->last_name ?? ''));
+        }
+        if ($ticket->relatedUser) {
+            $ticket->relatedUser->full_name = trim(($ticket->relatedUser->first_name ?? '') . ' ' . ($ticket->relatedUser->last_name ?? ''));
+        }
+
+        return response()->json([
+            'id'          => $ticket->id,
+            'title'       => $ticket->title,
+            'description' => $ticket->description,
+            'type'        => $ticket->type,
+            'priority'    => $ticket->priority,
+            'status'      => $ticket->status,
+            'created_at'  => $ticket->created_at,
+            'due_date'    => $ticket->due_date,
+            'company'     => [
+                'id'   => $ticket->company?->id,
+                'name' => $ticket->company?->name,
+            ],
+            'creator'     => $ticket->creator ? [
+                'id'        => $ticket->creator->id,
+                'full_name' => $ticket->creator->full_name,
+                'email'     => $ticket->creator->email,
+            ] : null,
+            'assignee'    => $ticket->assignee ? [
+                'id'        => $ticket->assignee->id,
+                'full_name' => $ticket->assignee->full_name,
+                'email'     => $ticket->assignee->email,
+            ] : null,
+            'related_user'=> $ticket->relatedUser ? [
+                'id'        => $ticket->relatedUser->id,
+                'full_name' => $ticket->relatedUser->full_name,
+                'email'     => $ticket->relatedUser->email,
+            ] : null,
+        ]);
     }
-
-    $ticket->load(['company', 'creator', 'assignee', 'relatedUser']);
-
-    return response()->json([
-        'id'          => $ticket->id,
-        'title'       => $ticket->title,
-        'description' => $ticket->description,
-        'type'        => $ticket->type,
-        'priority'    => $ticket->priority,
-        'status'      => $ticket->status,
-        'created_at'  => $ticket->created_at,
-        'due_date'    => $ticket->due_date,
-        'company'     => [
-            'id'   => $ticket->company?->id,
-            'name' => $ticket->company?->name,
-        ],
-        'creator'     => [
-            'id'        => $ticket->creator?->id,
-            'full_name' => $ticket->creator?->full_name,
-            'email'     => $ticket->creator?->email,
-        ],
-        'assignee'    => $ticket->assignee ? [
-            'id'        => $ticket->assignee->id,
-            'full_name' => $ticket->assignee->full_name,
-            'email'     => $ticket->assignee->email,
-        ] : null,
-        'related_user'=> $ticket->relatedUser ? [
-            'id'        => $ticket->relatedUser->id,
-            'full_name' => $ticket->relatedUser->full_name,
-            'email'     => $ticket->relatedUser->email,
-        ] : null,
-    ]);
-}
 }

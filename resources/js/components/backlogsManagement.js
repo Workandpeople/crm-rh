@@ -1,14 +1,26 @@
+// resources/js/components/backlogsManagement.js
 export default function initBacklogsManagement() {
-    console.log("Initialisation de la gestion des backlogs");
+    console.log("%c[backlogsManagement] init", "color: #6366f1");
 
     const page = document.querySelector(".ticketing-admin-page");
     if (!page) return;
 
-    const csrfToken = document.querySelector(
-        'meta[name="csrf-token"]'
-    )?.content;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-    // Modale création
+    // --- Elements principaux ---
+    const list = page.querySelector(".ticket-list");
+    const statsCards = page.querySelectorAll(".ticket-stats .stat-card p");
+
+    // Filtres avancés
+    const selectType = document.getElementById("filter-ticket-type");
+    const selectEmployee = document.getElementById("filter-ticket-employee");
+    const selectStatus = document.getElementById("filter-ticket-status");
+    const inputStart = document.getElementById("filter-ticket-start");
+    const inputEnd = document.getElementById("filter-ticket-end");
+    const inputSearch = document.getElementById("filter-ticket-search");
+    const btnReset = document.getElementById("btnTicketsReset");
+
+    // Bouton + modal création
     const btnAddTicket = document.getElementById("btnAddTicket");
     const modalEl = document.getElementById("modalTicketCreate");
     const modalTicket = modalEl ? new window.bootstrap.Modal(modalEl) : null;
@@ -21,12 +33,16 @@ export default function initBacklogsManagement() {
         ? new window.bootstrap.Modal(modalDetailsEl)
         : null;
 
-    const filters = page.querySelectorAll(".filter-btn");
-    const list = page.querySelector(".ticket-list");
-    const statsCards = page.querySelectorAll(".stat-card p");
-    const companyId = localStorage.getItem("selectedCompanyId");
-    const teamId = localStorage.getItem("selectedTeamId");
+    // Cache local
+    let ticketsCache = [];
 
+    const FILTER_STORAGE_KEY = "backlogFilters";
+
+    function getCompanyId() {
+        return localStorage.getItem("selectedCompanyId") || "";
+    }
+
+    // --- TOAST helper ---
     function showToast(message, type = "success") {
         const bs = window.bootstrap;
         if (!bs?.Toast) {
@@ -46,30 +62,89 @@ export default function initBacklogsManagement() {
 
         const wrap = document.createElement("div");
         wrap.innerHTML = `
-    <div class="toast align-items-center text-white bg-${
-        type === "success" ? "success" : "danger"
-    } border-0 mb-2" role="alert">
-      <div class="d-flex">
-        <div class="toast-body">${message}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>`;
+        <div class="toast align-items-center text-white bg-${
+            type === "success" ? "success" : "danger"
+        } border-0 mb-2" role="alert">
+          <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        </div>`;
         const toastEl = wrap.firstElementChild;
         container.appendChild(toastEl);
         new bs.Toast(toastEl, { delay: 3000 }).show();
     }
 
+    // --- Helpers filtres <-> localStorage ---
+    function loadSavedFilters() {
+        try {
+            const raw = localStorage.getItem(FILTER_STORAGE_KEY);
+            if (!raw) {
+                return {
+                    type: "",
+                    employee_id: "",
+                    status: "",
+                    start: "",
+                    end: "",
+                    search: "",
+                };
+            }
+            const parsed = JSON.parse(raw);
+            return {
+                type: parsed.type || "",
+                employee_id: parsed.employee_id || "",
+                status: parsed.status || "",
+                start: parsed.start || "",
+                end: parsed.end || "",
+                search: parsed.search || "",
+            };
+        } catch (e) {
+            console.warn("[backlogsManagement] Impossible de parser les filtres", e);
+            return {
+                type: "",
+                employee_id: "",
+                status: "",
+                start: "",
+                end: "",
+                search: "",
+            };
+        }
+    }
+
+    function saveFiltersToStorage(filters) {
+        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
+    }
+
+    function getFiltersFromUI() {
+        return {
+            type: selectType?.value || "",
+            employee_id: selectEmployee?.value || "",
+            status: selectStatus?.value || "",
+            start: inputStart?.value || "",
+            end: inputEnd?.value || "",
+            search: inputSearch?.value || "",
+        };
+    }
+
+    function applyFiltersToUI(filters) {
+        if (selectType) selectType.value = filters.type || "";
+        if (selectEmployee) selectEmployee.value = filters.employee_id || "";
+        if (selectStatus) selectStatus.value = filters.status || "";
+        if (inputStart) inputStart.value = filters.start || "";
+        if (inputEnd) inputEnd.value = filters.end || "";
+        if (inputSearch) inputSearch.value = filters.search || "";
+    }
+
+    // --- Chargement assignables (dropdown dans la modale) ---
     async function loadAssignees() {
         if (!assigneeSelect) return;
 
         try {
-            const url = new URL(
-                "/admin/backlogs/options",
-                window.location.origin
-            );
+            const url = new URL("/admin/backlogs/options", window.location.origin);
+            const companyId = getCompanyId();
             if (companyId) url.searchParams.set("company_id", companyId);
 
-            const res = await fetch(url, {
+            const res = await fetch(url.toString(), {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -95,100 +170,115 @@ export default function initBacklogsManagement() {
         }
     }
 
-    // Chargement initial
-    loadTickets("all");
-    loadAssignees();
-    function formatStatus(status) {
-    switch (status) {
-        case 'en_attente': return 'En attente';
-        case 'valide': return 'Validé';
-        case 'refuse': return 'Refusé';
-        default: return status;
-    }
-}
+    // --- Chargement des tickets depuis le back ---
+    async function loadTickets(applyEmployeesFromResult = true) {
+        if (!list) return;
 
-    // Filtres
-    filters.forEach((btn) => {
-        btn.addEventListener("click", () => {
-            filters.forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-            loadTickets(btn.dataset.type);
-        });
-    });
+        const companyId = getCompanyId();
+        if (!companyId) {
+            list.innerHTML =
+                '<p class="text-muted p-3">Sélectionnez d’abord une entreprise dans le header.</p>';
+            return;
+        }
 
-    async function loadTickets(type = "all") {
-        list.innerHTML = `<p class="text-muted p-3">Chargement...</p>`;
+        const filters = getFiltersFromUI();
+        saveFiltersToStorage(filters);
+
+        list.innerHTML =
+            '<p class="text-muted p-3">Chargement des tickets...</p>';
+
         try {
-            const url = new URL(`/admin/backlogs`, window.location.origin);
-            url.searchParams.set("type", type);
-            url.searchParams.set("mode", "ajax");
-            if (companyId) url.searchParams.set("company_id", companyId);
-            if (teamId) url.searchParams.set("team_id", teamId);
+            const url = new URL("/admin/backlogs", window.location.origin);
+            url.searchParams.set("company_id", companyId);
 
-            const res = await fetch(url, {
+            if (filters.type) url.searchParams.set("type", filters.type);
+            if (filters.employee_id)
+                url.searchParams.set("employee_id", filters.employee_id);
+            if (filters.status) url.searchParams.set("status", filters.status);
+            if (filters.start) url.searchParams.set("start", filters.start);
+            if (filters.end) url.searchParams.set("end", filters.end);
+            if (filters.search)
+                url.searchParams.set("search", filters.search.trim());
+
+            const res = await fetch(url.toString(), {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const data = await res.json();
-            renderTickets(data.tickets);
-            updateStats(data.stats);
+            ticketsCache = data.tickets || [];
+
+            renderTickets(ticketsCache);
+            updateStats(data.stats || {});
+
+            if (applyEmployeesFromResult) {
+                populateEmployeeFilterFromTickets(ticketsCache, filters.employee_id);
+            }
         } catch (err) {
+            console.error(err);
             list.innerHTML = `<p class="text-danger p-3">Erreur de chargement : ${err.message}</p>`;
         }
     }
 
-    function renderTickets(tickets) {
-        if (!tickets.length) {
-            list.innerHTML = `<p class="text-muted p-3">Aucun ticket trouvé.</p>`;
-            return;
-        }
+    function populateEmployeeFilterFromTickets(tickets, selectedId = "") {
+        if (!selectEmployee) return;
 
-        list.innerHTML = tickets
-            .map(
-                (t) => `
-      <div class="ticket-card">
-        <div class="ticket-header">
-          <div class="d-flex align-items-center gap-2">
-            <span class="ticket-type ${t.type}">
-              ${icon(t.type)} ${t.type.replace("_", " ")}
-            </span>
-            <span class="ticket-user">${
-                t.creator?.full_name ?? "Utilisateur inconnu"
-            }</span>
-          </div>
-          <span class="ticket-status ${t.status}">${formatStatus(t.status)}</span>
-        </div>
-        <h5 class="ticket-title">${t.title}</h5>
-        <p class="ticket-desc">${t.description ?? ""}</p>
-        <div class="ticket-footer">
-          <small>Créé le ${formatDate(t.created_at)}</small>
-          <div class="actions">
-            ${
-                t.status === "en_attente"
-                    ? `
-              <button class="btn-action valide" data-id="${t.id}"><i class="fa-solid fa-check"></i></button>
-              <button class="btn-action refuse" data-id="${t.id}"><i class="fa-solid fa-xmark"></i></button>
-            `
-                    : ""
+        const map = new Map();
+        tickets.forEach((t) => {
+            if (t.creator) {
+                map.set(t.creator.id, {
+                    id: t.creator.id,
+                    full_name:
+                        t.creator.full_name ||
+                        `${t.creator.first_name ?? ""} ${
+                            t.creator.last_name ?? ""
+                        }`.trim(),
+                });
             }
-            <button class="btn-action details" data-id="${
-                t.id
-            }"><i class="fa-solid fa-eye"></i></button>
-          </div>
-        </div>
-      </div>
-    `
-            )
-            .join("");
+        });
+
+        const options = [...map.values()];
+        selectEmployee.innerHTML =
+            '<option value="">Tous</option>' +
+            options
+                .map(
+                    (u) =>
+                        `<option value="${u.id}" ${
+                            u.id === selectedId ? "selected" : ""
+                        }>${u.full_name}</option>`
+                )
+                .join("");
     }
 
-    function updateStats(stats) {
-        const [total, pending, validated, refused] = statsCards;
-        total.textContent = stats.total;
-        pending.textContent = stats.pending;
-        validated.textContent = stats.validated;
-        refused.textContent = stats.refused;
+    // --- Rendu tickets & stats ---
+    function formatStatus(status) {
+        switch (status) {
+            case "en_attente":
+                return "En attente";
+            case "valide":
+                return "Validé";
+            case "refuse":
+                return "Refusé";
+            default:
+                return status || "";
+        }
+    }
+
+    function formatType(type) {
+        switch (type) {
+            case "conge":
+                return "Congé";
+            case "note_frais":
+                return "Note de frais";
+            case "incident":
+                return "Incident";
+            case "document_rh":
+                return "Document RH";
+            case "autre":
+                return "Autre";
+            default:
+                return type || "";
+        }
     }
 
     function icon(type) {
@@ -199,27 +289,97 @@ export default function initBacklogsManagement() {
                 return '<i class="fa-solid fa-receipt"></i>';
             case "incident":
                 return '<i class="fa-solid fa-triangle-exclamation"></i>';
+            case "document_rh":
+                return '<i class="fa-solid fa-file-lines"></i>';
             default:
                 return '<i class="fa-solid fa-circle-question"></i>';
         }
     }
 
     function formatDate(dateStr) {
+        if (!dateStr) return "—";
         return new Date(dateStr).toLocaleDateString("fr-FR");
     }
 
+    function renderTickets(tickets) {
+        if (!tickets.length) {
+            list.innerHTML =
+                '<p class="text-muted p-3">Aucun ticket trouvé avec ces filtres.</p>';
+            return;
+        }
+
+        list.innerHTML = tickets
+            .map((t) => {
+                const creatorName =
+                    t.creator?.full_name ||
+                    `${t.creator?.first_name ?? ""} ${
+                        t.creator?.last_name ?? ""
+                    }`.trim() ||
+                    "Utilisateur inconnu";
+
+                return `
+        <div class="ticket-card">
+          <div class="ticket-header">
+            <div class="left">
+              <span class="ticket-type ${t.type}">
+                ${icon(t.type)} ${formatType(t.type)}
+              </span>
+              <span class="ticket-user">${creatorName}</span>
+            </div>
+            <span class="ticket-status ${t.status}">${formatStatus(
+                    t.status
+                )}</span>
+          </div>
+          <h5 class="ticket-title">${t.title}</h5>
+          <p class="ticket-desc">${t.description ?? ""}</p>
+          <div class="ticket-footer">
+            <small>Créé le ${formatDate(t.created_at)}</small>
+            <div class="actions">
+              ${
+                  t.status === "en_attente"
+                      ? `
+                <button class="btn-action valide" data-id="${
+                    t.id
+                }" title="Valider"><i class="fa-solid fa-check"></i></button>
+                <button class="btn-action refuse" data-id="${
+                    t.id
+                }" title="Refuser"><i class="fa-solid fa-xmark"></i></button>
+              `
+                      : ""
+              }
+              <button class="btn-action details" data-id="${
+                  t.id
+              }" title="Détails"><i class="fa-solid fa-eye"></i></button>
+            </div>
+          </div>
+        </div>
+      `;
+            })
+            .join("");
+    }
+
+    function updateStats(stats) {
+        const [totalEl, pendingEl, validatedEl, refusedEl] = statsCards;
+        if (!totalEl) return;
+
+        totalEl.textContent = stats.total ?? "0";
+        pendingEl.textContent = stats.pending ?? "0";
+        validatedEl.textContent = stats.validated ?? "0";
+        refusedEl.textContent = stats.refused ?? "0";
+    }
+
+    // --- Création ticket ---
     btnAddTicket?.addEventListener("click", () => {
-        // On peut pré-remplir certains champs si besoin
         formCreateTicket?.reset();
         modalTicket?.show();
+        loadAssignees(); // actualise la liste à chaque ouverture
     });
 
     formCreateTicket?.addEventListener("submit", async (e) => {
         e.preventDefault();
         try {
             const formData = new FormData(formCreateTicket);
-
-            // Ajout du company_id depuis le localStorage si présent
+            const companyId = getCompanyId();
             if (companyId && !formData.get("company_id")) {
                 formData.append("company_id", companyId);
             }
@@ -241,23 +401,20 @@ export default function initBacklogsManagement() {
 
             modalTicket?.hide();
             showToast("Ticket créé avec succès", "success");
-            loadTickets(
-                document.querySelector(".filter-btn.active")?.dataset.type ||
-                    "all"
-            );
+            await loadTickets(); // recharge avec filtres en cours
         } catch (err) {
             console.error(err);
             showToast("Erreur lors de la création du ticket", "error");
         }
     });
 
-    // Délégation pour les boutons Valider / Refuser
+    // --- Délégation actions Valider / Refuser / Détails ---
     list.addEventListener("click", async (e) => {
         const btnDetails = e.target.closest(".btn-action.details");
         const btnValide = e.target.closest(".btn-action.valide");
         const btnRefuse = e.target.closest(".btn-action.refuse");
 
-        // === CAS 1 : DÉTAILS ===
+        // Détails
         if (btnDetails) {
             const id = btnDetails.dataset.id;
             if (!id) return;
@@ -278,15 +435,9 @@ export default function initBacklogsManagement() {
             return;
         }
 
-        // === CAS 2 : VALIDER / REFUSER ===
+        // Valider / Refuser
         if (!btnValide && !btnRefuse) return;
-
-        const card = e.target.closest(".ticket-card");
-        const id =
-            card?.querySelector(".btn-action.details")?.dataset.id ||
-            btnValide?.dataset.id ||
-            btnRefuse?.dataset.id;
-
+        const id = (btnValide || btnRefuse).dataset.id;
         if (!id) return;
 
         const newStatus = btnValide ? "valide" : "refuse";
@@ -308,10 +459,7 @@ export default function initBacklogsManagement() {
                 `Ticket ${newStatus === "valide" ? "validé" : "refusé"}`,
                 "success"
             );
-            loadTickets(
-                document.querySelector(".filter-btn.active")?.dataset.type ||
-                    "all"
-            );
+            await loadTickets(false); // garde les options employés actuelles
         } catch (err) {
             console.error(err);
             showToast("Erreur lors de la mise à jour du statut", "error");
@@ -325,6 +473,7 @@ export default function initBacklogsManagement() {
             conge: "Congé",
             note_frais: "Note de frais",
             incident: "Incident",
+            document_rh: "Document RH",
             autre: "Autre",
         };
 
@@ -334,29 +483,26 @@ export default function initBacklogsManagement() {
             haute: "Haute",
         };
 
-        // Titre / description
         byId("ticketDetailTitle").textContent = t.title || "—";
         byId("ticketDetailDescription").textContent = t.description || "—";
 
-        // Type
         const typeEl = byId("ticketDetailType");
         typeEl.textContent = typeLabel[t.type] ?? t.type ?? "—";
         typeEl.className = "badge ticket-type-badge " + (t.type || "");
 
-        // Priorité
         const prioEl = byId("ticketDetailPriority");
         prioEl.textContent =
             priorityLabel[t.priority] ?? t.priority ?? "Moyenne";
         prioEl.className =
             "badge ticket-priority-badge " + (t.priority || "moyenne");
 
-        // Statut
         const statusEl = byId("ticketDetailStatus");
-        statusEl.textContent = t.status ?? "—";
-        statusEl.className = "badge ticket-status-badge " + (t.status || "");
+        statusEl.textContent = formatStatus(t.status);
+        statusEl.className =
+            "badge ticket-status-badge " + (t.status || "");
 
-        // Métadonnées
-        byId("ticketDetailCreator").textContent = t.creator?.full_name ?? "—";
+        byId("ticketDetailCreator").textContent =
+            t.creator?.full_name ?? "—";
         byId("ticketDetailAssignee").textContent =
             t.assignee?.full_name ?? "Non assigné";
         byId("ticketDetailRelatedUser").textContent =
@@ -370,4 +516,41 @@ export default function initBacklogsManagement() {
             ? formatDate(t.due_date)
             : "Aucune";
     }
+
+    // --- Écouteurs sur les filtres ---
+    let searchDebounce;
+    function onFiltersChange() {
+        loadTickets();
+    }
+
+    selectType?.addEventListener("change", onFiltersChange);
+    selectEmployee?.addEventListener("change", onFiltersChange);
+    selectStatus?.addEventListener("change", onFiltersChange);
+    inputStart?.addEventListener("change", onFiltersChange);
+    inputEnd?.addEventListener("change", onFiltersChange);
+
+    inputSearch?.addEventListener("input", () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(onFiltersChange, 300);
+    });
+
+    btnReset?.addEventListener("click", () => {
+        const emptyFilters = {
+            type: "",
+            employee_id: "",
+            status: "",
+            start: "",
+            end: "",
+            search: "",
+        };
+        applyFiltersToUI(emptyFilters);
+        saveFiltersToStorage(emptyFilters);
+        loadTickets();
+    });
+
+    // --- INIT ---
+    const initialFilters = loadSavedFilters();
+    applyFiltersToUI(initialFilters);
+    loadTickets(true);
+    loadAssignees();
 }

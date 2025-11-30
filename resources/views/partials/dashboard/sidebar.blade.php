@@ -86,36 +86,31 @@
       <details>
         <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">${companyName ?? 'Entreprise'}</summary>
         <ul class="list-unstyled mb-0">
-          <li><a href="#" data-page="backlogs" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.backlog} me-2"></i>Backlogs</a></li>
+          <li><a href="#" data-page="backlogs" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.backlog} me-2"></i>Gestion des Tickets</a></li>
           <li><a href="#" data-page="calendrierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier RH</a></li>
-          <li><a href="#" data-page="documentsRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.doc} me-2"></i>Documents RH</a></li>
-          <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Congés / absences</a></li>
-          <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
-          <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
-          <li><a href="#" data-page="entretiens" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.chat} me-2"></i>Entretiens</a></li>
           <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.blog} me-2"></i>Blog & actualités</a></li>
         </ul>
       </details>`;
     }
 
     // === ÉQUIPE ===
-    if (teamId || companyId) {
-      const sectionTitle = teamId ? (teamName ?? 'Équipe') : 'Mes équipes';
-      html += `
-      <details>
-        <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">${sectionTitle}</summary>
-        <ul class="list-unstyled mb-0">
-          <li><a href="#" data-page="backlogs" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.backlog} me-2"></i>Backlogs</a></li>
-          <li><a href="#" data-page="calendrierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier RH</a></li>
-          <li><a href="#" data-page="documentsRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.doc} me-2"></i>Documents RH</a></li>
-          <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Congés / absences</a></li>
-          <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
-          <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
-          <li><a href="#" data-page="entretiens" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.chat} me-2"></i>Entretiens</a></li>
-          <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.blog} me-2"></i>Actualités</a></li>
-        </ul>
-      </details>`;
-    }
+    // if (teamId || companyId) {
+    //   const sectionTitle = teamId ? (teamName ?? 'Équipe') : 'Mes équipes';
+    //   html += `
+    //   <details>
+    //     <summary class="text-uppercase small fw-bold mb-2 section-title cursor-pointer">${sectionTitle}</summary>
+    //     <ul class="list-unstyled mb-0">
+    //       <li><a href="#" data-page="backlogs" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.backlog} me-2"></i>Backlogs</a></li>
+    //       <li><a href="#" data-page="calendrierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier RH</a></li>
+    //       <li><a href="#" data-page="documentsRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.doc} me-2"></i>Documents RH</a></li>
+    //       <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Congés / absences</a></li>
+    //       <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
+    //       <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
+    //       <li><a href="#" data-page="entretiens" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.chat} me-2"></i>Entretiens</a></li>
+    //       <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.blog} me-2"></i>Actualités</a></li>
+    //     </ul>
+    //   </details>`;
+    // }
 
     // === ESPACE EMPLOYÉ ===
     if (['employe', 'chef_equipe', 'admin', 'superadmin'].includes(role)) {
@@ -127,10 +122,7 @@
           <li><a href="#" data-page="ticketing" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.ticket} me-2"></i>Mes tickets</a></li>
           <li><a href="#" data-page="dossierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.folder} me-2"></i>Mes documents</a></li>
           <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Mes congés</a></li>
-          <li><a href="#" data-page="notesFrais" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.receipt} me-2"></i>Notes de frais</a></li>
-          <li><a href="#" data-page="fichesPaie" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.money} me-2"></i>Fiches de paie</a></li>
           <li><a href="#" data-page="calendrier" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier</a></li>
-          <li><a href="#" data-page="organigramme" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.org} me-2"></i>Organigramme</a></li>
           <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.news} me-2"></i>Actualités</a></li>
         </ul>
       </details>`;

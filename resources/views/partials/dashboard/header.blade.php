@@ -17,12 +17,6 @@
                     <option value="">— Entreprise —</option>
                 </select>
             @endif
-
-            @if(in_array($role, ['superadmin', 'admin', 'chef_equipe']))
-                <select id="selectTeam" class="select">
-                    <option value="">— Équipe —</option>
-                </select>
-            @endif
         </div>
     </div>
 

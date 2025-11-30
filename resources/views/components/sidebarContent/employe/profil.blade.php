@@ -11,9 +11,9 @@
             <div class="card p-4 text-center">
                 <div class="profil-avatar">
                     <img src="{{ asset('images/avatar.png') }}" alt="Avatar">
-                    <h5>{{ auth()->user()->name }}</h5>
+                    <h5>{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h5>
                     <p>{{ auth()->user()->email }}</p>
-                    <span class="badge mt-3">{{ ucfirst(auth()->user()->role) }}</span>
+                    <span class="badge mt-3">{{ ucfirst(auth()->user()->status) }}</span>
                 </div>
             </div>
         </div>
@@ -76,6 +76,11 @@
             <i class="fa-solid fa-ticket"></i>
             <h6>Ouvrir un ticket RH</h6>
             <a href="#" class="link-dynamic" data-page="ticketing">Créer</a>
+        </div>
+               <div class="card p-4">
+            <i class="fa-solid fa-ticket"></i>
+            <h6>Fiche de Paie</h6>
+            <a href="#" class="link-dynamic" data-page="fichesPaie">Consulter</a>
         </div>
     </div>
 </div>

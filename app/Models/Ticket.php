@@ -12,10 +12,15 @@ class Ticket extends Model
 
     protected $fillable = [
         'company_id','created_by','assigned_to','type',
-        'title','description','priority','status','due_date','related_user_id'
+        'title','description','priority','status','due_date',
+        'related_user_id',
+        'details',
     ];
 
-    protected $casts = ['due_date' => 'date'];
+   protected $casts = [
+        'due_date' => 'date',
+        'details'  => 'array', // Pour le champ JSON 'details'
+    ];
 
     public function company()
     {

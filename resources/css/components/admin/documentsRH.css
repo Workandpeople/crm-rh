@@ -1,4 +1,6 @@
-/* === DOCUMENTS RH (UNIFIÉ) === */
+/* ========================================================= */
+/* === PAGE DOCUMENTS RH (ADMIN) ============================ */
+/* ========================================================= */
 
 .documents-admin-page {
     background-color: var(--color-bg);
@@ -7,186 +9,289 @@
     padding: 2rem;
 }
 
-.documents-admin-page h2 {
+/* --------------------------------------------------------- */
+/* HEADER                                                    */
+/* --------------------------------------------------------- */
+
+.documents-admin-page h2.fw-bold {
     color: var(--color-primary);
+    font-size: 1.6rem;
+    margin: 0;
 }
 
-/* EXPORT */
-.btn-export {
-    background-color: var(--color-primary);
-    color: #fff;
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    padding: 0.6rem 1rem;
-}
-.btn-export:hover {
-    background-color: var(--color-primary-hover);
-}
-
-/* FILTRES */
-.documents-filters {
+.documents-admin-page .btn-export {
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: 1rem;
-    padding: 1rem 1.5rem;
-}
-.filter-group {
-    display: flex;
-    flex-direction: column;
-}
-.filter-group label {
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    margin-bottom: 0.3rem;
-}
-.filter-group select {
-    background-color: var(--color-bg);
     color: var(--color-text);
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.8rem;
+    border-radius: .55rem;
+    padding: .45rem .8rem;
 }
 
-/* STATS */
+.documents-admin-page .btn-export:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+/* --------------------------------------------------------- */
+/* STATS                                                     */
+/* --------------------------------------------------------- */
+
 .document-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
 }
-.stat-card {
+
+.document-stats .stat-card {
     background-color: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
-    border-radius: 1rem;
+    border-radius: .9rem;
     padding: 1rem;
-    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
-.stat-card h6 {
+
+.document-stats .stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background-color: var(--color-primary);
+}
+
+.document-stats .stat-card h6 {
     color: var(--color-text-muted);
     font-weight: 500;
+    margin-bottom: .2rem;
 }
-.stat-card p {
-    font-size: 1.2rem;
+
+.document-stats .stat-card p {
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--color-primary);
 }
 
-/* TABLE */
+/* --------------------------------------------------------- */
+/* FILTRES AVANCÉS                                           */
+/* --------------------------------------------------------- */
+
+.documents-filters {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+}
+
+.documents-filters .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.documents-filters label {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.documents-filters .form-select,
+.documents-filters .form-control {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: .55rem;
+    padding: .45rem .7rem;
+}
+
+.documents-filters .form-select:focus,
+.documents-filters .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(79,70,229,.35);
+}
+
+/* Barre de recherche */
+.search-bar input {
+    padding-left: 2rem !important;
+}
+
+.search-bar i {
+    color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------- */
+/* TABLEAU DOCUMENT RH                                       */
+/* --------------------------------------------------------- */
+
 .documents-table table {
     width: 100%;
     border-collapse: collapse;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: .9rem;
+    overflow: hidden;
 }
-.documents-table th,
-.documents-table td {
-    padding: 1rem;
+
+.documents-table thead {
+    background: rgba(79, 70, 229, 0.12);
+}
+
+.documents-table th {
+    padding: .9rem;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
     text-align: left;
 }
-.documents-table thead {
-    background-color: var(--color-bg-secondary);
-}
-.documents-table tr {
-    border-bottom: 1px solid var(--color-border);
-}
-.documents-table tr:hover {
-    background-color: rgba(255, 255, 255, 0.03);
-}
-.documents-table th {
-    color: var(--color-text);
-    font-weight: 600;
-}
+
 .documents-table td {
+    padding: .85rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: .9rem;
     color: var(--color-text);
-    font-size: 0.95rem;
 }
 
-/* STATUTS */
+.documents-table tbody tr:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
+/* --------------------------------------------------------- */
+/* BADGES                                                     */
+/* --------------------------------------------------------- */
+
 .status {
-    padding: 0.3rem 0.7rem;
-    border-radius: 0.4rem;
-    font-size: 0.85rem;
-    font-weight: 600;
+    display: inline-block;
+    padding: .32rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .02em;
     text-transform: capitalize;
 }
-.status.valide {
-    background-color: #22c55e;
-    color: #fff;
-}
-.status.en-attente {
-    background-color: #facc15;
-    color: #1e1e2f;
-}
-.status.refuse {
-    background-color: #ef4444;
-    color: #fff;
-}
-.status.expire {
-    background-color: #9ca3af;
-    color: #fff;
+
+/* Validé */
+.status.valide,
+.status.validated {
+    background: rgba(34,197,94,0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34,197,94,0.4);
 }
 
-/* ACTIONS */
+/* En attente */
+.status.en-attente,
+.status.pending {
+    background: rgba(234,179,8,0.15);
+    color: #eab308;
+    border: 1px solid rgba(234,179,8,0.4);
+}
+
+/* Refusé */
+.status.refuse,
+.status.rejected {
+    background: rgba(239,68,68,0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239,68,68,0.5);
+}
+
+/* Expiré */
+.status.expire,
+.status.expired {
+    background: rgba(148,163,184,0.18);
+    color: #94a3b8;
+    border: 1px solid rgba(148,163,184,0.5);
+}
+
+/* --------------------------------------------------------- */
+/* ACTIONS                                                    */
+/* --------------------------------------------------------- */
+
 .table-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: .45rem;
 }
+
 .btn-action {
-    background-color: transparent;
+    width: 34px;
+    height: 34px;
+    border-radius: .45rem;
     border: 1px solid var(--color-border);
+    background: transparent;
     color: var(--color-text);
-    border-radius: 0.4rem;
-    width: 36px;
-    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-}
-.btn-action:hover {
-    transform: scale(1.05);
+    transition: .2s ease;
 }
 
-/* ACTION COLORS */
+.btn-action:hover {
+    transform: scale(1.06);
+}
+
+/* Action valider */
 .btn-action.valide {
     border-color: #22c55e;
     color: #22c55e;
 }
 .btn-action.valide:hover {
-    background-color: #22c55e;
+    background: #22c55e;
     color: #fff;
 }
 
+/* Refuser */
 .btn-action.refuse {
     border-color: #ef4444;
     color: #ef4444;
 }
 .btn-action.refuse:hover {
-    background-color: #ef4444;
+    background: #ef4444;
     color: #fff;
 }
 
-.btn-action.upload {
-    border-color: #22c55e;
-    color: #22c55e;
-}
-.btn-action.upload:hover {
-    background-color: #22c55e;
-    color: #fff;
-}
-
+/* Télécharger */
 .btn-action.download {
     border-color: var(--color-primary);
     color: var(--color-primary);
 }
 .btn-action.download:hover {
-    background-color: var(--color-primary);
+    background: var(--color-primary);
     color: #fff;
 }
 
+/* Supprimer */
 .btn-action.delete {
-    border-color: #9ca3af;
-    color: #9ca3af;
+    border-color: #ef4444;
+    color: #ef4444;
 }
 .btn-action.delete:hover {
-    background-color: #9ca3af;
-    color: #1e1e2f;
+    background: #ef4444;
+    color: #fff;
+}
+
+/* Uploader */
+.btn-action.upload {
+    border-color: #22c55e;
+    color: #22c55e;
+}
+.btn-action.upload:hover {
+    background: #22c55e;
+    color: #fff;
+}
+
+/* --------------------------------------------------------- */
+/* RESPONSIVE                                                */
+/* --------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .documents-filters {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .documents-table th,
+    .documents-table td {
+        padding: .7rem;
+        font-size: .85rem;
+    }
 }
