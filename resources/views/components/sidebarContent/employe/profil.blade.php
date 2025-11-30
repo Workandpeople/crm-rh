@@ -24,7 +24,7 @@
                 <div class="profil-info">
                     <div class="profil-info-item">
                         <label>Nom complet</label>
-                        <p>{{ auth()->user()->name }}</p>
+                        <p>{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</p>
                     </div>
                     <div class="profil-info-item">
                         <label>Adresse e-mail</label>
