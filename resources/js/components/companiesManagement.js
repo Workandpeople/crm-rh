@@ -157,8 +157,8 @@ export default function initCompaniesManagement() {
       return matchAdmin && matchSearch;
     });
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-    if (currentPage > totalPages) currentPage = 1;
+    const totalPages = Math.ceil(filtered.length / perPage);
+    if (currentPage > Math.max(totalPages, 1)) currentPage = 1;
 
     const start = (currentPage - 1) * perPage;
     const pageData = filtered.slice(start, start + perPage);
@@ -174,7 +174,7 @@ export default function initCompaniesManagement() {
     const adminName = c.admin?.first_name ? `${c.admin.first_name} ${c.admin.last_name}` : '-';
     const logo = c.logo_path
       ? (c.logo_path.startsWith('http') ? c.logo_path : `/${c.logo_path}`)
-      : '/images/placeholder-logo.png';
+      : '/images/placeholder_logo.jpg';
     return `
       <div class="societe-card" data-id="${c.id}">
         <div class="societe-header d-flex align-items-center justify-content-between mb-3">
@@ -208,7 +208,13 @@ export default function initCompaniesManagement() {
 
   function renderPagination(totalPages) {
     if (!paginationEl) return;
-    if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+    const wrapper = paginationEl.closest('nav');
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      if (wrapper) wrapper.classList.add('d-none');
+      return;
+    }
+    if (wrapper) wrapper.classList.remove('d-none');
 
     let html = `
       <li class="page-item ${currentPage===1?'disabled':''}">
@@ -257,7 +263,7 @@ export default function initCompaniesManagement() {
           // Preview logo actuel
           const currentLogo = c.logo_path
             ? (c.logo_path.startsWith('http') ? c.logo_path : `/${c.logo_path}`)
-            : '/images/placeholder-logo.png';
+            : '/images/placeholder_logo.jpg';
           if (editLogoPrev) editLogoPrev.src = currentLogo;
           if (editLogoCurrent) editLogoCurrent.textContent = c.logo_path ?? '—';
           if (editLogoDrop && editLogoFile && editLogoPrev) {
@@ -286,7 +292,7 @@ export default function initCompaniesManagement() {
   // Create
   document.getElementById('btnNewCompany')?.addEventListener('click', ()=>{
     document.getElementById('formCreateCompany')?.reset();
-    if (createLogoPrev) createLogoPrev.src = '/images/placeholder-logo.png';
+    if (createLogoPrev) createLogoPrev.src = '/images/placeholder_logo.jpg';
     modalCreate?.show();
   });
 

@@ -146,11 +146,15 @@
     }
 
     // ===== EVENTS =====
-    selectCompany?.addEventListener('change', async (e) => {
+    selectCompany?.addEventListener('change', (e) => {
         const id = e.target.value || '';
+        const name = e.target.selectedOptions?.[0]?.textContent?.trim() || '';
         localStorage.setItem('selectedCompanyId', id);
+        localStorage.setItem('selectedCompanyName', name || '');
         localStorage.removeItem('selectedTeamId');
-        await fetchTeams(id);
+        localStorage.removeItem('selectedTeamName');
+        // On recharge pour forcer le contenu à refléter la nouvelle société
+        window.location.reload();
     });
     selectTeam?.addEventListener('change', (e) => {
         const id = e.target.value || '';

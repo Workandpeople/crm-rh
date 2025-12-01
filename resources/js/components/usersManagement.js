@@ -118,7 +118,7 @@ export default function initUsersManagement() {
 
     // === CHARGEMENT UTILISATEURS ===
     async function loadUsers() {
-        tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4">Chargement...</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Chargement...</td></tr>`;
         try {
             const res = await fetch("/admin/users", {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -239,9 +239,6 @@ export default function initUsersManagement() {
                     <td>${getRoleBadge(u.role?.name)}</td>
                     <td>${getCompanyBadge(u.company?.name)}</td>
                     <td>${getStatusBadge(u.status)}</td>
-                    <td>${
-                        u.last_login_at ? formatDate(u.last_login_at) : "-"
-                    }</td>
                     <td>
                         <div class="table-actions">
                             <button class="btn-action edit" data-id="${
@@ -258,7 +255,7 @@ export default function initUsersManagement() {
                 </tr>`
                   )
                   .join("")
-            : `<tr><td colspan="7" class="text-center py-4 text-muted">Aucun utilisateur trouvé</td></tr>`;
+            : `<tr><td colspan="6" class="text-center py-4 text-muted">Aucun utilisateur trouvé</td></tr>`;
 
         renderPagination(totalPages);
     }

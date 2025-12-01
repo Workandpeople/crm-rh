@@ -34,7 +34,7 @@
             <label class="form-label d-block">Logo</label>
             <div id="createLogoDrop" class="border rounded p-3 text-center" style="cursor:pointer;">
               <div class="mb-2">
-                <img id="createLogoPreview" src="{{ asset('images/placeholder-logo.png') }}" alt="Preview" style="max-height:80px;">
+                <img id="createLogoPreview" src="{{ asset('images/placeholder_logo.jpg') }}" alt="Preview" style="max-height:80px;">
               </div>
               <p class="mb-1 ">Glissez-déposez une image, ou cliquez pour parcourir</p>
               <small class="">PNG, JPG, JPEG, WEBP. Max 2 Mo</small>
@@ -85,7 +85,7 @@
             <label class="form-label d-block">Logo</label>
             <div id="editLogoDrop" class="border rounded p-3 text-center" style="cursor:pointer;">
               <div class="mb-2">
-                <img id="editLogoPreview" src="{{ asset('images/placeholder-logo.png') }}" alt="Preview" style="max-height:80px;">
+                <img id="editLogoPreview" src="{{ asset('images/placeholder_logo.jpg') }}" alt="Preview" style="max-height:80px;">
               </div>
               <p class="mb-1 ">Glissez-déposez une image, ou cliquez pour parcourir</p>
               <small class="">PNG, JPG, JPEG, WEBP. Max 2 Mo</small>

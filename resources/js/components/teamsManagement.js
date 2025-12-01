@@ -77,8 +77,8 @@ export default function initTeamsManagement() {
     const companyId = filterCompany.value;
     const filtered = cacheTeams.filter(t => !companyId || t.company_id === companyId);
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-    if (currentPage > totalPages) currentPage = 1;
+    const totalPages = Math.ceil(filtered.length / perPage);
+    if (currentPage > Math.max(totalPages, 1)) currentPage = 1;
 
     const start = (currentPage - 1) * perPage;
     const pageData = filtered.slice(start, start + perPage);
@@ -132,7 +132,14 @@ export default function initTeamsManagement() {
     }
 
   function renderPagination(totalPages) {
-    if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+    if (!paginationEl) return;
+    const wrapper = paginationEl.closest('nav');
+    if (totalPages <= 1) {
+      paginationEl.innerHTML = '';
+      if (wrapper) wrapper.classList.add('d-none');
+      return;
+    }
+    if (wrapper) wrapper.classList.remove('d-none');
     let html = `<li class="page-item ${currentPage===1?'disabled':''}">
       <a class="page-link" href="#" data-page="${currentPage-1}">«</a></li>`;
     for (let i=1;i<=totalPages;i++){

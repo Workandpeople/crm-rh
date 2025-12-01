@@ -75,7 +75,7 @@
           <li><a href="#" data-page="usersManagement" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.users} me-2"></i>Utilisateurs & rôles</a></li>
           <li><a href="#" data-page="societes" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.building} me-2"></i>Sociétés</a></li>
           <li><a href="#" data-page="equipes" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.org} me-2"></i>Équipes</a></li>
-          <li><a href="#" data-page="parametresSysteme" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.gear} me-2"></i>Paramètres système</a></li>
+          <!--<li><a href="#" data-page="parametresSysteme" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.gear} me-2"></i>Paramètres système</a></li>-->
         </ul>
       </details>`;
     }

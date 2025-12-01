@@ -59,7 +59,6 @@
           <th>Rôle</th>
           <th>Société</th>
           <th>Statut</th>
-          <th>Dernière connexion</th>
           <th class="col-actions">Actions</th>
         </tr>
       </thead>
