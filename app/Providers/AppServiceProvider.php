@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Définition du Gate pour la visualisation des backlogs
         Gate::define('view-backlogs', function ($user) {
-            return in_array($user->role->name, ['superadmin', 'admin', 'chef_equipe']);
+            return in_array($user->role->name, ['superadmin', 'admin', 'chef_equipe', 'employe']);
         });
     }
 }

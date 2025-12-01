@@ -1,5 +1,6 @@
 /* === CALENDRIER EMPLOYÉ === */
 
+/* Calendrier employé — style aligné sur la version entreprise */
 .calendar-page {
     background-color: var(--color-bg);
     color: var(--color-text);
@@ -14,104 +15,155 @@
 .month-title {
     color: var(--color-text);
     font-weight: 600;
+    font-size: 1.05rem;
 }
 .calendar-nav {
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text);
+    border-radius: 999px;
     border: 1px solid var(--color-border);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     transition: all 0.2s ease;
 }
 .calendar-nav:hover {
-    background-color: var(--color-primary);
-    color: #fff;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
 }
 
 /* LEGENDE */
 .calendar-legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.9rem;
+    gap: .75rem 1.5rem;
+    padding: .75rem 1rem;
+    background: var(--color-bg-secondary);
+    border-radius: .9rem;
+    border: 1px solid var(--color-border);
+    font-size: .85rem;
+}
+.calendar-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
     color: var(--color-text-muted);
 }
 .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    margin-right: 6px;
 }
-.legend-dot.conge {
-    background-color: #4f46e5;
-}
-.legend-dot.formation {
-    background-color: #22c55e;
-}
-.legend-dot.entretien {
-    background-color: #facc15;
-}
-.legend-dot.evenement {
-    background-color: #60a5fa;
-}
+.legend-dot.conge { background: #4f46e5; }
+.legend-dot.note_frais { background: #0ea5e9; }
+.legend-dot.document_rh { background: #a855f7; }
+.legend-dot.incident { background: #f97316; }
+.legend-dot.autre { background: #94a3b8; }
 
-/* GRILLE DU CALENDRIER */
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.75rem;
-    background-color: var(--color-bg);
+/* FULLCALENDAR WRAPPER */
+#calendarEmployeeContainer {
+    margin-top: 1rem;
 }
-
-.day-name {
-    text-align: center;
-    font-weight: 600;
-    color: var(--color-primary);
-    padding: 0.5rem 0;
+.calendar-employee-page .fc {
+    --fc-border-color: var(--color-border);
+    --fc-page-bg-color: transparent;
+    --fc-neutral-bg-color: rgba(15, 23, 42, 0.8);
+    --fc-today-bg-color: rgba(56, 189, 248, 0.12);
+    font-family: inherit;
+    font-size: .9rem;
 }
-
-.day-cell {
-    background-color: var(--color-bg-secondary);
+.calendar-employee-page .fc-theme-standard .fc-scrollgrid {
+    border-radius: 1rem;
+    overflow: hidden;
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    min-height: 110px;
-    padding: 0.5rem;
-    position: relative;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.day-cell:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    background: var(--color-bg-secondary);
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
 }
 
-.day-number {
-    font-size: 0.9rem;
-    font-weight: 600;
+.calendar-employee-page .fc-col-header-cell {
+    background: rgba(79, 70, 229, 0.16);
+    padding: .6rem .4rem;
+}
+.calendar-employee-page .fc-col-header-cell-cushion {
     color: var(--color-text);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .75rem;
+}
+.calendar-employee-page .fc-daygrid-day {
+    background: rgba(15, 23, 42, 0.95);
+}
+.calendar-employee-page .fc-daygrid-day-frame {
+    padding: .35rem .35rem .4rem;
+}
+.calendar-employee-page .fc-daygrid-day-top {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.calendar-employee-page .fc-daygrid-day-number {
+    color: var(--color-text-muted);
+    font-size: .78rem;
+    padding: .1rem .25rem;
+    border-radius: .4rem;
+    text-decoration: none;
+}
+.calendar-employee-page .fc-day-today .fc-daygrid-day-number {
+    color: #0ea5e9;
+    font-weight: 700;
+    background: rgba(14,165,233,0.15);
+}
+.calendar-employee-page .fc-day-sat,
+.calendar-employee-page .fc-day-sun {
+    background: rgba(15, 23, 42, 0.9);
+}
+.calendar-employee-page .fc-daygrid-day:hover {
+    background: rgba(148, 163, 184, 0.12);
 }
 
-/* ÉVÉNEMENTS */
-.event {
-    margin-top: 0.3rem;
-    font-size: 0.8rem;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.4rem;
-    color: #fff;
-    text-align: center;
+/* Events */
+.calendar-employee-page .fc-daygrid-event {
+    border-radius: .5rem;
+    padding: 0;
+    margin-top: .2rem;
+    border: 1px solid transparent;
+    overflow: hidden;
 }
-.event.conge {
-    background-color: #4f46e5;
+.calendar-employee-page .fc-daygrid-event:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,.35);
 }
-.event.formation {
-    background-color: #22c55e;
+.calendar-employee-page .fc-daygrid-event .fc-event-main {
+    padding: .15rem .4rem;
+    font-size: .75rem;
+    font-weight: 600;
 }
-.event.entretien {
-    background-color: #facc15;
-    color: #1e1e2f;
-}
-.event.evenement {
-    background-color: #60a5fa;
+
+.rh-calendar-event { border-radius: .5rem; }
+.rh-event-conge { background: rgba(79, 70, 229, 0.18); border-color: rgba(79, 70, 229, 0.6); }
+.rh-event-conge .fc-event-main { color: #c7d2fe; }
+.rh-event-note_frais { background: rgba(14, 165, 233, 0.2); border-color: rgba(14, 165, 233, 0.7); }
+.rh-event-note_frais .fc-event-main { color: #bae6fd; }
+.rh-event-document_rh { background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.7); }
+.rh-event-document_rh .fc-event-main { color: #f5d0fe; }
+.rh-event-incident { background: rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.8); }
+.rh-event-incident .fc-event-main { color: #fed7aa; }
+.rh-event-autre { background: rgba(148, 163, 184, 0.2); border-color: rgba(148, 163, 184, 0.8); }
+.rh-event-autre .fc-event-main { color: #e5e7eb; }
+
+@media (max-width: 768px) {
+    .calendar-page {
+        padding: 1.25rem;
+    }
+    .calendar-legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }

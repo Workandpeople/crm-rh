@@ -72,14 +72,15 @@
 }
 
 /* STYLES SELON ÉTAT */
-.document-card.uploaded {
-    border-left: 4px solid #22c55e;
-}
-.document-card.missing {
-    border-left: 4px solid #ef4444;
-}
-.document-card.expired {
-    border-left: 4px solid #facc15;
+.document-card.accepted { border-left: 4px solid #22c55e; }
+.document-card.pending { border-left: 4px solid #f59e0b; }
+.document-card.refused { border-left: 4px solid #ef4444; animation: blink-red 1s linear infinite; }
+.document-card.missing { border-left: 4px solid #ef4444; }
+
+@keyframes blink-red {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.45); }
+    70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
 }
 
 /* ICONES + INFOS */

@@ -121,7 +121,7 @@
           <li><a href="#" data-page="profil" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.user} me-2"></i>Mon profil</a></li>
           <li><a href="#" data-page="ticketing" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.ticket} me-2"></i>Mes tickets</a></li>
           <li><a href="#" data-page="dossierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.folder} me-2"></i>Mes documents</a></li>
-          <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Mes congés</a></li>
+          {{-- <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Mes congés</a></li> --}}
           <li><a href="#" data-page="calendrier" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier</a></li>
           <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.news} me-2"></i>Actualités</a></li>
         </ul>
@@ -153,8 +153,7 @@
       const html = await response.text();
       contentDiv.innerHTML = html.trim().length ? html : `<p class="text-warning p-3">Aucun contenu pour "${page}".</p>`;
       localStorage.setItem(storagePageKey, page);
-      const scriptKey = contentDiv.querySelector('[data-script]')?.dataset.script;
-      if (scriptKey && window.pageScripts?.[scriptKey]) window.pageScripts[scriptKey]();
+      if (window.runPageScriptFromDOM) window.runPageScriptFromDOM(contentDiv);
     } catch (e) {
       contentDiv.innerHTML = `<p class="text-danger p-3">Erreur : ${e.message}</p>`;
     } finally {

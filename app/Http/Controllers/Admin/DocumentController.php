@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Document;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -122,17 +123,32 @@ class DocumentController extends Controller
     {
         $user = Auth::user();
 
-        if (!in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin'])) {
+        $isManager = in_array($user->role->name ?? '', ['admin', 'chef_equipe', 'superadmin']);
+        $isOwner = $document->user_id === $user->id;
+
+        if (! $isManager && ! $isOwner) {
             return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
-        if ($user->company_id && $document->user && $document->user->company_id !== $user->company_id) {
+        if ($isManager && $user->company_id && $document->user && $document->user->company_id !== $user->company_id) {
             return response()->json(['message' => 'Document hors de votre société'], 403);
         }
 
         // Optionnel : suppression du fichier
         if ($document->file_path && Storage::exists($document->file_path)) {
             Storage::delete($document->file_path);
+        }
+
+        // Supprime un ticket document_rh associé (créé par l’utilisateur et même doc_type)
+        if ($isOwner) {
+            $ticket = Ticket::where('type', 'document_rh')
+                ->where('created_by', $document->user_id)
+                ->where('details->doc_type', $document->type)
+                ->orderByDesc('created_at')
+                ->first();
+            if ($ticket) {
+                $ticket->delete();
+            }
         }
 
         $document->delete();

@@ -33,6 +33,9 @@ import initLeavesManagement from "./components/leavesManagement";
 import initExpensesManagement from "./components/expensesManagement";
 import initDocumentsManagement from "./components/documentsManagement";
 import initCalendarRHManagement from './components/calendarRHManagement';
+import initTicketingEmployee from "./components/ticketingEmployee";
+import initCalendarEmployee from "./components/calendarEmployee";
+import initDossierEmployee from "./components/dossierEmployee";
 
 // Registre global appelé par le loader de la sidebar via data-script
 window.pageScripts = {
@@ -44,4 +47,25 @@ window.pageScripts = {
     expensesManagement: initExpensesManagement,
     documentsManagement: initDocumentsManagement,
     calendarRHManagement: initCalendarRHManagement,
+    ticketingEmployee: initTicketingEmployee,
+    calendarEmployee: initCalendarEmployee,
+    dossierEmployee: initDossierEmployee,
 };
+
+function runPageScriptFromDOM(root = document) {
+    const el = root.querySelector("[data-script]");
+    if (!el) return;
+    const key = el.dataset.script;
+    if (!key) return;
+    if (el.dataset.initialized === "1") return;
+    if (window.pageScripts?.[key]) {
+        window.pageScripts[key]();
+        el.dataset.initialized = "1";
+    }
+}
+
+window.runPageScriptFromDOM = runPageScriptFromDOM;
+
+document.addEventListener("DOMContentLoaded", () => {
+    runPageScriptFromDOM(document);
+});

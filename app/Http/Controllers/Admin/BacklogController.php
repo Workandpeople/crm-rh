@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -19,16 +20,20 @@ class BacklogController extends Controller
         try {
             $user = Auth::user();
             $roleName = $user->role->name ?? null;
+            $isEmployee = $roleName === 'employe';
+            $onlyMine = $request->boolean('mine', false) || $isEmployee;
 
-            if (!in_array($roleName, ['admin', 'chef_equipe', 'superadmin'])) {
+            if (!in_array($roleName, ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
                 abort(403, 'Accès non autorisé');
             }
 
             // --- paramètres reçus ---
-            $companyId   = $request->query('company_id', $user->company_id);
+            $companyId   = $isEmployee
+                ? $user->company_id
+                : $request->query('company_id', $user->company_id);
             $type        = $request->query('type');         // conge, note_frais…
             $status      = $request->query('status');       // en_attente, valide, refuse
-            $employeeId  = $request->query('employee_id');  // créateur
+            $employeeId  = $isEmployee ? null : $request->query('employee_id');  // créateur
             $start       = $request->query('start');        // date YYYY-MM-DD
             $end         = $request->query('end');          // date YYYY-MM-DD
             $search      = $request->query('search');       // texte libre
@@ -46,6 +51,12 @@ class BacklogController extends Controller
             // --- requête de base ---
             $query = Ticket::with(['creator', 'assignee', 'company'])
                 ->where('company_id', $companyId)
+                ->when($onlyMine, function ($q) use ($user) {
+                    $q->where(function ($sub) use ($user) {
+                        $sub->where('created_by', $user->id)
+                            ->orWhere('assigned_to', $user->id);
+                    });
+                })
                 ->latest('created_at');
 
             // type
@@ -88,7 +99,10 @@ class BacklogController extends Controller
             $tickets = $query->get();
 
             // stats globales de la société (on peut les laisser sans filtres détaillés)
-            $baseStats = Ticket::where('company_id', $companyId);
+            $baseStats = ($isEmployee || $onlyMine)
+                ? clone $query
+                : Ticket::where('company_id', $companyId);
+
             $stats = [
                 'total'     => (clone $baseStats)->count(),
                 'pending'   => (clone $baseStats)->where('status', 'en_attente')->count(),
@@ -153,14 +167,37 @@ class BacklogController extends Controller
 
         $validated = $request->validate([
             'title'           => 'required|string|max:255',
-            'type'            => 'required|in:conge,note_frais,incident,autre',
+            'type'            => 'required|in:conge,note_frais,incident,autre,document_rh',
             'description'     => 'nullable|string',
             'assignee_id'     => 'nullable|exists:users,id',
             'priority'        => 'nullable|in:basse,moyenne,haute',
             'due_date'        => 'nullable|date',
             'related_user_id' => 'nullable|exists:users,id',
             'company_id'      => 'required|exists:companies,id',
+            'doc_type'        => 'nullable|string|max:100',
+            'doc_file'        => 'nullable|file|max:5120',
         ]);
+
+        // doc_type obligatoire si type document_rh
+        if (($validated['type'] ?? null) === 'document_rh' && empty($validated['doc_type'])) {
+            return response()->json([
+                'message' => 'Type de document requis',
+            ], 422);
+        }
+
+        // Un employé ne peut créer que dans sa société
+        if ($role === 'employe') {
+            $validated['company_id'] = $user->company_id;
+        }
+
+        // Pour un document refusé, on supprime le ticket précédent avant d'en recréer un
+        if (($validated['type'] ?? null) === 'document_rh' && !empty($validated['doc_type'])) {
+            Ticket::where('type', 'document_rh')
+                ->where('created_by', $user->id)
+                ->where('status', 'refuse')
+                ->where('details->doc_type', $validated['doc_type'])
+                ->delete();
+        }
 
         $ticket = Ticket::create([
             'company_id'      => $validated['company_id'],
@@ -175,6 +212,44 @@ class BacklogController extends Controller
             'related_user_id' => $validated['related_user_id'] ?? null,
         ]);
 
+        // Si dépôt document_rh avec fichier → création/MAJ Document et détails ticket
+        if (($validated['type'] ?? null) === 'document_rh') {
+            $path = null;
+            if ($request->hasFile('doc_file')) {
+                $path = $request->file('doc_file')->store('documents', 'public');
+                $doc = Document::where('user_id', $user->id)
+                    ->where('type', $validated['doc_type'])
+                    ->first();
+                if ($doc) {
+                    $doc->update([
+                        'file_path'   => $path,
+                        'uploaded_at' => now(),
+                        'status'      => 'pending',
+                    ]);
+                } else {
+                    $doc = Document::create([
+                        'user_id'    => $user->id,
+                        'type'       => $validated['doc_type'],
+                        'file_path'  => $path,
+                        'uploaded_at'=> now(),
+                        'status'     => 'pending',
+                    ]);
+                }
+                $ticket->details = [
+                    'doc_type' => $validated['doc_type'],
+                    'file_path'=> $path,
+                    'document_id' => $doc->id,
+                ];
+                $ticket->status = 'en_attente';
+                $ticket->save();
+            } else {
+                $ticket->details = [
+                    'doc_type' => $validated['doc_type'],
+                ];
+                $ticket->save();
+            }
+        }
+
         $ticket->load(['creator', 'assignee']);
 
         if ($ticket->creator) {
@@ -187,6 +262,7 @@ class BacklogController extends Controller
         return response()->json([
             'success' => true,
             'ticket'  => $ticket,
+            'message' => 'Ticket créé',
         ], 201);
     }
 
@@ -228,6 +304,13 @@ class BacklogController extends Controller
         }
 
         $ticket->load(['company', 'creator', 'assignee', 'relatedUser']);
+
+        $authorizedEmployee = $role === 'employe'
+            && ($ticket->created_by === $user->id || $ticket->assigned_to === $user->id);
+
+        if (!in_array($role, ['admin', 'chef_equipe', 'superadmin']) && ! $authorizedEmployee) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
 
         if ($ticket->creator) {
             $ticket->creator->full_name = trim(($ticket->creator->first_name ?? '') . ' ' . ($ticket->creator->last_name ?? ''));

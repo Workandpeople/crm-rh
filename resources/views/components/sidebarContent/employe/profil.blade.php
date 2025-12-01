@@ -6,14 +6,30 @@
         </button>
     </div>
 
+    @php
+        $user = auth()->user();
+        $profile = $user->profile;
+        $company = $user->company;
+        $team = $user->team;
+        $display = function ($value, $hasField = true) {
+            if (! $hasField) {
+                return 'not in bdd';
+            }
+            if (is_null($value) || $value === '') {
+                return 'to be defined';
+            }
+            return $value;
+        };
+    @endphp
+
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="card p-4 text-center">
                 <div class="profil-avatar">
                     <img src="{{ asset('images/avatar.png') }}" alt="Avatar">
-                    <h5>{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</h5>
-                    <p>{{ auth()->user()->email }}</p>
-                    <span class="badge mt-3">{{ ucfirst(auth()->user()->status) }}</span>
+                    <h5>{{ $user->first_name }} {{ $user->last_name }}</h5>
+                    <p>{{ $user->email }}</p>
+                    <span class="badge mt-3">{{ ucfirst($display($user->status)) }}</span>
                 </div>
             </div>
         </div>
@@ -24,27 +40,27 @@
                 <div class="profil-info">
                     <div class="profil-info-item">
                         <label>Nom complet</label>
-                        <p>{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</p>
+                        <p>{{ $display(trim($user->first_name.' '.$user->last_name)) }}</p>
                     </div>
                     <div class="profil-info-item">
                         <label>Adresse e-mail</label>
-                        <p>{{ auth()->user()->email }}</p>
+                        <p>{{ $display($user->email) }}</p>
                     </div>
                     <div class="profil-info-item">
                         <label>Poste</label>
-                        <p>Technicien contrôle</p>
+                        <p>{{ $display($profile->position ?? null) }}</p>
                     </div>
                     <div class="profil-info-item">
                         <label>Société</label>
-                        <p>Work And People</p>
+                        <p>{{ $display($company->name ?? null) }}</p>
                     </div>
                     <div class="profil-info-item">
                         <label>Équipe</label>
-                        <p>Équipe Nord</p>
+                        <p>{{ $display($team->name ?? null) }}</p>
                     </div>
                     <div class="profil-info-item">
                         <label>Date d'embauche</label>
-                        <p>15/03/2022</p>
+                        <p>{{ $display(optional($profile)->hire_date?->format('d/m/Y')) }}</p>
                     </div>
                 </div>
             </div>
@@ -63,24 +79,32 @@
 
     <div class="profil-actions">
         <div class="card p-4">
-            <i class="fa-solid fa-folder-open"></i>
-            <h6>Voir mon dossier RH</h6>
+            <div class="d-flex align-items-center gap-2 justify-content-center mb-2">
+                <i class="fa-solid fa-folder-open"></i>
+                <h6 class="mb-0">Voir mon dossier RH</h6>
+            </div>
             <a href="#" class="link-dynamic" data-page="dossierRH">Ouvrir</a>
         </div>
         <div class="card p-4">
-            <i class="fa-solid fa-plane-departure"></i>
-            <h6>Faire une demande de congé</h6>
-            <a href="#" class="link-dynamic" data-page="conge">Accéder</a>
+            <div class="d-flex align-items-center gap-2 justify-content-center mb-2">
+                <i class="fa-solid fa-plane-departure"></i>
+                <h6 class="mb-0">Faire une demande de congé</h6>
+            </div>
+            <a href="#" class="link-dynamic" data-page="ticketing">Accéder</a>
         </div>
         <div class="card p-4">
-            <i class="fa-solid fa-ticket"></i>
-            <h6>Ouvrir un ticket RH</h6>
+            <div class="d-flex align-items-center gap-2 justify-content-center mb-2">
+                <i class="fa-solid fa-ticket"></i>
+                <h6 class="mb-0">Ouvrir un ticket RH</h6>
+            </div>
             <a href="#" class="link-dynamic" data-page="ticketing">Créer</a>
         </div>
-               <div class="card p-4">
-            <i class="fa-solid fa-ticket"></i>
-            <h6>Fiche de Paie</h6>
-            <a href="#" class="link-dynamic" data-page="fichesPaie">Consulter</a>
+        <div class="card p-4">
+            <div class="d-flex align-items-center gap-2 justify-content-center mb-2">
+                <i class="fa-solid fa-receipt"></i>
+                <h6 class="mb-0">Fiche de Paie</h6>
+            </div>
+            <a href="https://monespacepaye.example.com" target="_blank" rel="noopener" class="link-dynamic">Consulter</a>
         </div>
     </div>
 </div>
