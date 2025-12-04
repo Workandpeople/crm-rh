@@ -1,141 +1,229 @@
-{{-- MODALE CRÉATION TICKET --}}
+{{-- MODALE CRÉATION TICKET RH (multi-types) --}}
 <div class="modal fade" id="modalTicketCreate" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <form id="formCreateTicket">
+      <form id="formCreateTicket" enctype="multipart/form-data">
         @csrf
+
         <div class="modal-header">
-          <h5 class="modal-title fw-bold">Nouveau ticket RH</h5>
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+            <i class="fa-solid fa-ticket"></i>
+            Nouveau ticket RH
+          </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
+
         <div class="modal-body">
-          {{-- Type --}}
+          {{-- CHOIX TYPE DE TICKET --}}
           <div class="mb-3">
-            <label class="form-label">Type de demande</label>
-            <select name="type" id="ticketType" class="form-select" required>
-              <option value="conge">Congé / absence</option>
-              <option value="note_frais">Note de frais</option>
-              <option value="incident">Incident</option>
-              <option value="autre">Autre</option>
-            </select>
+            <label class="form-label d-block mb-1">Type de ticket</label>
+            <div class="d-flex flex-wrap gap-2 ticket-type-switcher">
+              <button type="button"
+                      class="btn btn-sm btn-outline-primary ticket-type-toggle active"
+                      data-ticket-type="conge">
+                <i class="fa-solid fa-plane-departure me-1"></i> Congé / absence
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn-outline-primary ticket-type-toggle"
+                      data-ticket-type="note_frais">
+                <i class="fa-solid fa-receipt me-1"></i> Note de frais
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn-outline-primary ticket-type-toggle"
+                      data-ticket-type="document_rh">
+                <i class="fa-solid fa-file-contract me-1"></i> Document RH
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn-outline-primary ticket-type-toggle"
+                      data-ticket-type="incident">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i> Incident
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn-outline-secondary ticket-type-toggle"
+                      data-ticket-type="autre">
+                <i class="fa-solid fa-circle-question me-1"></i> Autre
+              </button>
+            </div>
+
+            {{-- Valeur envoyée au back --}}
+            <input type="hidden" name="type" id="ticketTypeInput" value="conge">
           </div>
 
-          {{-- Titre --}}
-          <div class="mb-3">
-              <label class="form-label">Titre</label>
-              <input type="text" name="title" id="ticketTitle" class="form-control" required
-              placeholder="Ex : Demande de congé du 12 au 18 mars">
+          {{-- BLOC COMMUN (pour tous les types) --}}
+          <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Titre du ticket</label>
+              <input type="text"
+                     name="title"
+                     id="ticketTitle"
+                     class="form-control"
+                     required
+                     placeholder="Titre de la demande…">
             </div>
-
-            {{-- Description --}}
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea name="description" id="ticketDescription" class="form-control" rows="4"
-                placeholder="Précisez le contexte, les dates, les détails nécessaires…"></textarea>
-            </div>
-
-            {{-- Priorité --}}
-            <div class="mb-3">
-            <label class="form-label">Priorité</label>
-            <select name="priority" id="ticketPriority" class="form-select">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Priorité</label>
+              <select name="priority" id="ticketPriority" class="form-select">
                 <option value="basse">Basse</option>
                 <option value="moyenne" selected>Moyenne</option>
                 <option value="haute">Haute</option>
-            </select>
+              </select>
             </div>
 
-          {{-- Assignation --}}
-          <div class="mb-3">
-            <label class="form-label">Attribuer à</label>
-            <select name="assignee_id" id="ticketAssignee" class="form-select">
-              <option value="">— À définir plus tard —</option>
-              {{-- options injectées en JS via /admin/backlogs/options --}}
-            </select>
+            <div class="col-12 mb-3">
+              <label class="form-label">Description</label>
+              <textarea name="description"
+                        id="ticketDescription"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Description de la demande…"></textarea>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Employé concerné</label>
+              <select name="related_user_id" id="ticketRelatedUser" class="form-select">
+                <option value="">— Sélectionner un employé —</option>
+                {{-- options injectées en JS plus tard (users de la société) --}}
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Attribuer à</label>
+              <select name="assignee_id" id="ticketAssignee" class="form-select">
+                <option value="">— À définir plus tard —</option>
+                {{-- options injectées en JS via /admin/backlogs/options --}}
+              </select>
+            </div>
           </div>
-        </div>
+
+          {{-- ====== BLOCS SPÉCIFIQUES PAR TYPE ===================== --}}
+
+          {{-- CONGÉ / ABSENCE --}}
+          <div class="ticket-extra-group" data-ticket-type="conge">
+            <h6 class="mb-2 fw-semibold">Informations congé</h6>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Type de congé</label>
+                <select name="leave_type" id="ticketLeaveType" class="form-select">
+                  <option value="CP">Congés payés</option>
+                  <option value="SansSolde">Sans solde</option>
+                  <option value="Exceptionnel">Absence exceptionnelle</option>
+                  <option value="Maladie">Maladie</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Début</label>
+                <input type="date" name="leave_start_date" id="ticketLeaveStart" class="form-control">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Fin</label>
+                <input type="date" name="leave_end_date" id="ticketLeaveEnd" class="form-control">
+              </div>
+            </div>
+          </div>
+
+          {{-- NOTE DE FRAIS --}}
+          <div class="ticket-extra-group d-none" data-ticket-type="note_frais">
+            <h6 class="mb-2 fw-semibold">Informations note de frais</h6>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Type de dépense</label>
+                <select name="expense_type" id="ticketExpenseType" class="form-select">
+                  <option value="repas">Repas</option>
+                  <option value="peage">Péage / autoroute</option>
+                  <option value="hebergement">Hébergement</option>
+                  <option value="km">Kilométrage</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Montant (€)</label>
+                <input type="number"
+                       step="0.01"
+                       min="0"
+                       name="expense_amount"
+                       id="ticketExpenseAmount"
+                       class="form-control"
+                       placeholder="Ex : 23,90">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Date de la dépense</label>
+                <input type="date"
+                       name="expense_date"
+                       id="ticketExpenseDate"
+                       class="form-control">
+              </div>
+              {{-- V2 : justificatif (upload) --}}
+              {{--
+              <div class="col-12 mb-2">
+                <label class="form-label">Justificatif (PDF / image)</label>
+                <input type="file" name="expense_receipt" class="form-control">
+              </div>
+              --}}
+            </div>
+          </div>
+
+          {{-- DOCUMENT RH --}}
+          <div class="ticket-extra-group d-none" data-ticket-type="document_rh">
+            <h6 class="mb-2 fw-semibold">Informations document RH</h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Type de document</label>
+                <select name="document_type" id="ticketDocumentType" class="form-select">
+                  <option value="CNI">Carte d’identité</option>
+                  <option value="Carte Vitale">Carte Vitale</option>
+                  <option value="Permis">Permis de conduire</option>
+                  <option value="Contrat">Contrat de travail</option>
+                  <option value="Fiche Fonction">Fiche de fonction</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Date d’expiration (facultatif)</label>
+                <input type="date"
+                       name="document_expires_at"
+                       id="ticketDocumentExpiresAt"
+                       class="form-control">
+              </div>
+            </div>
+          </div>
+
+          {{-- INCIDENT --}}
+          <div class="ticket-extra-group d-none" data-ticket-type="incident">
+            <h6 class="mb-2 fw-semibold">Informations incident</h6>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Gravité</label>
+                <select name="incident_severity" id="ticketIncidentSeverity" class="form-select">
+                  <option value="mineur">Mineur</option>
+                  <option value="majeur">Majeur</option>
+                  <option value="critique">Critique</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Échéance de traitement</label>
+                <input type="date" name="due_date" id="ticketDueDate" class="form-control">
+              </div>
+            </div>
+          </div>
+
+          {{-- AUTRE --}}
+          <div class="ticket-extra-group d-none" data-ticket-type="autre">
+            <h6 class="mb-2 fw-semibold">Informations complémentaires</h6>
+            <p class="text-muted mb-2" style="font-size:.9rem;">
+              Utilisez ce ticket pour toute demande ne rentrant pas dans les autres catégories
+              (question RH, suivi, demande diverse, etc.).
+            </p>
+          </div>
+
+        </div>{{-- /modal-body --}}
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="submit" class="btn btn-primary">Créer le ticket</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Créer le ticket
+          </button>
         </div>
       </form>
-    </div>
-  </div>
-</div>
-
-{{-- MODALE DÉTAIL TICKET --}}
-<div class="modal fade modal-dark" id="modalTicketDetails" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold">
-          <i class="fa-solid fa-ticket me-2"></i>
-          Détail du ticket
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
-      </div>
-
-      <div class="modal-body">
-        {{-- En-tête : type + statut + priorité --}}
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-          <div class="d-flex flex-wrap align-items-center gap-2">
-            <span id="ticketDetailType" class="badge ticket-type-badge">Type</span>
-            <span id="ticketDetailPriority" class="badge ticket-priority-badge">Priorité</span>
-          </div>
-          <span id="ticketDetailStatus" class="badge ticket-status-badge">Statut</span>
-        </div>
-
-        {{-- Titre --}}
-        <h4 id="ticketDetailTitle" class="mb-2"></h4>
-        <p id="ticketDetailDescription" class=" mb-3"></p>
-
-        {{-- Métadonnées principales --}}
-        <div class="row mb-3">
-          <div class="col-md-6 mb-2">
-            <small class=" d-block">Créé par</small>
-            <span id="ticketDetailCreator">—</span>
-          </div>
-          <div class="col-md-6 mb-2">
-            <small class=" d-block">Assigné à</small>
-            <span id="ticketDetailAssignee">—</span>
-          </div>
-          <div class="col-md-6 mb-2">
-            <small class=" d-block">Employé concerné</small>
-            <span id="ticketDetailRelatedUser">—</span>
-          </div>
-          <div class="col-md-6 mb-2">
-            <small class=" d-block">Société</small>
-            <span id="ticketDetailCompany">—</span>
-          </div>
-        </div>
-
-        {{-- Dates --}}
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <small class=" d-block">Créé le</small>
-            <span id="ticketDetailCreatedAt">—</span>
-          </div>
-          <div class="col-md-6 mb-2">
-            <small class=" d-block">Échéance</small>
-            <span id="ticketDetailDueDate">—</span>
-          </div>
-        </div>
-
-        {{-- Zone commentaires / historique (placeholder pour plus tard) --}}
-        <div class="mt-3 border-top pt-3">
-          <small class=" d-block mb-1">Commentaires (à venir)</small>
-          <p class="mb-0 " style="font-size: .85rem;">
-            L’historique des échanges et commentaires sera affiché ici dans une prochaine étape.
-          </p>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
-          Fermer
-        </button>
-      </div>
-
     </div>
   </div>
 </div>

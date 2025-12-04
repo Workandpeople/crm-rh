@@ -37,6 +37,18 @@
     box-shadow: 0 4px 15px rgba(79, 70, 229, 0.45);
 }
 
+.ticket-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    font-size: .8rem;
+    color: var(--color-text-muted);
+}
+.ticket-meta span strong {
+    font-weight: 600;
+}
+
+
 /* ========================================================= */
 /* STATS                                                     */
 /* ========================================================= */
