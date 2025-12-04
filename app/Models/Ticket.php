@@ -11,15 +11,38 @@ class Ticket extends Model
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'company_id','created_by','assigned_to','type',
-        'title','description','priority','status','due_date',
+        'company_id',
+        'created_by',
+        'assigned_to',
+        'type',
+        'title',
+        'description',
+        'priority',
+        'status',
+        'due_date',
         'related_user_id',
-        'details',
+
+        // Champs “métier” liés au type de ticket
+        'leave_type',
+        'leave_start_date',
+        'leave_end_date',
+
+        'expense_type',
+        'expense_amount',
+        'expense_date',
+
+        'document_type',
+        'document_expires_at',
+
+        'incident_severity',
     ];
 
-   protected $casts = [
-        'due_date' => 'date',
-        'details'  => 'array', // Pour le champ JSON 'details'
+    protected $casts = [
+        'due_date'             => 'date',
+        'leave_start_date'     => 'date',
+        'leave_end_date'       => 'date',
+        'expense_date'         => 'date',
+        'document_expires_at'  => 'date',
     ];
 
     public function company()

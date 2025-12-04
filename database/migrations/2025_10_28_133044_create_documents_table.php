@@ -6,33 +6,41 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('type');
-            $table->string('file_path');
+
+            $table->foreignUuid('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->string('type'); // CNI, Contrat, etc.
+            $table->string('file_path'); // Dans la V1 : "pending_upload"
+
             $table->timestamp('uploaded_at')->useCurrent();
             $table->timestamp('expires_at')->nullable();
 
             $table->boolean('signed')->default(false);
             $table->timestamp('signed_at')->nullable();
 
-            $table->enum('status', ['valid', 'missing', 'expired', 'pending'])->default('pending');
+            // 🔥 Nouveau statut standardisé
+            $table->enum('status', [
+                'pending',     // Document envoyé par un employé / créé via backlog
+                'validated',   // Document validé par l’admin RH
+                'rejected',    // Refusé
+                'expired'      // Expiration (ex : CNI expirée)
+            ])->default('pending');
+
             $table->json('metadata')->nullable();
 
             $table->timestamps();
+
+            // Si tu veux empêcher 2 documents du même type pour le même user :
             $table->unique(['user_id', 'type']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('documents');
