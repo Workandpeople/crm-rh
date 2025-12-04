@@ -27,14 +27,11 @@ class BacklogController extends Controller
             $user     = Auth::user();
             $roleName = $user->role->name ?? null;
             $isEmployee = $roleName === 'employe';
-            $onlyMine = $request->boolean('mine', false) || $isEmployee;
+            $onlyMine   = $request->boolean('mine', false) || $isEmployee;
 
             if (!in_array($roleName, ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
                 return response()->json(['message' => 'Accès non autorisé'], 403);
             }
-
-            $isEmployee = $roleName === 'employe';
-            $onlyMine   = $request->boolean('mine', false) || $isEmployee;
 
             // --- paramètres reçus ---
             $companyId  = $isEmployee
@@ -364,20 +361,41 @@ class BacklogController extends Controller
                                     ],
                                 ]);
                             }
+                        } else {
+                            // Pas encore de fichier, mais ticket créé → on peut créer ou MAJ le doc en pending/pas de fichier
+                            $doc = Document::where('user_id', $targetUserId)
+                                ->where('type', $docType)
+                                ->first();
+
+                            if (! $doc) {
+                                $doc = Document::create([
+                                    'user_id'     => $targetUserId,
+                                    'type'        => $docType,
+                                    'file_path'   => 'pending_upload',
+                                    'uploaded_at' => now(),
+                                    'expires_at'  => $validated['document_expires_at'] ?? null,
+                                    'signed'      => false,
+                                    'signed_at'   => null,
+                                    'status'      => 'pending',
+                                    'metadata'    => [
+                                        'source'    => 'ticket',
+                                        'ticket_id' => $ticket->id,
+                                    ],
+                                ]);
+                            }
                         }
 
                         // Détails JSON du ticket (si colonne details existe)
-                        $details = [
-                            'doc_type'    => $docType,
-                            'expires_at'  => $validated['document_expires_at'] ?? null,
-                        ];
-                        if ($doc) {
-                            $details['document_id'] = $doc->id;
-                            $details['file_path']   = $doc->file_path;
-                        }
+                        if (Schema::hasColumn('tickets', 'details')) {
+                            $details = [
+                                'doc_type'   => $docType,
+                                'expires_at' => $validated['document_expires_at'] ?? null,
+                            ];
+                            if (!empty($doc)) {
+                                $details['document_id'] = $doc->id;
+                                $details['file_path']   = $doc->file_path;
+                            }
 
-                        // Si ton modèle Ticket a bien $casts['details' => 'array'] et une colonne JSON "details"
-                        if (property_exists($ticket, 'details') || array_key_exists('details', $ticket->getAttributes()) || Schema::hasColumn('tickets', 'details')) {
                             $ticket->details = $details;
                             $ticket->save();
                         }
@@ -463,15 +481,6 @@ class BacklogController extends Controller
             && ($ticket->created_by === $user->id || $ticket->assigned_to === $user->id);
 
         if (! $isAdminLike && ! $isOwner) {
-            return response()->json(['message' => 'Accès non autorisé'], 403);
-        }
-
-        $ticket->load(['company', 'creator', 'assignee', 'relatedUser']);
-
-        $authorizedEmployee = $role === 'employe'
-            && ($ticket->created_by === $user->id || $ticket->assigned_to === $user->id);
-
-        if (!in_array($role, ['admin', 'chef_equipe', 'superadmin']) && ! $authorizedEmployee) {
             return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
