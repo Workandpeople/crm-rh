@@ -20,6 +20,7 @@ export default function initBacklogsManagement() {
     const inputEnd = document.getElementById("filter-ticket-end");
     const inputSearch = document.getElementById("filter-ticket-search");
     const btnReset = document.getElementById("btnTicketsReset");
+    const extraFilterGroups = document.querySelectorAll(".filter-group-extra");
 
     // Bouton + modale création
     const btnAddTicket = document.getElementById("btnAddTicket");
@@ -128,11 +129,16 @@ export default function initBacklogsManagement() {
     function getFiltersFromUI() {
         return {
             type: selectType?.value || "",
-            employee_id: selectEmployee?.value || "",
             status: selectStatus?.value || "",
-            start: inputStart?.value || "",
-            end: inputEnd?.value || "",
             search: inputSearch?.value || "",
+
+            // filtres spécifiques
+            leave_start: document.getElementById("filter-leave-start")?.value || "",
+            leave_end: document.getElementById("filter-leave-end")?.value || "",
+            expense_min: document.getElementById("filter-expense-min")?.value || "",
+            expense_max: document.getElementById("filter-expense-max")?.value || "",
+            document_type: document.getElementById("filter-document-type")?.value || "",
+            incident_severity: document.getElementById("filter-incident-severity")?.value || "",
         };
     }
 
@@ -143,6 +149,19 @@ export default function initBacklogsManagement() {
         if (inputStart) inputStart.value = filters.start || "";
         if (inputEnd) inputEnd.value = filters.end || "";
         if (inputSearch) inputSearch.value = filters.search || "";
+    }
+
+    function updateExtraFiltersVisibility() {
+        const type = selectType?.value || "";
+
+        extraFilterGroups.forEach((group) => {
+            const extraType = group.getAttribute("data-extra-type");
+            if (!type || type !== extraType) {
+                group.classList.add("d-none");
+            } else {
+                group.classList.remove("d-none");
+            }
+        });
     }
 
     // --- Chargement assignables (dropdown dans la modale) ---
@@ -220,18 +239,53 @@ export default function initBacklogsManagement() {
             const url = new URL("/admin/backlogs", window.location.origin);
             url.searchParams.set("company_id", companyId);
 
-            if (filters.type) url.searchParams.set("type", filters.type);
-            if (filters.employee_id)
-                url.searchParams.set("employee_id", filters.employee_id);
-            if (filters.status) url.searchParams.set("status", filters.status);
-            if (filters.start) url.searchParams.set("start", filters.start);
-            if (filters.end) url.searchParams.set("end", filters.end);
+            // ======================
+            // 📌 FILTRES DE BASE
+            // ======================
+
+            if (filters.type)
+                url.searchParams.set("type", filters.type);
+
+            if (filters.status)
+                url.searchParams.set("status", filters.status);
+
             if (filters.search)
                 url.searchParams.set("search", filters.search.trim());
+
+            // ======================
+            // 📌 FILTRES SPÉCIFIQUES AU TYPE DE TICKET
+            // ======================
+
+            // --- CONGÉS ---
+            if (filters.leave_start)
+                url.searchParams.set("leave_start", filters.leave_start);
+
+            if (filters.leave_end)
+                url.searchParams.set("leave_end", filters.leave_end);
+
+            // --- NOTES DE FRAIS ---
+            if (filters.expense_min)
+                url.searchParams.set("expense_min", filters.expense_min);
+
+            if (filters.expense_max)
+                url.searchParams.set("expense_max", filters.expense_max);
+
+            // --- DOCUMENTS RH ---
+            if (filters.document_type)
+                url.searchParams.set("document_type", filters.document_type);
+
+            // --- INCIDENTS ---
+            if (filters.incident_severity)
+                url.searchParams.set("incident_severity", filters.incident_severity);
+
+            // ======================
+            // 📡 REQUÊTE
+            // ======================
 
             const res = await fetch(url.toString(), {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
             });
+
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const data = await res.json();
@@ -251,6 +305,7 @@ export default function initBacklogsManagement() {
             list.innerHTML = `<p class="text-danger p-3">Erreur de chargement : ${err.message}</p>`;
         }
     }
+
 
     function populateEmployeeFilterFromTickets(tickets, selectedId = "") {
         if (!selectEmployee) return;
@@ -331,35 +386,42 @@ export default function initBacklogsManagement() {
     function formatDate(dateStr) {
         if (!dateStr) return "—";
         return new Date(dateStr).toLocaleDateString("fr-FR");
-    }function formatMoney(amount) {
-    if (amount == null) return "—";
-    const n = Number(amount);
-    if (Number.isNaN(n)) return amount;
-    return n.toFixed(2).replace(".", ",") + " €";
-}
+    }
+    function formatMoney(amount) {
+        if (amount == null) return "—";
+        const n = Number(amount);
+        if (Number.isNaN(n)) return amount;
+        return n.toFixed(2).replace(".", ",") + " €";
+    }
 
-function getEmployeeName(t) {
-    const creatorName =
-        t.creator?.full_name ||
-        `${t.creator?.first_name ?? ""} ${t.creator?.last_name ?? ""}`.trim() ||
-        "Utilisateur inconnu";
+    function getEmployeeName(t) {
+        const creatorName =
+            t.creator?.full_name ||
+            `${t.creator?.first_name ?? ""} ${
+                t.creator?.last_name ?? ""
+            }`.trim() ||
+            "Utilisateur inconnu";
 
-    const relatedName =
-        t.related_user?.full_name ||
-        `${t.related_user?.first_name ?? ""} ${
-            t.related_user?.last_name ?? ""
-        }`.trim();
+        const relatedName =
+            t.related_user?.full_name ||
+            `${t.related_user?.first_name ?? ""} ${
+                t.related_user?.last_name ?? ""
+            }`.trim();
 
-    return relatedName || creatorName;
-}
+        return relatedName || creatorName;
+    }
 
     function buildExtraInfo(t) {
         const employeeName = getEmployeeName(t);
 
         switch (t.type) {
             case "conge": {
-                const start = t.leave_start_date ? formatDate(t.leave_start_date) : "—";
-                const end = t.leave_end_date ? formatDate(t.leave_end_date) : "—";
+                const start = t.leave_start_date
+                    ? formatDate(t.leave_start_date)
+                    : "—";
+                const end = t.leave_end_date
+                    ? formatDate(t.leave_end_date)
+                    : "—";
                 return `
                     <p class="ticket-desc">${t.description ?? ""}</p>
                     <p class="ticket-meta">
@@ -426,7 +488,6 @@ function getEmployeeName(t) {
         }
     }
 
-
     function renderTickets(tickets) {
         if (!tickets.length) {
             list.innerHTML =
@@ -489,7 +550,6 @@ function getEmployeeName(t) {
             })
             .join("");
     }
-
 
     function updateStats(stats) {
         const [totalEl, pendingEl, validatedEl, refusedEl] = statsCards;
@@ -659,6 +719,7 @@ function getEmployeeName(t) {
             haute: "Haute",
         };
 
+        // --- Générique ---
         byId("ticketDetailTitle").textContent = t.title || "—";
         byId("ticketDetailDescription").textContent = t.description || "—";
 
@@ -686,9 +747,101 @@ function getEmployeeName(t) {
         byId("ticketDetailCreatedAt").textContent = t.created_at
             ? formatDate(t.created_at)
             : "—";
-        byId("ticketDetailDueDate").textContent = t.due_date
-            ? formatDate(t.due_date)
-            : "Aucune";
+
+        // Pour incident on réutilise due_date dans le bloc spécifique
+        // (mais on garde le champ s'il est présent)
+        // byId("ticketDetailDueDate").textContent = t.due_date
+        //     ? formatDate(t.due_date)
+        //     : "Aucune";
+
+        // --- Gestion de l'affichage des blocs par type ---
+        const extraGroups = document.querySelectorAll(".ticket-details-extra");
+        extraGroups.forEach((g) => g.classList.add("d-none"));
+
+        const activeGroup = document.querySelector(
+            `.ticket-details-extra[data-ticket-type="${t.type}"]`
+        );
+        if (activeGroup) activeGroup.classList.remove("d-none");
+
+        // --- Remplissage spécifique par type ---
+        switch (t.type) {
+            case "conge": {
+                const leaveTypeLabel = {
+                    CP: "Congés payés",
+                    SansSolde: "Sans solde",
+                    Exceptionnel: "Absence exceptionnelle",
+                    Maladie: "Maladie",
+                };
+                document.getElementById("ticketDetailLeaveType").textContent =
+                    leaveTypeLabel[t.leave_type] ?? t.leave_type ?? "—";
+
+                document.getElementById("ticketDetailLeaveStart").textContent =
+                    t.leave_start_date ? formatDate(t.leave_start_date) : "—";
+
+                document.getElementById("ticketDetailLeaveEnd").textContent =
+                    t.leave_end_date ? formatDate(t.leave_end_date) : "—";
+                break;
+            }
+
+            case "note_frais": {
+                const expenseTypeLabel = {
+                    repas: "Repas",
+                    peage: "Péage / autoroute",
+                    hebergement: "Hébergement",
+                    km: "Kilométrage",
+                };
+                document.getElementById("ticketDetailExpenseType").textContent =
+                    expenseTypeLabel[t.expense_type] ?? t.expense_type ?? "—";
+
+                document.getElementById(
+                    "ticketDetailExpenseAmount"
+                ).textContent =
+                    t.expense_amount != null
+                        ? `${Number(t.expense_amount).toFixed(2)} €`
+                        : "—";
+
+                document.getElementById("ticketDetailExpenseDate").textContent =
+                    t.expense_date ? formatDate(t.expense_date) : "—";
+                break;
+            }
+
+            case "document_rh": {
+                document.getElementById(
+                    "ticketDetailDocumentType"
+                ).textContent = t.document_type ?? t.details?.doc_type ?? "—";
+
+                const exp =
+                    t.document_expires_at ?? t.details?.expires_at ?? null;
+                document.getElementById(
+                    "ticketDetailDocumentExpiresAt"
+                ).textContent = exp ? formatDate(exp) : "Aucune";
+                break;
+            }
+
+            case "incident": {
+                const severityLabel = {
+                    mineur: "Mineur",
+                    majeur: "Majeur",
+                    critique: "Critique",
+                };
+                document.getElementById(
+                    "ticketDetailIncidentSeverity"
+                ).textContent =
+                    severityLabel[t.incident_severity] ??
+                    t.incident_severity ??
+                    "—";
+
+                document.getElementById("ticketDetailDueDate").textContent =
+                    t.due_date ? formatDate(t.due_date) : "Aucune";
+                break;
+            }
+
+            case "autre":
+            default: {
+                // Rien de spécial, le bloc "autre" affiche juste un texte d'aide.
+                break;
+            }
+        }
     }
 
     // --- Écouteurs sur les filtres ---
@@ -697,7 +850,10 @@ function getEmployeeName(t) {
         loadTickets();
     }
 
-    selectType?.addEventListener("change", onFiltersChange);
+    selectType?.addEventListener("change", () => {
+        updateExtraFiltersVisibility();
+        onFiltersChange();
+    });
     selectEmployee?.addEventListener("change", onFiltersChange);
     selectStatus?.addEventListener("change", onFiltersChange);
     inputStart?.addEventListener("change", onFiltersChange);
@@ -725,8 +881,8 @@ function getEmployeeName(t) {
     // --- INIT ---
     const initialFilters = loadSavedFilters();
     applyFiltersToUI(initialFilters);
+    updateExtraFiltersVisibility();
     loadTickets(true);
-    loadAssignees();
 
     // type par défaut dans la modale
     if (ticketTypeInput && !ticketTypeInput.value) {

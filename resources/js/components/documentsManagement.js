@@ -113,7 +113,7 @@ export default function initDocumentsManagement() {
 
         tableBody.innerHTML = `
             <tr>
-              <td colspan="5" class="text-center text-muted py-3">
+              <td colspan="5" class="text-center  py-3">
                 Chargement des documents...
               </td>
             </tr>`;
@@ -160,7 +160,7 @@ export default function initDocumentsManagement() {
         if (!documents.length) {
             tableBody.innerHTML = `
               <tr>
-                <td colspan="5" class="text-center text-muted py-3">
+                <td colspan="5" class="text-center  py-3">
                   Aucun document trouvé.
                 </td>
               </tr>`;

@@ -38,24 +38,34 @@ class BacklogController extends Controller
                 ? $user->company_id
                 : $request->query('company_id', $user->company_id);
 
-            $type       = $request->query('type');         // conge, note_frais, ...
-            $status     = $request->query('status');       // en_attente, valide, refuse
+            $type       = $request->query('type');                // conge, note_frais, ...
+            $status     = $request->query('status');              // en_attente, valide, refuse
             $employeeId = $isEmployee ? null : $request->query('employee_id');
-            $start      = $request->query('start');        // YYYY-MM-DD
-            $end        = $request->query('end');          // YYYY-MM-DD
-            $search     = $request->query('search');       // texte libre
+            $search     = $request->query('search');              // texte libre
+
+            // 🔹 nouveaux filtres spécifiques
+            $leaveStart        = $request->query('leave_start');        // YYYY-MM-DD
+            $leaveEnd          = $request->query('leave_end');          // YYYY-MM-DD
+            $expenseMin        = $request->query('expense_min');        // montant min
+            $expenseMax        = $request->query('expense_max');        // montant max
+            $documentType      = $request->query('document_type');      // type doc RH
+            $incidentSeverity  = $request->query('incident_severity');  // mineur / majeur / critique
 
             Log::info('[BacklogController@index] Filtres', [
-                'user_id'    => $user->id,
-                'role'       => $roleName,
-                'company_id' => $companyId,
-                'type'       => $type,
-                'status'     => $status,
-                'employee_id'=> $employeeId,
-                'start'      => $start,
-                'end'        => $end,
-                'search'     => $search,
-                'onlyMine'   => $onlyMine,
+                'user_id'          => $user->id,
+                'role'             => $roleName,
+                'company_id'       => $companyId,
+                'type'             => $type,
+                'status'           => $status,
+                'employee_id'      => $employeeId,
+                'search'           => $search,
+                'onlyMine'         => $onlyMine,
+                'leave_start'      => $leaveStart,
+                'leave_end'        => $leaveEnd,
+                'expense_min'      => $expenseMin,
+                'expense_max'      => $expenseMax,
+                'document_type'    => $documentType,
+                'incident_severity'=> $incidentSeverity,
             ]);
 
             // --- requête de base ---
@@ -83,16 +93,55 @@ class BacklogController extends Controller
             if ($employeeId) {
                 $query->where(function ($q) use ($employeeId) {
                     $q->where('created_by', $employeeId)
-                      ->orWhere('related_user_id', $employeeId);
+                    ->orWhere('related_user_id', $employeeId);
                 });
             }
 
-            // période sur created_at
-            if ($start) {
-                $query->whereDate('created_at', '>=', $start);
+            // 🔹 Filtres spécifiques par type
+
+            // -- Congés : bornes sur les dates de congés --
+            if ($leaveStart || $leaveEnd) {
+                // si on filtre par congés, on force type = 'conge' (sauf si déjà filtré)
+                if (!$type) {
+                    $query->where('type', 'conge');
+                }
+
+                if ($leaveStart) {
+                    $query->whereDate('leave_start_date', '>=', $leaveStart);
+                }
+                if ($leaveEnd) {
+                    $query->whereDate('leave_end_date', '<=', $leaveEnd);
+                }
             }
-            if ($end) {
-                $query->whereDate('created_at', '<=', $end);
+
+            // -- Notes de frais : bornes sur le montant --
+            if ($expenseMin !== null && $expenseMin !== '') {
+                if (!$type) {
+                    $query->where('type', 'note_frais');
+                }
+                $query->where('expense_amount', '>=', (float) $expenseMin);
+            }
+            if ($expenseMax !== null && $expenseMax !== '') {
+                if (!$type) {
+                    $query->where('type', 'note_frais');
+                }
+                $query->where('expense_amount', '<=', (float) $expenseMax);
+            }
+
+            // -- Documents RH : type de document --
+            if ($documentType) {
+                if (!$type) {
+                    $query->where('type', 'document_rh');
+                }
+                $query->where('document_type', $documentType);
+            }
+
+            // -- Incidents : gravité --
+            if ($incidentSeverity) {
+                if (!$type) {
+                    $query->where('type', 'incident');
+                }
+                $query->where('incident_severity', $incidentSeverity);
             }
 
             // recherche texte : titre, description, nom/prénom créateur OU employé concerné
@@ -100,17 +149,17 @@ class BacklogController extends Controller
                 $s = '%' . trim($search) . '%';
                 $query->where(function ($q) use ($s) {
                     $q->where('title', 'LIKE', $s)
-                      ->orWhere('description', 'LIKE', $s)
-                      ->orWhereHas('creator', function ($q2) use ($s) {
-                          $q2->where('first_name', 'LIKE', $s)
-                             ->orWhere('last_name', 'LIKE', $s)
-                             ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$s]);
-                      })
-                      ->orWhereHas('relatedUser', function ($q3) use ($s) {
-                          $q3->where('first_name', 'LIKE', $s)
-                             ->orWhere('last_name', 'LIKE', $s)
-                             ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$s]);
-                      });
+                    ->orWhere('description', 'LIKE', $s)
+                    ->orWhereHas('creator', function ($q2) use ($s) {
+                        $q2->where('first_name', 'LIKE', $s)
+                            ->orWhere('last_name', 'LIKE', $s)
+                            ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$s]);
+                    })
+                    ->orWhereHas('relatedUser', function ($q3) use ($s) {
+                        $q3->where('first_name', 'LIKE', $s)
+                            ->orWhere('last_name', 'LIKE', $s)
+                            ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$s]);
+                    });
                 });
             }
 
@@ -157,6 +206,7 @@ class BacklogController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Utilisateurs pouvant être assignés / concernés.
@@ -522,6 +572,24 @@ class BacklogController extends Controller
                 'full_name' => $ticket->relatedUser->full_name,
                 'email'     => $ticket->relatedUser->email,
             ] : null,
+
+            // Champs spécifiques pour la modale détail
+            'leave_type'          => $ticket->leave_type,
+            'leave_start_date'    => $ticket->leave_start_date,
+            'leave_end_date'      => $ticket->leave_end_date,
+
+            'expense_type'        => $ticket->expense_type,
+            'expense_amount'      => $ticket->expense_amount,
+            'expense_date'        => $ticket->expense_date,
+
+            'document_type'       => $ticket->document_type,
+            'document_expires_at' => $ticket->document_expires_at,
+
+            'incident_severity'   => $ticket->incident_severity,
+
+            // Si tu as une colonne JSON "details" castée en array dans le modèle
+            'details'             => $ticket->details ?? null,
         ]);
     }
+
 }

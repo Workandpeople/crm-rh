@@ -40,14 +40,13 @@
 .ticket-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem 1rem;
-    font-size: .8rem;
+    gap: 0.5rem 1rem;
+    font-size: 0.8rem;
     color: var(--color-text-muted);
 }
 .ticket-meta span strong {
     font-weight: 600;
 }
-
 
 /* ========================================================= */
 /* STATS                                                     */
@@ -89,7 +88,7 @@
 }
 
 /* ========================================================= */
-/* FILTRES AVANCÉS                                           */
+/* FILTRES AVANCÉS - BACKLOG / TICKETS RH                   */
 /* ========================================================= */
 
 .ticket-filters-advanced {
@@ -106,13 +105,13 @@
     align-items: flex-end;
 }
 
-/* Chaque bloc de filtre (type, employé, statut, période) */
+/* Bloc générique de filtre (type, statut, filtres spécifiques, etc.) */
 .ticket-filters-advanced .filter-group {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    min-width: 160px;
-    flex: 0 0 auto; /* <-- ne prend plus toute la largeur */
+    min-width: 170px;
+    flex: 0 0 auto;
 }
 
 /* Label */
@@ -124,7 +123,8 @@
 
 /* Inputs & selects */
 .ticket-filters-advanced .form-select,
-.ticket-filters-advanced .form-control {
+.ticket-filters-advanced .form-control,
+.ticket-filters-advanced .search-input {
     background-color: var(--color-bg);
     color: var(--color-text);
     border: 1px solid var(--color-border);
@@ -134,60 +134,66 @@
 }
 
 .ticket-filters-advanced .form-select:focus,
-.ticket-filters-advanced .form-control:focus {
+.ticket-filters-advanced .form-control:focus,
+.ticket-filters-advanced .search-input:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.35);
+    outline: none;
 }
 
-/* Période (dates) */
-.filter-group-period .period-inputs {
+/* Groupes "extra" par type de ticket (congé, note_frais, document_rh, incident) */
+.ticket-filters-advanced .filter-group-extra {
+    min-width: 200px;
+}
+
+/* Ligne avec 2 inputs (dates, montants…) */
+.ticket-filters-advanced .period-inputs {
     display: flex;
     align-items: center;
     gap: 0.4rem;
 }
 
-.filter-group-period .period-separator {
+.ticket-filters-advanced .period-separator {
     opacity: 0.7;
     font-size: 0.9rem;
 }
 
-.filter-group-period .period-inputs input[type="date"] {
-    width: 140px; /* largeur fixe pour que ça reste propre */
+/* Largeur des champs date / number sur desktop */
+.ticket-filters-advanced .period-inputs input[type="date"],
+.ticket-filters-advanced .period-inputs input[type="number"] {
+    width: 135px;
 }
 
-/* Barre de recherche */
-
-.filter-group-search {
-    flex: 1 1 220px; /* s’étire pour occuper l’espace restant */
+/* Barre de recherche : prend le reste de la ligne à droite */
+.ticket-filters-advanced .filter-group-search {
     min-width: 220px;
     max-width: 320px;
     margin-left: auto; /* pousse la recherche à droite */
 }
 
-.search-wrapper {
+.ticket-filters-advanced .search-wrapper {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.search-wrapper .search-icon {
+.ticket-filters-advanced .search-icon {
     position: absolute;
     left: 0.55rem;
     font-size: 0.8rem;
-    color: var(--color-text-muted);
+    pointer-events: none;
 }
 
-.search-wrapper input {
+.ticket-filters-advanced .search-input {
     padding-left: 1.7rem;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    border-radius: 0.6rem;
-    border: 1px solid var(--color-border);
 }
 
-/* Responsive */
+/* ========================================= */
+/* RESPONSIVE                                */
+/* ========================================= */
+
 @media (max-width: 992px) {
-    .filter-group-search {
+    .ticket-filters-advanced .filter-group-search {
         max-width: 100%;
         margin-left: 0;
     }
@@ -197,14 +203,27 @@
     .ticket-filters-advanced {
         padding: 0.8rem 0.9rem;
     }
+
     .ticket-filters-advanced .filters-row {
         flex-direction: column;
+        align-items: stretch;
     }
+
     .ticket-filters-advanced .filter-group,
-    .filter-group-search {
+    .ticket-filters-advanced .filter-group-extra,
+    .ticket-filters-advanced .filter-group-search {
         min-width: 100%;
         max-width: 100%;
         margin-left: 0;
+    }
+
+    .ticket-filters-advanced .period-inputs {
+        flex-direction: row;
+    }
+
+    .ticket-filters-advanced .period-inputs input[type="date"],
+    .ticket-filters-advanced .period-inputs input[type="number"] {
+        width: 100%;
     }
 }
 
@@ -395,6 +414,7 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 1.2rem 0.75rem;
+    color: var(--color-text-muted) !important;
 }
 
 /* Responsive */

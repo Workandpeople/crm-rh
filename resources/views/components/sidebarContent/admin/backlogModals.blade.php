@@ -207,7 +207,7 @@
           {{-- AUTRE --}}
           <div class="ticket-extra-group d-none" data-ticket-type="autre">
             <h6 class="mb-2 fw-semibold">Informations complémentaires</h6>
-            <p class="text-muted mb-2" style="font-size:.9rem;">
+            <p class=" mb-2" style="font-size:.9rem;">
               Utilisez ce ticket pour toute demande ne rentrant pas dans les autres catégories
               (question RH, suivi, demande diverse, etc.).
             </p>
@@ -224,6 +224,160 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+{{-- MODALE DÉTAIL TICKET RH --}}
+<div class="modal fade" id="modalTicketDetails" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-info"></i>
+            Détail du ticket
+          </h5>
+          <p class="mb-0" style="font-size:.85rem;">
+            Consultation des informations et du contexte de la demande.
+          </p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        {{-- HEADER : type + statut + priorité --}}
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <span id="ticketDetailType" class="badge ticket-type-badge"></span>
+            <span id="ticketDetailStatus" class="badge ticket-status-badge"></span>
+            <span id="ticketDetailPriority" class="badge ticket-priority-badge"></span>
+          </div>
+          <small class="">
+            Créé le <span id="ticketDetailCreatedAt">—</span>
+            @ <span id="ticketDetailCompany">—</span>
+          </small>
+        </div>
+
+        {{-- Titre + description --}}
+        <div class="mb-3">
+          <h5 id="ticketDetailTitle" class="mb-1">Titre du ticket</h5>
+          <p id="ticketDetailDescription" class="mb-0 " style="white-space:pre-line;">—</p>
+        </div>
+
+        {{-- Métadonnées : créateur / assigné / employé concerné --}}
+        <div class="row mb-3">
+          <div class="col-md-4 mb-2">
+            <h6 class="fw-semibold mb-1">Créé par</h6>
+            <p class="mb-0" id="ticketDetailCreator">—</p>
+          </div>
+          <div class="col-md-4 mb-2">
+            <h6 class="fw-semibold mb-1">Assigné à</h6>
+            <p class="mb-0" id="ticketDetailAssignee">—</p>
+          </div>
+          <div class="col-md-4 mb-2">
+            <h6 class="fw-semibold mb-1">Employé concerné</h6>
+            <p class="mb-0" id="ticketDetailRelatedUser">—</p>
+          </div>
+        </div>
+
+        <hr>
+
+        {{-- BLOCS SPÉCIFIQUES PAR TYPE ----------------------------------}}
+
+        {{-- CONGÉ --}}
+        <div class="ticket-details-extra" data-ticket-type="conge">
+          <h6 class="fw-semibold mb-2">
+            <i class="fa-solid fa-plane-departure me-1"></i> Informations congé
+          </h6>
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Type de congé</span>
+              <span id="ticketDetailLeaveType">—</span>
+            </div>
+            <div class="col-md-4 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Date de début</span>
+              <span id="ticketDetailLeaveStart">—</span>
+            </div>
+            <div class="col-md-4 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Date de fin</span>
+              <span id="ticketDetailLeaveEnd">—</span>
+            </div>
+          </div>
+        </div>
+
+        {{-- NOTE DE FRAIS --}}
+        <div class="ticket-details-extra d-none" data-ticket-type="note_frais">
+          <h6 class="fw-semibold mb-2">
+            <i class="fa-solid fa-receipt me-1"></i> Informations note de frais
+          </h6>
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Type de dépense</span>
+              <span id="ticketDetailExpenseType">—</span>
+            </div>
+            <div class="col-md-4 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Montant</span>
+              <span id="ticketDetailExpenseAmount">—</span>
+            </div>
+            <div class="col-md-4 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Date de la dépense</span>
+              <span id="ticketDetailExpenseDate">—</span>
+            </div>
+          </div>
+        </div>
+
+        {{-- DOCUMENT RH --}}
+        <div class="ticket-details-extra d-none" data-ticket-type="document_rh">
+          <h6 class="fw-semibold mb-2">
+            <i class="fa-solid fa-file-contract me-1"></i> Informations document RH
+          </h6>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Type de document</span>
+              <span id="ticketDetailDocumentType">—</span>
+            </div>
+            <div class="col-md-6 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Date d’expiration</span>
+              <span id="ticketDetailDocumentExpiresAt">—</span>
+            </div>
+          </div>
+        </div>
+
+        {{-- INCIDENT --}}
+        <div class="ticket-details-extra d-none" data-ticket-type="incident">
+          <h6 class="fw-semibold mb-2">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> Informations incident
+          </h6>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Gravité</span>
+              <span id="ticketDetailIncidentSeverity">—</span>
+            </div>
+            <div class="col-md-6 mb-2">
+              <span class=" d-block" style="font-size:.8rem;">Échéance de traitement</span>
+              <span id="ticketDetailDueDate">—</span>
+            </div>
+          </div>
+        </div>
+
+        {{-- AUTRE --}}
+        <div class="ticket-details-extra d-none" data-ticket-type="autre">
+          <h6 class="fw-semibold mb-2">
+            <i class="fa-solid fa-circle-question me-1"></i> Informations complémentaires
+          </h6>
+          <p class=" mb-0" style="font-size:.9rem;">
+            Ticket générique. Les informations importantes sont décrites dans le titre et la description.
+          </p>
+        </div>
+
+      </div>{{-- /modal-body --}}
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Fermer
+        </button>
+      </div>
     </div>
   </div>
 </div>

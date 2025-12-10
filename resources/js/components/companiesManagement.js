@@ -164,7 +164,7 @@ export default function initCompaniesManagement() {
     const pageData = filtered.slice(start, start + perPage);
 
     listEl.innerHTML = pageData.length ? pageData.map(cardHTML).join('') :
-      `<div class="text-muted">Aucune société trouvée</div>`;
+      `<div class="">Aucune société trouvée</div>`;
 
     renderPagination(totalPages);
     bindRowActions();
@@ -182,7 +182,7 @@ export default function initCompaniesManagement() {
             <img src="${logo}" alt="Logo ${c.name}" class="societe-logo">
             <div>
               <h4 class="mb-1">${c.name}</h4>
-              <p class="text-muted mb-0">${c.domain}</p>
+              <p class=" mb-0">${c.domain}</p>
             </div>
           </div>
           <span class="status active">Active</span>

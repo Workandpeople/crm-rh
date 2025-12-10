@@ -255,7 +255,7 @@ export default function initUsersManagement() {
                 </tr>`
                   )
                   .join("")
-            : `<tr><td colspan="6" class="text-center py-4 text-muted">Aucun utilisateur trouvé</td></tr>`;
+            : `<tr><td colspan="6" class="text-center py-4 ">Aucun utilisateur trouvé</td></tr>`;
 
         renderPagination(totalPages);
     }

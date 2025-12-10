@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    {{-- FILTRES AVANCÉS (type + employé + statut + période + recherche) --}}
+  {{-- FILTRES AVANCÉS (type + statut + filtres contextuels + recherche) --}}
     <div class="ticket-filters-advanced mb-4">
         <div class="filters-row">
 
@@ -49,15 +49,6 @@
                 </select>
             </div>
 
-            {{-- Employé (créateur) --}}
-            {{--<div class="filter-group">
-                <label for="filter-ticket-employee" class="form-label">Employé</label>
-                <select id="filter-ticket-employee" class="form-select">
-                    <option value="">Tous</option>
-                    {{-- options dynamiques injectées en JS
-                </select>
-            </div> --}}
-
             {{-- Statut --}}
             <div class="filter-group">
                 <label for="filter-ticket-status" class="form-label">Statut</label>
@@ -69,30 +60,82 @@
                 </select>
             </div>
 
-            {{-- Période (date de création) --}}
-            <div class="filter-group filter-group-period">
-                <label class="form-label">Période</label>
+            {{-- 🔁 FILTRES SPÉCIFIQUES AU TYPE DE TICKET --}}
+            {{-- CONGÉS : période de congé --}}
+            <div class="filter-group filter-group-extra d-none" data-extra-type="conge">
+                <label class="form-label">Période de congé</label>
                 <div class="period-inputs">
-                    <input type="date" id="filter-ticket-start" class="form-control">
+                    <input type="date"
+                        id="filter-leave-start"
+                        class="form-control"
+                        placeholder="Du">
                     <span class="period-separator">→</span>
-                    <input type="date" id="filter-ticket-end" class="form-control">
+                    <input type="date"
+                        id="filter-leave-end"
+                        class="form-control"
+                        placeholder="Au">
                 </div>
+            </div>
+
+            {{-- NOTES DE FRAIS : montant --}}
+            <div class="filter-group filter-group-extra d-none" data-extra-type="note_frais">
+                <label class="form-label">Montant (€)</label>
+                <div class="period-inputs">
+                    <input type="number"
+                        step="0.01"
+                        min="0"
+                        id="filter-expense-min"
+                        class="form-control"
+                        placeholder="Min">
+                    <span class="period-separator">→</span>
+                    <input type="number"
+                        step="0.01"
+                        min="0"
+                        id="filter-expense-max"
+                        class="form-control"
+                        placeholder="Max">
+                </div>
+            </div>
+
+            {{-- DOCUMENTS RH : type de document --}}
+            <div class="filter-group filter-group-extra d-none" data-extra-type="document_rh">
+                <label for="filter-document-type" class="form-label">Type de document</label>
+                <select id="filter-document-type" class="form-select">
+                    <option value="">Tous</option>
+                    <option value="CNI">Carte d’identité</option>
+                    <option value="Carte Vitale">Carte Vitale</option>
+                    <option value="Permis">Permis de conduire</option>
+                    <option value="Contrat">Contrat de travail</option>
+                    <option value="Fiche Fonction">Fiche de fonction</option>
+                </select>
+            </div>
+
+            {{-- INCIDENTS : gravité --}}
+            <div class="filter-group filter-group-extra d-none" data-extra-type="incident">
+                <label for="filter-incident-severity" class="form-label">Gravité</label>
+                <select id="filter-incident-severity" class="form-select">
+                    <option value="">Toutes</option>
+                    <option value="mineur">Mineur</option>
+                    <option value="majeur">Majeur</option>
+                    <option value="critique">Critique</option>
+                </select>
             </div>
 
             {{-- Recherche texte --}}
             <div class="filter-group filter-group-search">
-                <label for="search-ticket" class="form-label">Recherche</label>
+                <label for="filter-ticket-search" class="form-label">Recherche</label>
                 <div class="search-wrapper">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
                     <input type="text"
                         id="filter-ticket-search"
-                        class="input w-100"
+                        class="search-input w-100"
                         placeholder="Rechercher un ticket...">
                 </div>
             </div>
 
         </div>
     </div>
+
 
 
     {{-- LISTE DES TICKETS (dynamique) --}}

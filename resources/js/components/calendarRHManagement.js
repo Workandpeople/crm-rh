@@ -4,10 +4,9 @@ export default function initCalendarRHManagement() {
     const page = document.querySelector(".calendar-admin-page");
     if (!page) return;
 
-    // FullCalendar via CDN global
     const FC = window.FullCalendar;
     if (!FC) {
-        console.error("[calendarRhManagement] FullCalendar non chargé (CDN)");
+        console.error("[calendarRHManagement] FullCalendar non chargé (CDN)");
         return;
     }
 
@@ -15,28 +14,22 @@ export default function initCalendarRHManagement() {
     calendarContainer.id = "rhCalendar";
     calendarContainer.style.minHeight = "500px";
 
-    // Si tu as encore l’ancienne grille statique, on la masque
     const oldGrid = page.querySelector(".calendar-grid");
     if (oldGrid) oldGrid.style.display = "none";
 
-    // On insère le vrai calendrier juste après le header / légende
     const legend = page.querySelector(".calendar-legend");
     if (legend && legend.nextElementSibling) {
-        legend.parentNode.insertBefore(
-            calendarContainer,
-            legend.nextElementSibling
-        );
+        legend.parentNode.insertBefore(calendarContainer, legend.nextElementSibling);
     } else {
         page.appendChild(calendarContainer);
     }
 
-    // Boutons prev / next et titre du mois
-    const btnPrev = page.querySelector(".calendar-nav.prev");
-    const btnNext = page.querySelector(".calendar-nav.next");
+    const btnPrev      = page.querySelector(".calendar-nav.prev");
+    const btnNext      = page.querySelector(".calendar-nav.next");
     const monthTitleEl = page.querySelector(".month-title");
 
     const companyId = localStorage.getItem("selectedCompanyId");
-    const teamId = localStorage.getItem("selectedTeamId");
+    const teamId    = localStorage.getItem("selectedTeamId");
 
     function updateMonthTitle(calendar) {
         if (!monthTitleEl) return;
@@ -46,7 +39,6 @@ export default function initCalendarRHManagement() {
             year: "numeric",
         });
         let txt = formatter.format(currentDate);
-        // Première lettre en majuscule
         txt = txt.charAt(0).toUpperCase() + txt.slice(1);
         monthTitleEl.textContent = txt;
     }
@@ -54,24 +46,22 @@ export default function initCalendarRHManagement() {
     const calendar = new FC.Calendar(calendarContainer, {
         initialView: "dayGridMonth",
         locale: "fr",
-        firstDay: 1, // Lundi
+        firstDay: 1,
         height: "auto",
         expandRows: true,
-        headerToolbar: false, // on gère la navigation avec tes propres boutons
+        headerToolbar: false,
         buttonText: {
             today: "Aujourd’hui",
         },
-        // Chargement des événements (congés) via ton controller
+
+        // Récupération des congés depuis ton controller
         events: async (info, successCallback, failureCallback) => {
             try {
-                const url = new URL(
-                    "/admin/calendar-rh/events",
-                    window.location.origin
-                );
+                const url = new URL("/admin/calendar-rh/events", window.location.origin);
                 url.searchParams.set("start", info.startStr);
                 url.searchParams.set("end", info.endStr);
                 if (companyId) url.searchParams.set("company_id", companyId);
-                if (teamId) url.searchParams.set("team_id", teamId);
+                if (teamId)    url.searchParams.set("team_id", teamId);
 
                 const res = await fetch(url.toString(), {
                     headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -81,48 +71,42 @@ export default function initCalendarRHManagement() {
                 const data = await res.json();
                 successCallback(data.events || []);
             } catch (e) {
-                console.error(
-                    "[calendarRHManagement] Erreur chargement events",
-                    e
-                );
+                console.error("[calendarRHManagement] Erreur chargement events", e);
                 failureCallback(e);
             }
         },
 
-        // Classes custom pour colorer selon le type
+        // Classes de couleur selon le type de congé brut (CP, SansSolde, Exceptionnel, Maladie)
         eventClassNames: (info) => {
-            const type = info.event.extendedProps.type || "autre";
-            return ["rh-calendar-event", `rh-event-${type}`];
+            const rawType = (info.event.extendedProps.raw_type || "").toString();
+            const slug = rawType
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // supprime accents
+                .toLowerCase()
+                .replace(/\s+/g, "-"); // SansSolde -> sanssolde, "Absence exceptionnelle" -> absence-exceptionnelle
+
+            return [
+                "rh-calendar-event",
+                "rh-leave-event",
+                slug ? `rh-leave-${slug}` : "rh-leave-unknown",
+            ];
         },
 
-        // Tooltip simple en title HTML
+        // Tooltip : "Congés payés — Jean Dupont" etc.
         eventDidMount: (info) => {
-            const type = info.event.extendedProps.type;
-            const baseTitle = info.event.title || "";
-            let prefix = "";
+            const rawType = info.event.extendedProps.raw_type || "";
+            const fullName = info.event.title || "";
 
-            switch (type) {
-                case "conge":
-                    prefix = "Congé : ";
-                    break;
-                case "maladie":
-                    prefix = "Maladie : ";
-                    break;
-                case "formation":
-                    prefix = "Formation : ";
-                    break;
-                case "entretien":
-                    prefix = "Entretien : ";
-                    break;
-                case "evenement":
-                    prefix = "Événement interne : ";
-                    break;
-                default:
-                    prefix = "";
-            }
+            const labels = {
+                CP: "Congés payés",
+                SansSolde: "Sans solde",
+                Exceptionnel: "Absence exceptionnelle",
+                Maladie: "Maladie",
+            };
 
-            info.el.title = prefix + baseTitle;
+            const label = labels[rawType] || rawType || "Congé";
+            info.el.title = `${label} — ${fullName}`;
         },
+
         datesSet: () => {
             updateMonthTitle(calendar);
         },
@@ -131,7 +115,6 @@ export default function initCalendarRHManagement() {
     calendar.render();
     updateMonthTitle(calendar);
 
-    // Navigation mois précédent / suivant
     btnPrev?.addEventListener("click", () => {
         calendar.prev();
         updateMonthTitle(calendar);
@@ -141,4 +124,11 @@ export default function initCalendarRHManagement() {
         calendar.next();
         updateMonthTitle(calendar);
     });
+
+    const btnToday = document.querySelector(".calendar-nav.today");
+    btnToday?.addEventListener("click", () => {
+        calendar.today();
+        updateMonthTitle(calendar);
+    });
 }
+

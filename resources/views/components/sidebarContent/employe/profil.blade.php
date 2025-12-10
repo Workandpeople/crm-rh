@@ -70,7 +70,7 @@
     <div class="card p-4 mb-4">
         <h5 class="fw-semibold mb-3">Complétude du dossier RH</h5>
         <div class="profil-progress">
-            <div class="bar" style="width: 78%;">78%</div>
+            <div class="bar progress-low" style="width: 30%;"></div>
         </div>
         <p class="mt-2 small" style="color: var(--color-text-muted);">
             Documents manquants : CNI, Fiche de fonction, Certificat médical
