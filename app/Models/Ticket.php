@@ -20,6 +20,7 @@ class Ticket extends Model
         'priority',
         'status',
         'due_date',
+        'details',
         'related_user_id',
 
         // Champs “métier” liés au type de ticket
@@ -43,6 +44,7 @@ class Ticket extends Model
         'leave_end_date'       => 'date',
         'expense_date'         => 'date',
         'document_expires_at'  => 'date',
+        'details'              => 'array',
     ];
 
     public function company()

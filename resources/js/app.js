@@ -36,6 +36,7 @@ import initCalendarRHManagement from './components/calendarRHManagement';
 import initTicketingEmployee from "./components/ticketingEmployee";
 import initCalendarEmployee from "./components/calendarEmployee";
 import initDossierEmployee from "./components/dossierEmployee";
+import initActualitesManagement from "./components/actualitesManagement";
 
 // Registre global appelé par le loader de la sidebar via data-script
 window.pageScripts = {
@@ -50,6 +51,7 @@ window.pageScripts = {
     ticketingEmployee: initTicketingEmployee,
     calendarEmployee: initCalendarEmployee,
     dossierEmployee: initDossierEmployee,
+    actualitesManagement: initActualitesManagement,
 };
 
 function runPageScriptFromDOM(root = document) {

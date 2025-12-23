@@ -1,8 +1,9 @@
 /* === DASHBOARD CONTENT === */
 
 #dashboardContent {
-    margin-left: 16vw;
+    margin-left: 17vw; /* aligne le contenu sur la largeur réelle de la sidebar */
     margin-top: 4rem;
+    padding: 1.5rem;
 
     background-color: var(--color-bg);
     min-height: calc(100vh - 4rem);

@@ -17,12 +17,13 @@ return new class extends Migration
             $table->foreignUuid('created_by')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('assigned_to')->nullable()->constrained('users')->nullOnDelete();
 
-            $table->enum('type', ['conge','note_frais','incident','autre']);
+            $table->enum('type', ['conge','note_frais','incident','document_rh','autre']);
             $table->string('title');
             $table->text('description');
             $table->enum('priority', ['basse','moyenne','haute'])->default('moyenne');
             $table->enum('status', ['en_attente','valide','refuse'])->default('en_attente');
             $table->date('due_date')->nullable();
+            $table->json('details')->nullable(); // payload spécifique selon le type
             $table->foreignUuid('related_user_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();

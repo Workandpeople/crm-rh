@@ -164,5 +164,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/calendar-rh/events', [\App\Http\Controllers\Admin\CalendarRHController::class, 'events'])
             ->name('admin.calendar-rh.events');
+
+        // === Blogs / Actualités ===
+        Route::get('/blogs', [\App\Http\Controllers\Admin\BlogController::class, 'index'])->name('admin.blogs.index');
+        Route::get('/blogs/{blog}', [\App\Http\Controllers\Admin\BlogController::class, 'show'])->name('admin.blogs.show');
+        Route::post('/blogs', [\App\Http\Controllers\Admin\BlogController::class, 'store'])->name('admin.blogs.store');
+        Route::put('/blogs/{blog}', [\App\Http\Controllers\Admin\BlogController::class, 'update'])->name('admin.blogs.update');
+        Route::delete('/blogs/{blog}', [\App\Http\Controllers\Admin\BlogController::class, 'destroy'])->name('admin.blogs.destroy');
     });
 });

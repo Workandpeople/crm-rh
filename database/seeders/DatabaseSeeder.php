@@ -161,7 +161,7 @@ class DatabaseSeeder extends Seeder
                     Document::factory()->create([
                         'user_id'    => $user->id,
                         'type'       => $type,
-                        'status'     => $faker->randomElement(['valid', 'pending', 'expired']),
+                        'status'     => $faker->randomElement(['validated', 'pending', 'expired']),
                         'expires_at' => now()->addMonths(rand(6, 18)),
                         'signed'     => true,
                         'signed_at'  => now()->subDays(rand(3, 30)),
