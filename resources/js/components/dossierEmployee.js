@@ -110,6 +110,21 @@ export default function initDossierEmployee() {
         e.preventDefault();
         const fd = new FormData(form);
         const docType = docTypeSelect?.value || "";
+        const title = fd.get("title")?.toString().trim();
+        const companyId = fd.get("company_id")?.toString().trim();
+
+        if (!docType) {
+            showToast("Veuillez choisir un type de document.", "error");
+            return;
+        }
+        if (!title) {
+            showToast("Veuillez renseigner un titre pour le ticket.", "error");
+            return;
+        }
+        if (!companyId) {
+            showToast("Aucune société associée à votre compte.", "error");
+            return;
+        }
         if (docType && !fd.get("description")) {
             fd.set("description", `Dépôt du document "${docType}".`);
         }

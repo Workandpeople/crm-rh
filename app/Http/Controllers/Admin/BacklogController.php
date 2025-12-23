@@ -260,6 +260,10 @@ class BacklogController extends Controller
         return response()->json(['message' => 'Accès non autorisé'], 403);
     }
 
+        if ($role === 'employe' && $user?->company_id) {
+            $request->merge(['company_id' => $user->company_id]);
+        }
+
 
         // Validation (on supporte à la fois "document_type" et un éventuel "doc_type")
         $validated = $request->validate([
