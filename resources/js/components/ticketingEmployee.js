@@ -1,450 +1,482 @@
 export default function initTicketingEmployee() {
-    console.log("%c[initTicketingEmployee] init", "color: #22c55e");
+    console.log("%c[ticketingEmployee] Initialisation", "color: violet;");
 
     const page = document.querySelector(".ticketing-employee-page");
     if (!page) return;
 
-    const csrfToken = document.querySelector(
-        'meta[name="csrf-token"]'
-    )?.content;
+    const listEl = document.getElementById("employeeTicketsList");
 
-    // Elements
-    const list = page.querySelector(".ticket-list");
-    const statsCards = page.querySelectorAll(".ticket-stats .stat-card p");
+    // Filters
+    const filterType = document.getElementById("filterEmployeeType");
+    const filterStatus = document.getElementById("filterEmployeeStatus");
+    const filterSearch = document.getElementById("filterEmployeeSearch");
 
-    const selectType = document.getElementById("filter-ticket-type");
-    const selectStatus = document.getElementById("filter-ticket-status");
-    const inputSearch = document.getElementById("filter-ticket-search");
+    // Stats
+    const statTotal = document.getElementById("statTotal");
+    const statPending = document.getElementById("statPending");
+    const statValidated = document.getElementById("statValidated");
+    const statRefused = document.getElementById("statRefused");
 
-    const btnAddTicket = document.getElementById("btnAddTicket");
-    const modalCreateEl = document.getElementById("modalTicketCreate");
-    const modalCreate = modalCreateEl
-        ? new window.bootstrap.Modal(modalCreateEl)
-        : null;
-    const formCreateTicket = document.getElementById("formCreateTicket");
+    // Modals
+    const createModalEl = document.getElementById("modalEmployeeTicketCreate");
+    const detailsModalEl = document.getElementById(
+        "modalEmployeeTicketDetails"
+    );
 
-    const modalDetailsEl = document.getElementById("modalTicketDetails");
-    const modalDetails = modalDetailsEl
-        ? new window.bootstrap.Modal(modalDetailsEl)
-        : null;
+    const btnOpenCreate = document.getElementById("btnOpenCreateTicket");
+    const formCreate = document.getElementById("formEmployeeCreateTicket");
 
-    const assigneeSelect = document.getElementById("ticketAssignee");
-    const relatedUserSelect = document.getElementById("ticketRelatedUser");
+    const createError = document.getElementById("employeeCreateError");
+    const createSuccess = document.getElementById("employeeCreateSuccess");
+    const createSpinner = document.getElementById("employeeCreateSpinner");
 
     let ticketsCache = [];
 
-    const FILTER_STORAGE_KEY = "employeeTicketFilters";
+    // Bootstrap modal instances
+    const createModal = createModalEl
+        ? new bootstrap.Modal(createModalEl)
+        : null;
+    const detailsModal = detailsModalEl
+        ? new bootstrap.Modal(detailsModalEl)
+        : null;
 
-    function getCompanyId() {
-        return localStorage.getItem("selectedCompanyId") || "";
+    // -------- TYPE SWITCHER (create modal)
+    const typeInput = document.getElementById("employeeTicketTypeInput");
+    const typeToggles =
+        createModalEl?.querySelectorAll(".ticket-type-toggle") || [];
+    const extraGroups =
+        createModalEl?.querySelectorAll(".ticket-extra-group") || [];
+
+    function setCreateType(type) {
+        if (!typeInput) return;
+        typeInput.value = type;
+
+        typeToggles.forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.ticketType === type);
+        });
+
+        extraGroups.forEach((grp) => {
+            const isMatch = grp.dataset.ticketType === type;
+            grp.classList.toggle("d-none", !isMatch);
+        });
     }
 
-    /* ------------------ TOAST HELPER ------------------ */
-    function showToast(message, type = "success") {
-        const bs = window.bootstrap;
-        if (!bs?.Toast) {
-            alert(message);
-            return;
-        }
+    typeToggles.forEach((btn) => {
+        btn.addEventListener("click", () =>
+            setCreateType(btn.dataset.ticketType)
+        );
+    });
 
-        const container =
-            document.getElementById("toastContainer") ||
-            (() => {
-                const c = document.createElement("div");
-                c.id = "toastContainer";
-                c.className = "toast-container position-fixed top-0 end-0 p-3";
-                document.body.appendChild(c);
-                return c;
-            })();
-
-        const wrap = document.createElement("div");
-        wrap.innerHTML = `
-        <div class="toast align-items-center text-white bg-${
-            type === "success" ? "success" : "danger"
-        } border-0 mb-2" role="alert">
-          <div class="d-flex">
-            <div class="toast-body">${message}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-          </div>
-        </div>`;
-        const toastEl = wrap.firstElementChild;
-        container.appendChild(toastEl);
-        new bs.Toast(toastEl, { delay: 3000 }).show();
+    // -------- Helpers
+    function esc(str) {
+        return String(str ?? "").replace(
+            /[&<>"']/g,
+            (m) =>
+                ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;",
+                }[m])
+        );
     }
 
-    /* ------------------ FILTRES <-> STORAGE ------------------ */
-    function loadSavedFilters() {
-        try {
-            const raw = localStorage.getItem(FILTER_STORAGE_KEY);
-            if (!raw) {
-                return { type: "", status: "", search: "" };
-            }
-            const parsed = JSON.parse(raw);
-            return {
-                type: parsed.type || "",
-                status: parsed.status || "",
-                search: parsed.search || "",
-            };
-        } catch {
-            return { type: "", status: "", search: "" };
-        }
+    function fmtDate(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return "—";
+        return d.toLocaleDateString("fr-FR");
     }
 
-    function saveFiltersToStorage(filters) {
-        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
+    function typeLabel(type) {
+        return (
+            {
+                conge: "Congé",
+                note_frais: "Note de frais",
+                document_rh: "Document RH",
+                incident: "Incident",
+                autre: "Autre",
+            }[type] || type
+        );
     }
 
-    function getFiltersFromUI() {
-        return {
-            type: selectType?.value || "",
-            status: selectStatus?.value || "",
-            search: inputSearch?.value || "",
-        };
+    function statusLabel(s) {
+        return (
+            {
+                en_attente: "En attente",
+                valide: "Validé",
+                refuse: "Refusé",
+            }[s] || s
+        );
     }
 
-    function applyFiltersToUI(filters) {
-        if (selectType) selectType.value = filters.type || "";
-        if (selectStatus) selectStatus.value = filters.status || "";
-        if (inputSearch) inputSearch.value = filters.search || "";
+    function priorityLabel(p) {
+        return (
+            {
+                basse: "Basse",
+                moyenne: "Moyenne",
+                haute: "Haute",
+            }[p] || p
+        );
     }
 
-    /* ------------------ LOAD ASSIGNEES / USERS ------------------ */
-    async function loadOptions() {
-        if (!assigneeSelect && !relatedUserSelect) return;
+    function applyBadges(el, value, kind) {
+        if (!el) return;
+        el.textContent = value ?? "—";
+        el.classList.remove(
+            "badge-conge",
+            "badge-note_frais",
+            "badge-document_rh",
+            "badge-incident",
+            "badge-autre",
+            "badge-status-pending",
+            "badge-status-ok",
+            "badge-status-no",
+            "badge-priority-low",
+            "badge-priority-mid",
+            "badge-priority-high"
+        );
 
-        try {
-            const url = new URL(
-                "/admin/backlogs/options",
-                window.location.origin
+        if (kind === "type") {
+            el.classList.add(
+                {
+                    conge: "badge-conge",
+                    note_frais: "badge-note_frais",
+                    document_rh: "badge-document_rh",
+                    incident: "badge-incident",
+                    autre: "badge-autre",
+                }[value] || "badge-autre"
             );
-            const companyId = getCompanyId();
-            if (companyId) url.searchParams.set("company_id", companyId);
+        }
 
-            const res = await fetch(url.toString(), {
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (kind === "status") {
+            el.classList.add(
+                {
+                    en_attente: "badge-status-pending",
+                    valide: "badge-status-ok",
+                    refuse: "badge-status-no",
+                }[value] || "badge-status-pending"
+            );
+        }
 
-            const data = await res.json();
-            const users = data.users || data.assignees || [];
-
-            const optionsHtml =
-                '<option value="">— Sélectionner —</option>' +
-                users
-                    .map(
-                        (u) =>
-                            `<option value="${u.id}">${
-                                u.full_name ||
-                                (u.first_name ?? "") + " " + (u.last_name ?? "")
-                            }</option>`
-                    )
-                    .join("");
-
-            if (relatedUserSelect) relatedUserSelect.innerHTML = optionsHtml;
-            if (assigneeSelect) {
-                assigneeSelect.innerHTML =
-                    '<option value="">— À définir plus tard —</option>' +
-                    users
-                        .map(
-                            (u) =>
-                                `<option value="${u.id}">${
-                                    u.full_name ||
-                                    (u.first_name ?? "") +
-                                        " " +
-                                        (u.last_name ?? "")
-                                }</option>`
-                        )
-                        .join("");
-            }
-        } catch (err) {
-            console.error(err);
-            showToast("Erreur lors du chargement des options", "error");
+        if (kind === "priority") {
+            el.classList.add(
+                {
+                    basse: "badge-priority-low",
+                    moyenne: "badge-priority-mid",
+                    haute: "badge-priority-high",
+                }[value] || "badge-priority-mid"
+            );
         }
     }
 
-    /* ------------------ LOAD TICKETS (MES TICKETS) ------------------ */
-    async function loadTickets() {
-        if (!list) return;
+    function showOnlyDetailsBlock(type) {
+        const blocks =
+            detailsModalEl?.querySelectorAll(".ticket-details-extra") || [];
+        blocks.forEach((b) =>
+            b.classList.toggle("d-none", b.dataset.ticketType !== type)
+        );
+    }
 
-        const companyId = getCompanyId();
-        if (!companyId) {
-            list.innerHTML =
-                '<p class="text-muted p-3">Sélectionnez d’abord une entreprise dans le header.</p>';
+    // -------- Render list
+    function renderTickets(items) {
+        if (!listEl) return;
+
+        if (!items.length) {
+            listEl.innerHTML = `<div class="empty-state">
+                <i class="fa-regular fa-folder-open"></i>
+                <div>
+                    <h6 class="mb-1">Aucun ticket</h6>
+                    <p class="mb-0">Crée ton premier ticket RH.</p>
+                </div>
+            </div>`;
             return;
         }
 
-        const filters = getFiltersFromUI();
-        saveFiltersToStorage(filters);
-
-        list.innerHTML =
-            '<p class="text-muted p-3">Chargement de vos tickets...</p>';
-
-        try {
-            const url = new URL("/admin/backlogs", window.location.origin);
-            url.searchParams.set("company_id", companyId);
-            url.searchParams.set("mine", "1"); // 🔹 très important
-
-            if (filters.type) url.searchParams.set("type", filters.type);
-            if (filters.status) url.searchParams.set("status", filters.status);
-            if (filters.search)
-                url.searchParams.set("search", filters.search.trim());
-
-            const res = await fetch(url.toString(), {
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            const data = await res.json();
-            ticketsCache = data.tickets || [];
-
-            renderTickets(ticketsCache);
-            updateStats(data.stats || {});
-        } catch (err) {
-            console.error(err);
-            list.innerHTML = `<p class="text-danger p-3">Erreur de chargement : ${err.message}</p>`;
-        }
-    }
-
-    /* ------------------ RENDER ------------------ */
-    function formatStatus(status) {
-        switch (status) {
-            case "en_attente":
-                return "En attente";
-            case "valide":
-                return "Validé";
-            case "refuse":
-                return "Refusé";
-            default:
-                return status || "";
-        }
-    }
-
-    function formatType(type) {
-        switch (type) {
-            case "conge":
-                return "Congé";
-            case "note_frais":
-                return "Note de frais";
-            case "incident":
-                return "Incident";
-            case "document_rh":
-                return "Document RH";
-            case "autre":
-                return "Autre";
-            default:
-                return type || "";
-        }
-    }
-
-    function icon(type) {
-        switch (type) {
-            case "conge":
-                return '<i class="fa-solid fa-plane-departure"></i>';
-            case "note_frais":
-                return '<i class="fa-solid fa-receipt"></i>';
-            case "incident":
-                return '<i class="fa-solid fa-triangle-exclamation"></i>';
-            case "document_rh":
-                return '<i class="fa-solid fa-file-lines"></i>';
-            default:
-                return '<i class="fa-solid fa-circle-question"></i>';
-        }
-    }
-
-    function formatDate(dateStr) {
-        if (!dateStr) return "—";
-        return new Date(dateStr).toLocaleDateString("fr-FR");
-    }
-
-    function renderTickets(tickets) {
-        if (!tickets.length) {
-            list.innerHTML =
-                '<p class="text-muted p-3">Aucun ticket trouvé avec ces filtres.</p>';
-            return;
-        }
-
-        list.innerHTML = tickets
+        listEl.innerHTML = items
             .map((t) => {
-                const creatorName =
-                    t.creator?.full_name ||
-                    `${t.creator?.first_name ?? ""} ${
-                        t.creator?.last_name ?? ""
-                    }`.trim() ||
-                    "Moi";
+                const tType = t.type;
+                const badgeType = esc(typeLabel(tType));
+                const badgeStatus = esc(statusLabel(t.status));
+                const badgePriority = esc(priorityLabel(t.priority));
+
+                // mini résumé contextuel
+                let meta = "";
+                if (tType === "conge") {
+                    meta = `Du <b>${esc(
+                        fmtDate(t.leave_start_date)
+                    )}</b> au <b>${esc(fmtDate(t.leave_end_date))}</b>`;
+                } else if (tType === "note_frais") {
+                    meta = `<b>${esc(t.expense_amount ?? "—")}€</b> • ${esc(
+                        t.expense_type ?? "—"
+                    )} • ${esc(fmtDate(t.expense_date))}`;
+                } else if (tType === "document_rh") {
+                    meta = `<b>${esc(t.document_type ?? "—")}</b> • exp. ${esc(
+                        fmtDate(t.document_expires_at)
+                    )}`;
+                } else if (tType === "incident") {
+                    meta = `Gravité : <b>${esc(
+                        t.incident_severity ?? "—"
+                    )}</b> • échéance ${esc(fmtDate(t.due_date))}`;
+                }
 
                 return `
-        <div class="ticket-card">
-          <div class="ticket-header">
-            <div class="left">
-              <span class="ticket-type ${t.type}">
-                ${icon(t.type)} ${formatType(t.type)}
-              </span>
-              <span class="ticket-user">${creatorName}</span>
-            </div>
-            <span class="ticket-status ${t.status}">
-              ${formatStatus(t.status)}
-            </span>
-          </div>
-          <h5 class="ticket-title">${t.title}</h5>
-          <p class="ticket-desc">${t.description ?? ""}</p>
-          <div class="ticket-footer">
-            <small>Créé le ${formatDate(t.created_at)}</small>
-            <div class="actions">
-              <button class="btn-action details" data-id="${
-                  t.id
-              }" title="Détails">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
+            <button class="ticket-row" data-id="${esc(t.id)}" type="button">
+                <div class="ticket-row-main">
+                    <div class="ticket-row-top">
+                        <div class="ticket-row-title">${esc(t.title)}</div>
+                        <div class="ticket-row-badges">
+                            <span class="badge ticket-type-badge ${tType}">${badgeType}</span>
+                            <span class="badge ticket-status-badge ${esc(
+                                t.status
+                            )}">${badgeStatus}</span>
+                            <span class="badge ticket-priority-badge ${esc(
+                                t.priority
+                            )}">${badgePriority}</span>
+                        </div>
+                    </div>
+                    <div class="ticket-row-sub">
+                        <span class="text-muted">${esc(
+                            fmtDate(t.created_at)
+                        )}</span>
+                        ${
+                            meta
+                                ? `<span class="ticket-row-meta">${meta}</span>`
+                                : ""
+                        }
+                    </div>
+                </div>
+                <div class="ticket-row-action">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </button>`;
             })
             .join("");
     }
 
     function updateStats(stats) {
-        const [totalEl, pendingEl, validatedEl, refusedEl] = statsCards;
-        if (!totalEl) return;
-
-        totalEl.textContent = stats.total ?? "0";
-        pendingEl.textContent = stats.pending ?? "0";
-        validatedEl.textContent = stats.validated ?? "0";
-        refusedEl.textContent = stats.refused ?? "0";
+        statTotal.textContent = stats.total ?? 0;
+        statPending.textContent = stats.pending ?? 0;
+        statValidated.textContent = stats.validated ?? 0;
+        statRefused.textContent = stats.refused ?? 0;
     }
 
-    /* ------------------ MODALE CRÉATION ------------------ */
-    btnAddTicket?.addEventListener("click", () => {
-        formCreateTicket?.reset();
-        modalCreate?.show();
-        loadOptions();
+    // -------- API
+    async function loadTickets() {
+        if (!listEl) return;
+
+        listEl.innerHTML = `<p class="text-muted p-3">Chargement…</p>`;
+
+        const url = new URL("/admin/backlogs", window.location.origin);
+        url.searchParams.set("mine", "true");
+
+        if (filterType?.value) url.searchParams.set("type", filterType.value);
+        if (filterStatus?.value)
+            url.searchParams.set("status", filterStatus.value);
+        if (filterSearch?.value?.trim())
+            url.searchParams.set("search", filterSearch.value.trim());
+
+        const res = await fetch(url.toString(), {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        ticketsCache = data.tickets || [];
+        renderTickets(ticketsCache);
+        updateStats(data.stats || {});
+    }
+
+    async function loadTicketDetails(id) {
+        const url = new URL(`/admin/backlogs/${id}`, window.location.origin);
+        const res = await fetch(url.toString(), {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+    }
+
+    // -------- Details modal fill
+    function fillDetails(ticket) {
+        const type = ticket.type;
+
+        const typeEl = document.getElementById("empDetailType");
+        const statusEl = document.getElementById("empDetailStatus");
+        const priorityEl = document.getElementById("empDetailPriority");
+
+        applyBadges(typeEl, type, "type");
+        applyBadges(statusEl, ticket.status, "status");
+        applyBadges(priorityEl, ticket.priority, "priority");
+
+        typeEl.textContent = typeLabel(type);
+        statusEl.textContent = statusLabel(ticket.status);
+        priorityEl.textContent = priorityLabel(ticket.priority);
+
+        document.getElementById("empDetailCreatedAt").textContent = fmtDate(
+            ticket.created_at
+        );
+        document.getElementById("empDetailTitle").textContent =
+            ticket.title || "—";
+        document.getElementById("empDetailDescription").textContent =
+            ticket.description || "—";
+
+        showOnlyDetailsBlock(type);
+
+        // fill extras
+        if (type === "conge") {
+            document.getElementById("empLeaveType").textContent =
+                ticket.leave_type || "—";
+            document.getElementById("empLeaveStart").textContent = fmtDate(
+                ticket.leave_start_date
+            );
+            document.getElementById("empLeaveEnd").textContent = fmtDate(
+                ticket.leave_end_date
+            );
+        }
+        if (type === "note_frais") {
+            document.getElementById("empExpenseType").textContent =
+                ticket.expense_type || "—";
+            document.getElementById("empExpenseAmount").textContent =
+                ticket.expense_amount ? `${ticket.expense_amount} €` : "—";
+            document.getElementById("empExpenseDate").textContent = fmtDate(
+                ticket.expense_date
+            );
+        }
+        if (type === "document_rh") {
+            document.getElementById("empDocType").textContent =
+                ticket.document_type || "—";
+            document.getElementById("empDocExp").textContent = fmtDate(
+                ticket.document_expires_at
+            );
+        }
+        if (type === "incident") {
+            document.getElementById("empIncidentSeverity").textContent =
+                ticket.incident_severity || "—";
+            document.getElementById("empIncidentDueDate").textContent = fmtDate(
+                ticket.due_date
+            );
+        }
+    }
+
+    // -------- Create ticket
+    async function createTicket(formEl) {
+        const url = new URL("/admin/backlogs", window.location.origin);
+
+        const fd = new FormData(formEl);
+
+        const res = await fetch(url.toString(), {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute("content"),
+            },
+            body: fd,
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            const msg =
+                data?.message || data?.error || `Erreur HTTP ${res.status}`;
+            throw new Error(msg);
+        }
+
+        if (data?.success === false) {
+            throw new Error(data?.message || "Erreur lors de la création");
+        }
+
+        return data; // IMPORTANT
+    }
+
+    function setCreateAlerts({ error = "", success = "" }) {
+        if (createError) {
+            createError.classList.toggle("d-none", !error);
+            createError.textContent = error;
+        }
+        if (createSuccess) {
+            createSuccess.classList.toggle("d-none", !success);
+            createSuccess.textContent = success;
+        }
+    }
+
+    // -------- Events
+    btnOpenCreate?.addEventListener("click", () => {
+        setCreateAlerts({ error: "", success: "" });
+
+        formCreate?.reset();
+        setCreateType("conge");
+
+        createModal?.show();
     });
 
-    formCreateTicket?.addEventListener("submit", async (e) => {
+    formCreate?.addEventListener("submit", async (e) => {
         e.preventDefault();
+        setCreateAlerts({ error: "", success: "" });
+
+        createSpinner?.classList.remove("d-none");
+
         try {
-            const formData = new FormData(formCreateTicket);
-            const companyId = getCompanyId();
-            if (companyId && !formData.get("company_id")) {
-                formData.append("company_id", companyId);
+            const data = await createTicket(formCreate);
+
+            // ✅ Injection immédiate si l’API renvoie le ticket
+            if (data?.ticket) {
+                ticketsCache = [data.ticket, ...(ticketsCache || [])];
+                renderTickets(ticketsCache);
             }
 
-            const res = await fetch("/admin/backlogs", {
-                method: "POST",
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "X-CSRF-TOKEN": csrfToken,
-                },
-                body: formData,
-            });
+            setCreateAlerts({ success: "Ticket créé ✅" });
 
-            if (!res.ok) {
-                const txt = await res.text();
-                console.error(txt);
-                throw new Error(`HTTP ${res.status}`);
-            }
-
-            modalCreate?.hide();
-            showToast("Ticket créé avec succès", "success");
+            // ✅ Reload pour être sûr que tout est cohérent
             await loadTickets();
+
+            setTimeout(() => createModal?.hide(), 450);
+            formCreate.reset();
         } catch (err) {
-            console.error(err);
-            showToast("Erreur lors de la création du ticket", "error");
+            setCreateAlerts({ error: err.message || "Erreur" });
+        } finally {
+            createSpinner?.classList.add("d-none");
         }
     });
 
-    /* ------------------ MODALE DÉTAIL ------------------ */
-    list.addEventListener("click", async (e) => {
-        const btnDetails = e.target.closest(".btn-action.details");
-        if (!btnDetails) return;
+    // click row -> details
+    listEl?.addEventListener("click", async (e) => {
+        const row = e.target.closest(".ticket-row");
+        if (!row) return;
 
-        const id = btnDetails.dataset.id;
-        if (!id) return;
-
+        const id = row.dataset.id;
         try {
-            const res = await fetch(`/admin/backlogs/${id}`, {
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            const t = await res.json();
-            fillTicketDetailsModal(t);
-            modalDetails?.show();
+            const data = await loadTicketDetails(id);
+            // show endpoint renvoie un objet "ticket" ? chez toi c'est un payload custom
+            // on gère les 2 cas
+            const ticket = data.ticket || data;
+            fillDetails(ticket);
+            detailsModal?.show();
         } catch (err) {
             console.error(err);
-            showToast("Erreur lors du chargement du ticket", "error");
+            alert("Erreur de chargement du détail.");
         }
     });
 
-    function fillTicketDetailsModal(t) {
-        const byId = (id) => document.getElementById(id);
-
-        const typeLabel = {
-            conge: "Congé",
-            note_frais: "Note de frais",
-            incident: "Incident",
-            document_rh: "Document RH",
-            autre: "Autre",
+    // filters
+    const debounce = (fn, wait = 250) => {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), wait);
         };
+    };
 
-        const priorityLabel = {
-            basse: "Basse",
-            moyenne: "Moyenne",
-            haute: "Haute",
-        };
+    filterType?.addEventListener("change", loadTickets);
+    filterStatus?.addEventListener("change", loadTickets);
+    filterSearch?.addEventListener("input", debounce(loadTickets, 300));
 
-        byId("ticketDetailTitle").textContent = t.title || "—";
-        byId("ticketDetailDescription").textContent = t.description || "—";
-
-        const typeEl = byId("ticketDetailType");
-        typeEl.textContent = typeLabel[t.type] ?? t.type ?? "—";
-        typeEl.className = "badge ticket-type-badge " + (t.type || "");
-
-        const prioEl = byId("ticketDetailPriority");
-        prioEl.textContent =
-            priorityLabel[t.priority] ?? t.priority ?? "Moyenne";
-        prioEl.className =
-            "badge ticket-priority-badge " + (t.priority || "moyenne");
-
-        const statusEl = byId("ticketDetailStatus");
-        statusEl.textContent = formatStatus(t.status);
-        statusEl.className = "badge ticket-status-badge " + (t.status || "");
-
-        byId("ticketDetailCreator").textContent = t.creator?.full_name ?? "—";
-        byId("ticketDetailAssignee").textContent =
-            t.assignee?.full_name ?? "Non assigné";
-        byId("ticketDetailRelatedUser").textContent =
-            t.related_user?.full_name ?? "—";
-        byId("ticketDetailCompany").textContent = t.company?.name ?? "—";
-
-        byId("ticketDetailCreatedAt").textContent = t.created_at
-            ? formatDate(t.created_at)
-            : "—";
-        byId("ticketDetailDueDate").textContent = t.due_date
-            ? formatDate(t.due_date)
-            : "Aucune";
-
-        // Si tu veux, tu pourras compléter ici pour remplir les blocs spécifiques
-        // leave / expense / document / incident avec t.leave_type, t.leave_start_date, etc.
-    }
-
-    /* ------------------ FILTRES EVENTS ------------------ */
-    let searchDebounce;
-    function onFiltersChange() {
-        loadTickets();
-    }
-
-    selectType?.addEventListener("change", onFiltersChange);
-    selectStatus?.addEventListener("change", onFiltersChange);
-
-    inputSearch?.addEventListener("input", () => {
-        clearTimeout(searchDebounce);
-        searchDebounce = setTimeout(onFiltersChange, 300);
+    // init
+    loadTickets().catch((e) => {
+        console.error(e);
+        if (listEl)
+            listEl.innerHTML = `<p class="text-danger p-3">Erreur de chargement.</p>`;
     });
-
-    /* ------------------ INIT ------------------ */
-    const initialFilters = loadSavedFilters();
-    applyFiltersToUI(initialFilters);
-    loadOptions();
-    loadTickets();
 }

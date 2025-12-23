@@ -1,13 +1,301 @@
-/* Ticketing employé : s'appuie sur le style admin, avec quelques accents perso */
+/* ========================================================= */
+/* TICKETING EMPLOYÉ                                         */
+/* ========================================================= */
 
-.ticketing-employee-page .btn-add-ticket {
-    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
+.ticketing-employee-page {
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: calc(100vh - 4rem);
+    padding: 2rem;
 }
 
-.ticketing-employee-page .ticket-card {
-    border-color: color-mix(in oklab, var(--color-border) 60%, var(--color-primary) 40%);
+/* Header */
+.ticketing-employee-page h2 {
+    color: var(--color-primary);
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+}
+.ticketing-employee-page p {
+    color: var(--color-text-muted);
 }
 
-.ticketing-employee-page .ticket-status.en_attente { background-color: #facc15; color: #1e1e2f; }
-.ticketing-employee-page .ticket-status.valide { background-color: #22c55e; color: #fff; }
-.ticketing-employee-page .ticket-status.refuse { background-color: #ef4444; color: #fff; }
+/* Bouton */
+.ticketing-employee-page #btnOpenCreateTicket {
+    background: linear-gradient(
+        90deg,
+        var(--color-primary),
+        var(--color-primary-hover)
+    );
+    color: #fff;
+    border: 0;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+    transition: all 0.2s ease;
+}
+
+/* ========================================================= */
+/* FILTERS (style backlog)                                   */
+/* ========================================================= */
+
+.ticketing-employee-filters {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 0.9rem;
+    padding: 1rem 1.1rem;
+}
+
+.ticketing-employee-filters .filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.2rem;
+    align-items: flex-end;
+}
+
+.ticketing-employee-filters .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 180px;
+    flex: 0 0 auto;
+}
+
+.ticketing-employee-filters .form-label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-weight: 700;
+}
+
+.ticketing-employee-filters .form-select,
+.ticketing-employee-filters .form-control {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.55rem;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.92rem;
+}
+
+.ticketing-employee-filters .form-select:focus,
+.ticketing-employee-filters .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.35);
+}
+
+.ticketing-employee-filters .filter-group-search {
+    flex: 1 1 260px;
+    min-width: 240px;
+    margin-left: auto;
+}
+
+.ticketing-employee-filters .search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ticketing-employee-filters .search-icon {
+    position: absolute;
+    left: 0.65rem;
+    font-size: 0.85rem;
+}
+
+.ticketing-employee-filters #filterEmployeeSearch {
+    padding-left: 2rem;
+}
+
+/* ========================================================= */
+/* STATS (style backlog)                                     */
+/* ========================================================= */
+
+.ticketing-employee-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+    gap: 0.9rem;
+}
+
+.ticketing-employee-stats .stat-card {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 0.9rem;
+    padding: 0.95rem 1rem;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.ticketing-employee-stats .stat-label {
+    color: var(--color-text-muted);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.ticketing-employee-stats .stat-value {
+    margin-top: 0.15rem;
+    font-weight: 900;
+    font-size: 1.35rem;
+}
+
+/* ========================================================= */
+/* LIST / CARDS                                               */
+/* ========================================================= */
+
+.ticketing-employee-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Ta card ticket côté employé */
+.ticket-row {
+    width: 100%;
+    text-align: left;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.ticket-row:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+    border-color: color-mix(
+        in oklab,
+        var(--color-border) 55%,
+        var(--color-primary) 45%
+    );
+}
+
+.ticket-row-title {
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--color-text);
+}
+
+.ticket-row-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticket-row-sub {
+    margin-top: 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+.ticket-row-action {
+    color: var(--color-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+/* empty stat dans le ticketing js*/
+.empty-state {
+    background: var(--color-bg-secondary);
+    border: 1px dashed var(--color-border);
+    border-radius: 1rem;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.empty-state i {
+    font-size: 1.6rem;
+    color: var(--color-text-muted);
+}
+
+/* ========================================================= */
+/* BADGES (comme admin backlog)                               */
+/* ========================================================= */
+
+.ticket-type-badge,
+.ticket-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    border: 1px solid transparent;
+}
+
+/* Types */
+.ticket-type-badge.conge {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.6);
+    color: #bfdbfe;
+}
+.ticket-type-badge.note_frais {
+    background: rgba(234, 179, 8, 0.18);
+    border-color: rgba(234, 179, 8, 0.75);
+    color: #fef9c3;
+}
+.ticket-type-badge.document_rh {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.65);
+    color: #bbf7d0;
+}
+.ticket-type-badge.incident {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.7);
+    color: #fecaca;
+}
+.ticket-type-badge.autre {
+    background: rgba(148, 163, 184, 0.18);
+    border-color: rgba(148, 163, 184, 0.7);
+    color: #e5e7eb;
+}
+
+/* Statuts */
+.ticket-status-badge.en_attente {
+    background: rgba(234, 179, 8, 0.16);
+    border-color: rgba(234, 179, 8, 0.7);
+    color: #fde68a;
+}
+.ticket-status-badge.valide {
+    background: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.65);
+    color: #bbf7d0;
+}
+.ticket-status-badge.refuse {
+    background: rgba(239, 68, 68, 0.16);
+    border-color: rgba(239, 68, 68, 0.65);
+    color: #fecaca;
+}
+
+/* ========================================================= */
+/* RESPONSIVE                                                 */
+/* ========================================================= */
+
+@media (max-width: 900px) {
+    .ticketing-employee-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .ticketing-employee-page {
+        padding: 1.25rem;
+    }
+    .ticketing-employee-filters .filter-group {
+        min-width: 100%;
+    }
+    .ticketing-employee-filters .filter-group-search {
+        margin-left: 0;
+    }
+}

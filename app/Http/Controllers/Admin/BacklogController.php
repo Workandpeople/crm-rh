@@ -21,133 +21,89 @@ class BacklogController extends Controller
      * - Admin / chef / superadmin : sur toute la société (ou company_id passé)
      * - Employé : uniquement ses tickets (créés ou assignés) + filtre mine=true possible
      */
-    public function index(Request $request)
+   public function index(Request $request)
     {
         try {
             $user     = Auth::user();
             $roleName = $user->role->name ?? null;
-            $isEmployee = $roleName === 'employe';
-            $onlyMine   = $request->boolean('mine', false) || $isEmployee;
 
             if (!in_array($roleName, ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
                 return response()->json(['message' => 'Accès non autorisé'], 403);
             }
+
+            $isEmployee = $roleName === 'employe';
+            $onlyMine   = $request->boolean('mine', false) || $isEmployee;
 
             // --- paramètres reçus ---
             $companyId  = $isEmployee
                 ? $user->company_id
                 : $request->query('company_id', $user->company_id);
 
-            $type       = $request->query('type');                // conge, note_frais, ...
-            $status     = $request->query('status');              // en_attente, valide, refuse
+            $type       = $request->query('type');                 // conge, note_frais, ...
+            $status     = $request->query('status');               // en_attente, valide, refuse
             $employeeId = $isEmployee ? null : $request->query('employee_id');
-            $search     = $request->query('search');              // texte libre
+            $search     = $request->query('search');
 
-            // 🔹 nouveaux filtres spécifiques
-            $leaveStart        = $request->query('leave_start');        // YYYY-MM-DD
-            $leaveEnd          = $request->query('leave_end');          // YYYY-MM-DD
-            $expenseMin        = $request->query('expense_min');        // montant min
-            $expenseMax        = $request->query('expense_max');        // montant max
-            $documentType      = $request->query('document_type');      // type doc RH
-            $incidentSeverity  = $request->query('incident_severity');  // mineur / majeur / critique
+            // --- filtres spécifiques ---
+            $leaveStart       = $request->query('leave_start');        // YYYY-MM-DD
+            $leaveEnd         = $request->query('leave_end');          // YYYY-MM-DD
+            $expenseMin       = $request->query('expense_min');        // numeric
+            $expenseMax       = $request->query('expense_max');        // numeric
+            $documentType     = $request->query('document_type');      // string
+            $incidentSeverity = $request->query('incident_severity');  // mineur|majeur|critique
 
             Log::info('[BacklogController@index] Filtres', [
-                'user_id'          => $user->id,
-                'role'             => $roleName,
-                'company_id'       => $companyId,
-                'type'             => $type,
-                'status'           => $status,
-                'employee_id'      => $employeeId,
-                'search'           => $search,
-                'onlyMine'         => $onlyMine,
-                'leave_start'      => $leaveStart,
-                'leave_end'        => $leaveEnd,
-                'expense_min'      => $expenseMin,
-                'expense_max'      => $expenseMax,
-                'document_type'    => $documentType,
-                'incident_severity'=> $incidentSeverity,
+                'user_id' => $user->id,
+                'role' => $roleName,
+                'company_id' => $companyId,
+                'onlyMine' => $onlyMine,
+                'type' => $type,
+                'status' => $status,
+                'employee_id' => $employeeId,
+                'search' => $search,
+                'leave_start' => $leaveStart,
+                'leave_end' => $leaveEnd,
+                'expense_min' => $expenseMin,
+                'expense_max' => $expenseMax,
+                'document_type' => $documentType,
+                'incident_severity' => $incidentSeverity,
             ]);
 
-            // --- requête de base ---
-            $query = Ticket::with(['creator', 'assignee', 'company', 'relatedUser'])
+            // =========================
+            // Base query (on ne la "consomme" pas)
+            // =========================
+            $baseQuery = Ticket::query()
+                ->with(['creator', 'assignee', 'company', 'relatedUser'])
                 ->where('company_id', $companyId)
                 ->when($onlyMine, function ($q) use ($user) {
                     $q->where(function ($sub) use ($user) {
                         $sub->where('created_by', $user->id)
-                            ->orWhere('assigned_to', $user->id);
+                            ->orWhere('assigned_to', $user->id)
+                            ->orWhere('related_user_id', $user->id);
                     });
-                })
-                ->latest('created_at');
+                });
 
-            // type (on ne gère plus "all" ici : si vide => pas de filtre)
+            // =========================
+            // Filtres de base
+            // =========================
             if ($type && $type !== 'all') {
-                $query->where('type', $type);
+                $baseQuery->where('type', $type);
             }
 
-            // statut
             if ($status) {
-                $query->where('status', $status);
+                $baseQuery->where('status', $status);
             }
 
-            // filtrage par employé (créateur ou employé concerné)
             if ($employeeId) {
-                $query->where(function ($q) use ($employeeId) {
+                $baseQuery->where(function ($q) use ($employeeId) {
                     $q->where('created_by', $employeeId)
                     ->orWhere('related_user_id', $employeeId);
                 });
             }
 
-            // 🔹 Filtres spécifiques par type
-
-            // -- Congés : bornes sur les dates de congés --
-            if ($leaveStart || $leaveEnd) {
-                // si on filtre par congés, on force type = 'conge' (sauf si déjà filtré)
-                if (!$type) {
-                    $query->where('type', 'conge');
-                }
-
-                if ($leaveStart) {
-                    $query->whereDate('leave_start_date', '>=', $leaveStart);
-                }
-                if ($leaveEnd) {
-                    $query->whereDate('leave_end_date', '<=', $leaveEnd);
-                }
-            }
-
-            // -- Notes de frais : bornes sur le montant --
-            if ($expenseMin !== null && $expenseMin !== '') {
-                if (!$type) {
-                    $query->where('type', 'note_frais');
-                }
-                $query->where('expense_amount', '>=', (float) $expenseMin);
-            }
-            if ($expenseMax !== null && $expenseMax !== '') {
-                if (!$type) {
-                    $query->where('type', 'note_frais');
-                }
-                $query->where('expense_amount', '<=', (float) $expenseMax);
-            }
-
-            // -- Documents RH : type de document --
-            if ($documentType) {
-                if (!$type) {
-                    $query->where('type', 'document_rh');
-                }
-                $query->where('document_type', $documentType);
-            }
-
-            // -- Incidents : gravité --
-            if ($incidentSeverity) {
-                if (!$type) {
-                    $query->where('type', 'incident');
-                }
-                $query->where('incident_severity', $incidentSeverity);
-            }
-
-            // recherche texte : titre, description, nom/prénom créateur OU employé concerné
             if ($search) {
                 $s = '%' . trim($search) . '%';
-                $query->where(function ($q) use ($s) {
+                $baseQuery->where(function ($q) use ($s) {
                     $q->where('title', 'LIKE', $s)
                     ->orWhere('description', 'LIKE', $s)
                     ->orWhereHas('creator', function ($q2) use ($s) {
@@ -163,9 +119,63 @@ class BacklogController extends Controller
                 });
             }
 
-            $tickets = $query->get();
+            // =========================
+            // Filtres spécifiques par type
+            // =========================
 
-            // Ajout d'un full_name sur les relations pour simplifier le JS
+            // Congés : overlap sur période demandée
+            if ($leaveStart || $leaveEnd) {
+                $startDate = $leaveStart ?: '1900-01-01';
+                $endDate   = $leaveEnd   ?: '2999-12-31';
+
+                // si aucun type n'est fixé, on force conge
+                if (!$type || $type === 'all') {
+                    $baseQuery->where('type', 'conge');
+                }
+
+                $baseQuery->where(function ($q) use ($startDate, $endDate) {
+                    // overlap : start <= endFilter AND end >= startFilter
+                    $q->whereDate('leave_start_date', '<=', $endDate)
+                    ->whereDate('leave_end_date', '>=', $startDate);
+                });
+            }
+
+            // Notes de frais : montant min/max
+            if (($expenseMin !== null && $expenseMin !== '') || ($expenseMax !== null && $expenseMax !== '')) {
+                if (!$type || $type === 'all') {
+                    $baseQuery->where('type', 'note_frais');
+                }
+
+                if ($expenseMin !== null && $expenseMin !== '') {
+                    $baseQuery->where('expense_amount', '>=', (float) $expenseMin);
+                }
+                if ($expenseMax !== null && $expenseMax !== '') {
+                    $baseQuery->where('expense_amount', '<=', (float) $expenseMax);
+                }
+            }
+
+            // Documents RH : type document
+            if ($documentType) {
+                if (!$type || $type === 'all') {
+                    $baseQuery->where('type', 'document_rh');
+                }
+                $baseQuery->where('document_type', $documentType);
+            }
+
+            // Incidents : gravité
+            if ($incidentSeverity) {
+                if (!$type || $type === 'all') {
+                    $baseQuery->where('type', 'incident');
+                }
+                $baseQuery->where('incident_severity', $incidentSeverity);
+            }
+
+            // =========================
+            // Liste
+            // =========================
+            $listQuery = (clone $baseQuery)->latest('created_at');
+            $tickets = $listQuery->get();
+
             $tickets->each(function ($t) {
                 if ($t->creator) {
                     $t->creator->full_name = trim(($t->creator->first_name ?? '') . ' ' . ($t->creator->last_name ?? ''));
@@ -178,16 +188,16 @@ class BacklogController extends Controller
                 }
             });
 
-            // Stats : si employé / mine => stats sur la même base que la liste
-            $baseStats = $onlyMine
-                ? clone $query
-                : Ticket::where('company_id', $companyId);
+            // =========================
+            // Stats (sur la même base que la liste)
+            // =========================
+            $statsBase = clone $baseQuery;
 
             $stats = [
-                'total'     => (clone $baseStats)->count(),
-                'pending'   => (clone $baseStats)->where('status', 'en_attente')->count(),
-                'validated' => (clone $baseStats)->where('status', 'valide')->count(),
-                'refused'   => (clone $baseStats)->where('status', 'refuse')->count(),
+                'total'     => (clone $statsBase)->count(),
+                'pending'   => (clone $statsBase)->where('status', 'en_attente')->count(),
+                'validated' => (clone $statsBase)->where('status', 'valide')->count(),
+                'refused'   => (clone $statsBase)->where('status', 'refuse')->count(),
             ];
 
             return response()->json([
@@ -206,6 +216,7 @@ class BacklogController extends Controller
             ], 500);
         }
     }
+
 
 
     /**
@@ -241,47 +252,46 @@ class BacklogController extends Controller
     /**
      * Création d'un ticket + entité métier associée (congé, note de frais, document RH, etc.).
      */
-    public function store(Request $request)
-    {
-        $user = Auth::user();
-        $role = $user->role->name ?? null;
+    public function store(Request $request){
+    $user = Auth::user();
+    $role = $user->role->name ?? null;
 
-        if (!in_array($role, ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
-            return response()->json(['message' => 'Accès non autorisé'], 403);
-        }
+    if (!in_array($role, ['admin', 'chef_equipe', 'superadmin', 'employe'])) {
+        return response()->json(['message' => 'Accès non autorisé'], 403);
+    }
+
 
         // Validation (on supporte à la fois "document_type" et un éventuel "doc_type")
         $validated = $request->validate([
-            'title'           => 'required|string|max:255',
-            'type'            => 'required|in:conge,note_frais,incident,document_rh,autre',
-            'description'     => 'nullable|string',
-            'assignee_id'     => 'nullable|exists:users,id',
-            'priority'        => 'nullable|in:basse,moyenne,haute',
-            'due_date'        => 'nullable|date',
-            'related_user_id' => 'nullable|exists:users,id',
-            'company_id'      => 'required|exists:companies,id',
+        'title'           => 'required|string|max:255',
+        'type'            => 'required|in:conge,note_frais,incident,document_rh,autre',
+        'description'     => 'nullable|string',
 
-            // CONGÉ
-            'leave_type'       => 'nullable|in:CP,SansSolde,Exceptionnel,Maladie',
-            'leave_start_date' => 'nullable|date',
-            'leave_end_date'   => 'nullable|date|after_or_equal:leave_start_date',
+        // ✅ si employé : il ne doit pas assigner quelqu’un
+        // (sinon tu peux laisser, mais c’est une porte)
+        'assignee_id'     => $role === 'employe' ? 'nullable' : 'nullable|exists:users,id',
 
-            // NOTE DE FRAIS
-            'expense_type'   => 'nullable|in:repas,peage,hebergement,km',
-            'expense_amount' => 'nullable|numeric|min:0',
-            'expense_date'   => 'nullable|date',
+        'priority'        => 'nullable|in:basse,moyenne,haute',
+        'due_date'        => 'nullable|date',
+        'related_user_id' => 'nullable|exists:users,id',
+        'company_id'      => 'required|exists:companies,id',
 
-            // DOCUMENT RH (V1, sans upload obligatoire)
-            'document_type'        => 'nullable|string|max:255',
-            'document_expires_at'  => 'nullable|date',
+        'leave_type'       => 'nullable|in:CP,SansSolde,Exceptionnel,Maladie',
+        'leave_start_date' => 'nullable|date',
+        'leave_end_date'   => 'nullable|date|after_or_equal:leave_start_date',
 
-            // compat éventuelle avec ancien nommage
-            'doc_type'        => 'nullable|string|max:255',
-            'doc_file'        => 'nullable|file|max:5120',
+        'expense_type'   => 'nullable|in:repas,peage,hebergement,km',
+        'expense_amount' => 'nullable|numeric|min:0',
+        'expense_date'   => 'nullable|date',
 
-            // INCIDENT
-            'incident_severity' => 'nullable|in:mineur,majeur,critique',
-        ]);
+        'document_type'        => 'nullable|string|max:255',
+        'document_expires_at'  => 'nullable|date',
+
+        'doc_type'        => 'nullable|string|max:255',
+        'doc_file'        => 'nullable|file|max:5120',
+
+        'incident_severity' => 'nullable|in:mineur,majeur,critique',
+    ]);
 
         // DocType final : on prend d'abord document_type (modale actuelle), sinon doc_type
         $docType = $validated['document_type'] ?? $validated['doc_type'] ?? null;

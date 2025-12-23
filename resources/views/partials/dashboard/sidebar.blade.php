@@ -24,6 +24,9 @@
     @include('components.sidebarContent.admin.backlogModals') {{-- Backlogs --}}
     @include('components.sidebarContent.admin.congesModals') {{-- Congés / absences --}}
     @include('components.sidebarContent.admin.notesFraisModals') {{-- Notes de frais --}}
+
+    {{-- EMPLOYÉ MODALS --}}
+    @include('components.sidebarContent.employe.ticketingModals') {{-- Ticketing --}}
 @endpush
 
 @push('js')

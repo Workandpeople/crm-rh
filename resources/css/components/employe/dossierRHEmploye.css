@@ -13,14 +13,20 @@
 
 /* BOUTON AJOUT */
 .btn-upload-doc {
-    background-color: var(--color-primary);
+    background: linear-gradient(
+        90deg,
+        var(--color-primary),
+        var(--color-primary-hover)
+    );
     color: #fff;
-    border: none;
-    border-radius: 0.5rem;
+    border: 0;
+    border-radius: 0.6rem;
     font-weight: 600;
-    padding: 0.6rem 1rem;
-    transition: background 0.2s ease;
+    padding: 0.55rem 1.1rem;
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+    transition: all 0.2s ease;
 }
+
 .btn-upload-doc:hover {
     background-color: var(--color-primary-hover);
 }
