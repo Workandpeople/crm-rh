@@ -16,8 +16,15 @@ class DashboardController extends Controller
     public function loadPage(string $page)
     {
         try {
-            // Cherche d'abord dans chaque sous-dossier par rôle
-            $roles = ['superadmin', 'admin', 'employe'];
+            // Cherche d'abord dans le sous-dossier du role courant
+            $roleName = auth()->user()->role->name ?? 'employe';
+            $roleMap = [
+                'superadmin' => ['superadmin', 'admin', 'employe'],
+                'admin' => ['admin', 'employe'],
+                'chef_equipe' => ['employe'],
+                'employe' => ['employe'],
+            ];
+            $roles = $roleMap[$roleName] ?? ['employe'];
             foreach ($roles as $role) {
                 $viewPath = "components.sidebarContent.{$role}.{$page}";
                 if (View::exists($viewPath)) {

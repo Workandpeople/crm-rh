@@ -1,3 +1,5 @@
+import initTicketChat from "../modules/ticketChat";
+
 export default function initTicketingEmployee() {
     console.log("%c[ticketingEmployee] Initialisation", "color: violet;");
 
@@ -39,6 +41,16 @@ export default function initTicketingEmployee() {
     const detailsModal = detailsModalEl
         ? new bootstrap.Modal(detailsModalEl)
         : null;
+
+    const empChatContainer = detailsModalEl?.querySelector(".ticket-chat");
+    const ticketChat = initTicketChat({
+        modalEl: detailsModalEl,
+        listEl: document.getElementById("empTicketChatList"),
+        emptyEl: document.getElementById("empTicketChatEmpty"),
+        formEl: document.getElementById("empTicketChatForm"),
+        inputEl: document.getElementById("empTicketChatInput"),
+        currentUserId: empChatContainer?.dataset.currentUserId,
+    });
 
     // -------- TYPE SWITCHER (create modal)
     const typeInput = document.getElementById("employeeTicketTypeInput");
@@ -453,6 +465,7 @@ export default function initTicketingEmployee() {
             // on gère les 2 cas
             const ticket = data.ticket || data;
             fillDetails(ticket);
+            ticketChat?.open(ticket.id);
             detailsModal?.show();
         } catch (err) {
             console.error(err);

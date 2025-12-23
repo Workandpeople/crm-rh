@@ -126,7 +126,7 @@
           <li><a href="#" data-page="dossierRH" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.folder} me-2"></i>Mes documents</a></li>
           {{-- <li><a href="#" data-page="conges" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.plane} me-2"></i>Mes congés</a></li> --}}
           <li><a href="#" data-page="calendrier" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.calendar} me-2"></i>Calendrier</a></li>
-          <li><a href="#" data-page="actualites" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.news} me-2"></i>Actualités</a></li>
+          <li><a href="#" data-page="actualitesEmploye" class="nav-link d-block py-2 px-3 rounded"><i class="fa-solid ${icon.news} me-2"></i>Actualités</a></li>
         </ul>
       </details>`;
     }

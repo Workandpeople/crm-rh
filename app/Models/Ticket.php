@@ -74,6 +74,11 @@ class Ticket extends Model
         return $this->hasMany(TicketComment::class);
     }
 
+    public function conversation()
+    {
+        return $this->hasOne(TicketConversation::class);
+    }
+
     public function tasks()
     {
         return $this->belongsToMany(Task::class);

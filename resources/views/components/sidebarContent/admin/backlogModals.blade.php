@@ -371,6 +371,21 @@
           </p>
         </div>
 
+        <hr>
+
+        <div class="ticket-chat" data-current-user-id="{{ Auth::id() }}">
+          <div class="ticket-chat-header">
+            <h6 class="fw-semibold mb-0"><i class="fa-solid fa-comments me-1"></i>Discussion</h6>
+            <small class="">Chat en direct</small>
+          </div>
+          <div class="ticket-chat-list" id="adminTicketChatList"></div>
+          <p class="ticket-chat-empty d-none" id="adminTicketChatEmpty">Aucun message pour le moment.</p>
+          <form class="ticket-chat-form" id="adminTicketChatForm">
+            <input type="text" class="form-control" id="adminTicketChatInput" placeholder="Ecrire un message...">
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+          </form>
+        </div>
+
       </div>{{-- /modal-body --}}
 
       <div class="modal-footer">

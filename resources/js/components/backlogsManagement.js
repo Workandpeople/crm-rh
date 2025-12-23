@@ -1,3 +1,5 @@
+import initTicketChat from "../modules/ticketChat";
+
 export default function initBacklogsManagement() {
     console.log("%c[backlogsManagement] init", "color: #6366f1");
 
@@ -40,6 +42,15 @@ export default function initBacklogsManagement() {
     const modalTicketDetails = modalDetailsEl
         ? new window.bootstrap.Modal(modalDetailsEl)
         : null;
+    const adminChatContainer = modalDetailsEl?.querySelector(".ticket-chat");
+    const ticketChat = initTicketChat({
+        modalEl: modalDetailsEl,
+        listEl: document.getElementById("adminTicketChatList"),
+        emptyEl: document.getElementById("adminTicketChatEmpty"),
+        formEl: document.getElementById("adminTicketChatForm"),
+        inputEl: document.getElementById("adminTicketChatInput"),
+        currentUserId: adminChatContainer?.dataset.currentUserId,
+    });
 
     // Cache local
     let ticketsCache = [];
@@ -663,6 +674,7 @@ export default function initBacklogsManagement() {
 
                 const t = await res.json();
                 fillTicketDetailsModal(t);
+                ticketChat?.open(t.id);
                 modalTicketDetails?.show();
             } catch (err) {
                 console.error(err);

@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\{
     ResetPasswordController
 };
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TicketConversationController;
 
 // ======================================
 //  AUTH INVITÉS (non connectés)
@@ -43,6 +44,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/{page}', [DashboardController::class, 'loadPage'])
         ->where('page', '^[A-Za-z0-9_-]+$')
         ->name('dashboard.page');
+
+    // === Ticket conversations (chat) ===
+    Route::get('/tickets/{ticket}/conversation', [TicketConversationController::class, 'show'])
+        ->name('tickets.conversation.show');
+    Route::post('/tickets/{ticket}/messages', [TicketConversationController::class, 'storeMessage'])
+        ->name('tickets.messages.store');
 
     // === Super Admin actions ===
     Route::prefix('admin')->middleware('auth')->group(function () {

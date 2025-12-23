@@ -17,6 +17,7 @@
 @import "./components/dashboard.css";
 @import "./components/sidebar.css";
 @import "./components/searchBar.css";
+@import "./components/ticketChat.css";
 
 /* === Composants EMPLOYE === */
 @import "./components/employe/profile.css";
@@ -26,6 +27,7 @@
 @import "./components/employe/congesEmploye.css";
 @import "./components/employe/fichesPaieEmploye.css";
 @import "./components/employe/notesFraisEmploye.css";
+@import "./components/employe/actualitesEmploye.css";
 
 /* === Composants ADMIN === */
 @import "./components/admin/ticketingAdmin.css";
