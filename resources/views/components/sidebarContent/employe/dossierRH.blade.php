@@ -96,7 +96,15 @@
 
     $validCount = $computed->where('state', 'accepted')->count();
     $completion = round(($validCount / max(count($requiredDocs), 1)) * 100);
-    $missingLabels = $computed->whereIn('state', ['missing', 'expired', 'pending'])->pluck('label')->implode(', ');
+    $missingLabels = $computed
+        ->filter(fn ($doc) => in_array($doc['state'], ['missing', 'pending', 'refused']))
+        ->pluck('label')
+        ->implode(', ');
+    $progressClass = match (true) {
+        $completion < 40 => 'progress-low',
+        $completion < 70 => 'progress-medium',
+        default => 'progress-high',
+    };
 @endphp
 
 <div class="dossier-page" data-script="dossierEmployee" data-user-name="{{ $userFullName }}">
@@ -112,7 +120,9 @@
     <div class="card dossier-progress mb-4">
         <h5 class="fw-semibold mb-3">Complétude du dossier</h5>
         <div class="progress">
-            <div class="bar" style="width: {{ $completion }}%;">{{ $completion }}%</div>
+            <div class="bar {{ $progressClass }}" style="width: {{ $completion }}%;">
+                {{ $completion }}%
+            </div>
         </div>
         <p class="mt-2 small text-white">
             Documents manquants : {{ $missingLabels ?: 'Aucun (tous déposés)' }}
@@ -208,7 +218,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Créer le ticket</button>
+                    <button type="submit" class="btn btn-primary">Déposer le document</button>
                 </div>
             </form>
         </div>

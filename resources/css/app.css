@@ -38,6 +38,7 @@
 @import "./components/admin/organigrammeAdmin.css";
 @import "./components/admin/entretiensAdmin.css";
 @import "./components/admin/modalsAdmin.css";
+@import "./components/admin/blogActu.css";
 
 /* === Composants SUPER ADMIN === */
 @import "./components/superadmin/userManagement.css";
