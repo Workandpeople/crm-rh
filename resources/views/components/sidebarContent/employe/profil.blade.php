@@ -7,6 +7,9 @@
     </div>
 
     @php
+        use Carbon\Carbon;
+        use App\Models\Ticket;
+
         $user = auth()->user();
         $profile = $user->profile;
         $company = $user->company;
@@ -19,6 +22,84 @@
                 return 'to be defined';
             }
             return $value;
+        };
+
+        $docs = $user->documents?->keyBy('type') ?? collect();
+        $ticketByDocType = Ticket::where('type', 'document_rh')
+            ->where('created_by', $user->id)
+            ->orderByDesc('created_at')
+            ->get()
+            ->mapWithKeys(fn ($t) => [($t->details['doc_type'] ?? '') => $t]);
+
+        $requiredDocs = [
+            'contrat' => 'Contrat / Avenants',
+            'cni' => 'CNI / Photo',
+            'carte_vitale' => 'Carte vitale',
+            'permis' => 'Permis de conduire',
+            'carte_grise' => 'Carte grise (CEE)',
+            'fiche_fonction' => 'Fiche de fonction',
+            'fiche_epi' => 'Fiche remise EPI',
+            'charte_deontologique' => 'Charte déontologique',
+            'rgpd' => 'RGPD',
+            'habilitation' => 'Habilitations',
+            'diplome' => 'Diplômes',
+            'iso_17020' => 'ISO 17020',
+            'iso_9001' => 'ISO 9001',
+            'iso_26000' => 'ISO 26000',
+            'formation_integration' => 'Formation intégration',
+            'formation_routiere' => 'Sensibilisation routière',
+            'formation_groupe' => 'Formation groupe',
+            'formation_tutorat' => 'Formation tutorat',
+            'qcm' => 'QCM / tests site',
+            'certificat' => 'Certificats',
+            'supervision' => 'Supervision',
+            'cv' => 'CV',
+        ];
+
+        $docStates = collect($requiredDocs)->map(function ($label, $type) use ($docs, $ticketByDocType) {
+            $doc = $docs->get($type);
+            $ticket = $ticketByDocType[$type] ?? null;
+
+            if (! $doc) {
+                return [
+                    'label' => $label,
+                    'state' => 'missing',
+                ];
+            }
+
+            $isExpired = $doc->expires_at && Carbon::parse($doc->expires_at)->isPast();
+            $status = $doc->status;
+
+            if ($ticket) {
+                $status = $ticket->status === 'valide'
+                    ? 'valid'
+                    : ($ticket->status === 'refuse' ? 'rejected' : $status);
+            }
+
+            $state = match (true) {
+                $isExpired => 'refused',
+                $status === 'valid' => 'accepted',
+                $status === 'rejected' => 'refused',
+                $status === 'pending' => 'pending',
+                default => 'pending',
+            };
+
+            return [
+                'label' => $label,
+                'state' => $state,
+            ];
+        });
+
+        $validCount = $docStates->where('state', 'accepted')->count();
+        $completion = round(($validCount / max(count($requiredDocs), 1)) * 100);
+        $missingLabels = $docStates
+            ->filter(fn ($doc) => in_array($doc['state'], ['missing', 'pending', 'refused']))
+            ->pluck('label')
+            ->implode(', ');
+        $progressClass = match (true) {
+            $completion < 40 => 'progress-low',
+            $completion < 70 => 'progress-medium',
+            default => 'progress-high',
         };
     @endphp
 
@@ -70,10 +151,15 @@
     <div class="card p-4 mb-4">
         <h5 class="fw-semibold mb-3">Complétude du dossier RH</h5>
         <div class="profil-progress">
-            <div class="bar progress-low" style="width: 30%;"></div>
+            <div class="bar {{ $progressClass }}" style="width: {{ $completion }}%;">
+                {{ $completion }}%
+            </div>
         </div>
         <p class="mt-2 small" style="color: var(--color-text-muted);">
-            Documents manquants : CNI, Fiche de fonction, Certificat médical
+            Documents manquants : {{ $missingLabels ?: 'Aucun (tous déposés)' }}
+            @if ($missingLabels)
+                — <a href="#" class="link-dynamic fw-semibold" data-page="dossierRH">Compléter maintenant</a>
+            @endif
         </p>
     </div>
 
@@ -83,7 +169,7 @@
                 <i class="fa-solid fa-folder-open"></i>
                 <h6 class="mb-0">Voir mon dossier RH</h6>
             </div>
-            <a href="#" class="link-dynamic" data-page="dossierRH">Ouvrir</a>
+            <a href="{{ route('dashboard.page', ['page' => 'dossierRH']) }}" class="link-dynamic" data-page="dossierRH">Ouvrir</a>
         </div>
         <div class="card p-4">
             <div class="d-flex align-items-center gap-2 justify-content-center mb-2">

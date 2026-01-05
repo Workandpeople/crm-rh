@@ -1,136 +1,3 @@
-@push('css')
-<style>
-  .admin-actualites{
-    background: var(--color-bg);
-    color: var(--color-text);
-    min-height: calc(100vh - 4rem);
-    padding: 2rem;
-  }
-  .admin-actualites .head{
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom: 1.25rem;
-  }
-  .admin-actualites .head h2{
-    color: var(--color-primary);
-    margin:0; font-size:1.6rem; font-weight:700;
-  }
-  .admin-actualites .head .subhead{
-    color: var(--color-text-muted);
-    margin:.25rem 0 0; font-size:.92rem;
-    max-width: 820px;
-  }
-  .btn-add{
-    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
-    color:#fff; border:0; border-radius:.6rem; font-weight:700;
-    padding:.6rem 1.1rem; box-shadow:0 3px 10px rgba(79,70,229,.3);
-    transition: all .25s ease;
-  }
-  .btn-add:hover{ transform: translateY(-2px); box-shadow:0 4px 15px rgba(79,70,229,.45); }
-  .btn-ghost{
-    background: transparent; color: var(--color-text);
-    border:1px solid var(--color-border); border-radius:.6rem; font-weight:700;
-    padding:.55rem 1rem; transition: all .2s ease;
-  }
-  .btn-ghost:hover{ border-color: var(--color-primary); color: var(--color-primary); }
-
-  .filters{
-    display:flex; flex-wrap:wrap; gap:1rem;
-    margin-bottom: 1.25rem;
-  }
-  .filters .fg{
-    flex:1 1 200px; display:flex; flex-direction:column; gap:.35rem;
-  }
-  .filters label{ font-weight:600; color: var(--color-text-muted); font-size:.9rem; }
-  .input-icon{ position:relative; display:flex; align-items:center; }
-  .input-icon i{ position:absolute; left:.85rem; color:var(--color-text-muted); pointer-events:none; }
-  .input,.select{
-    background: var(--color-bg); color: var(--color-text);
-    border:1px solid var(--color-border); border-radius:.5rem; padding:.55rem .8rem; outline:0;
-    transition: all .2s ease; width:100%;
-  }
-  .input{ padding-left:2.2rem; }
-  .input:focus,.select:focus{ border-color: var(--color-primary); box-shadow:0 0 0 3px rgba(79,70,229,.25); }
-
-  .stats{
-    display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:1.25rem;
-  }
-  .stat-card{
-    background: var(--color-bg-secondary);
-    border:1px solid var(--color-border);
-    border-radius:1rem; padding:1rem 1.25rem; min-width:180px;
-    box-shadow:0 4px 12px rgba(0,0,0,.1);
-  }
-  .stat-card .label{ color: var(--color-text-muted); text-transform:uppercase; font-size:.8rem; letter-spacing:.3px; }
-  .stat-card .value{ font-weight:800; font-size:1.6rem; margin:0; }
-
-  .tbl-wrap{
-    background: var(--color-bg-secondary);
-    border:1px solid var(--color-border);
-    border-radius:1rem; overflow:hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,.15);
-  }
-  .tbl{
-    width:100%; border-collapse: collapse; table-layout: fixed;
-  }
-  .tbl thead{
-    background: rgba(255,255,255,.05);
-    position: sticky; top: 0; z-index: 1;
-  }
-  .tbl th{
-    padding: .9rem 1rem; text-align:left; border-bottom:2px solid var(--color-border);
-    font-weight:700; font-size:.95rem; color: var(--color-text);
-    text-transform: uppercase; letter-spacing:.35px;
-  }
-  .tbl td{
-    padding: .9rem 1rem; border-bottom:1px solid var(--color-border); vertical-align: middle;
-    color: var(--color-text);
-  }
-  .tbl tbody tr:hover{ background: rgba(255,255,255,.04); }
-  .tbl td, .tbl th{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .col-actions{ width: 150px; }
-  .badge-status{
-    display:inline-block; padding:.3rem .65rem; border-radius:999px;
-    font-weight:700; font-size:.85rem;
-  }
-  .badge-status.published{ background:#22C55E; color:#fff; }
-  .badge-status.draft{ background:#F59E0B; color:#1E1E2F; }
-  .badge-status.archived{ background:#9CA3AF; color:#111827; }
-
-  .table-actions{
-    display:flex; align-items:center; gap:.45rem; flex-wrap:wrap;
-  }
-  .btn-action{
-    width:36px; height:36px; display:flex; align-items:center; justify-content:center;
-    background: transparent; color: var(--color-text);
-    border:1px solid var(--color-border); border-radius:.45rem;
-    transition: all .2s ease; cursor:pointer;
-  }
-  .btn-action:hover{ transform: scale(1.05); }
-  .btn-action.edit{ border-color: var(--color-primary); color: var(--color-primary); }
-  .btn-action.edit:hover{ background: var(--color-primary); color:#fff; }
-  .btn-action.delete{ border-color:#EF4444; color:#EF4444; }
-  .btn-action.delete:hover{ background:#EF4444; color:#fff; }
-  .btn-action.star{ border-color:#F59E0B; color:#F59E0B; }
-  .btn-action.star.active{ background:#F59E0B; color:#1E1E2F; }
-
-  .pagination-custom{
-    display:flex; justify-content:center; gap:.75rem; padding:1rem 0;
-  }
-  .page-link-custom{
-    border:1px solid var(--color-border); background: var(--color-bg-secondary);
-    color: var(--color-text); border-radius:.5rem; padding:.55rem 1rem; min-width:110px;
-  }
-  .page-link-custom:disabled{ opacity:.5; cursor:not-allowed; }
-
-  @media (max-width: 768px){
-    .admin-actualites{ padding: 1rem; }
-    .admin-actualites .head{ flex-direction:column; align-items:flex-start; gap:.6rem; }
-    .btn-add, .btn-ghost{ width:100%; }
-    .col-actions{ width:120px; }
-  }
-</style>
-@endpush
-
 <div class="admin-actualites" data-script="actualitesManagement">
   <div class="head">
     <div>
@@ -363,6 +230,142 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
         <button type="button" class="btn btn-danger" id="confirmDeleteBlog">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{-- MODALE VUE ARTICLE --}}
+<div class="modal fade" id="modalBlogView" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content blog-view-modal">
+      <div class="modal-header">
+        <div class="d-flex flex-column gap-1">
+          <h5 class="modal-title" id="blogViewTitle">—</h5>
+
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <span class="badge blog-badge" id="blogViewStatus">—</span>
+            <span class="badge blog-badge" id="blogViewHighlight">—</span>
+            <span class="text-muted" style="font-size:.9rem;">
+              <span id="blogViewAuthor">—</span> • <span id="blogViewDate">—</span>
+            </span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        {{-- HERO --}}
+        <div class="blog-view-hero">
+          <div class="blog-view-hero-img">
+            <img id="blogViewMainImage" class="d-none" alt="Image principale">
+            <div class="blog-view-hero-placeholder" id="blogViewMainPlaceholder">
+              <i class="fa-regular fa-image"></i>
+              <span>Aucune image</span>
+            </div>
+          </div>
+
+          <div class="blog-view-hero-meta">
+            <div class="blog-view-field">
+              <div class="k">Crédit image</div>
+              <div class="v" id="blogViewMainCredit">—</div>
+            </div>
+            <div class="blog-view-field">
+              <div class="k">Société</div>
+              <div class="v" id="blogViewCompany">—</div>
+            </div>
+            <div class="blog-view-field">
+              <div class="k">ID</div>
+              <div class="v" id="blogViewId">—</div>
+            </div>
+
+            <div class="blog-view-actions">
+              <button type="button" class="btn btn-primary" id="btnEditFromView">
+                <i class="fa-solid fa-pen me-2"></i> Modifier
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {{-- SECTIONS --}}
+        <div class="blog-view-sections">
+
+          {{-- Section 2 --}}
+          <div class="blog-section-card d-none" id="blogViewSection2">
+            <div class="blog-section-head">
+              <h6 class="m-0">Section 2</h6>
+              <span class="pill" id="blogViewSection2Type">—</span>
+            </div>
+
+            <div class="blog-section-layout" id="blogViewSection2Layout">
+              <div class="blog-section-media">
+                <img id="blogViewSecondImage" class="d-none" alt="Image section 2">
+                <div class="media-placeholder" id="blogViewSecondPlaceholder">
+                  <i class="fa-regular fa-image"></i>
+                  <span>Aucune image</span>
+                </div>
+                <div class="media-credit text-muted" id="blogViewSecondCredit"></div>
+              </div>
+
+              <div class="blog-section-content">
+                <h5 class="section-title" id="blogViewSecondTitle"></h5>
+                <p class="section-text" id="blogViewSecondContent"></p>
+              </div>
+            </div>
+          </div>
+
+          {{-- Section 3 --}}
+          <div class="blog-section-card d-none" id="blogViewSection3">
+            <div class="blog-section-head">
+              <h6 class="m-0">Section 3</h6>
+              <span class="pill" id="blogViewSection3Type">—</span>
+            </div>
+
+            <div class="blog-section-layout" id="blogViewSection3Layout">
+              <div class="blog-section-media">
+                <img id="blogViewThirdImage" class="d-none" alt="Image section 3">
+                <div class="media-placeholder" id="blogViewThirdPlaceholder">
+                  <i class="fa-regular fa-image"></i>
+                  <span>Aucune image</span>
+                </div>
+                <div class="media-credit text-muted" id="blogViewThirdCredit"></div>
+              </div>
+
+              <div class="blog-section-content">
+                <p class="section-text" id="blogViewThirdContent"></p>
+              </div>
+            </div>
+          </div>
+
+          {{-- Section 4 --}}
+          <div class="blog-section-card d-none" id="blogViewSection4">
+            <div class="blog-section-head">
+              <h6 class="m-0">Section 4</h6>
+              <span class="pill" id="blogViewSection4Type">—</span>
+            </div>
+
+            <div class="blog-section-layout" id="blogViewSection4Layout">
+              <div class="blog-section-media">
+                <img id="blogViewFourthImage" class="d-none" alt="Image section 4">
+                <div class="media-placeholder" id="blogViewFourthPlaceholder">
+                  <i class="fa-regular fa-image"></i>
+                  <span>Aucune image</span>
+                </div>
+                <div class="media-credit text-muted" id="blogViewFourthCredit"></div>
+              </div>
+
+              <div class="blog-section-content">
+                <p class="section-text" id="blogViewFourthContent"></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>
